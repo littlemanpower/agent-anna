@@ -9,6 +9,8 @@ Copied from https://agent-anna.github.io/agent-anna/agent-anna/index.html (origi
 - Chat goes through a Supabase Edge Function (`anna-chat`) that keeps the Dahl API key on the server and calls Dahl (model `MiniMaxAI/MiniMax-M2.7`). The key is not in the page source or in localStorage.
 - Without a key saved on the server, the chat says it is offline and asks for a key (no fake replies).
 - Team notes spoken as "tell Martin/Preach/Anna …" are delivered through the same function.
+- Visitors can leave Anna a saved message through a small form. That goes to a separate `anna-message` Edge Function and is stored in `anna_messages` (not readable from the browser). Those notes are meant to be surfaced in the existing Agent Anna team daily report - no new email service.
+- A Share on X button opens the visitor's own X compose window (intent link) with a prefilled line about Anna and Cool Hot Sauce. Nothing is posted by the site.
 
 ## Setup
 Open the live page, click **KEYS**, paste your Dahl API key once, and click **SAVE KEYS**. The key is stored on the server, so you should not need to paste it again on this site. A GitHub token, if you want repo reports, is still saved only in your browser's localStorage. No secret keys or tokens are included in this repo.

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>AGENT ANNA // COOL HOT SAUCE</title>
     <meta name="description" content="Agent Anna, your Cool Hot Sauce guide. Chat with Anna, by Mr. Preach X.">
     <meta name="theme-color" content="#e3121b">
@@ -222,7 +222,7 @@
         /* ---------- Chat pane ---------- */
         .chat-console-pane {
             width: 40%; height: 100%; display: flex; flex-direction: column; min-height: 0;
-            background: var(--pane-bg); position: relative;
+            background: var(--pane-bg); position: relative; overflow: hidden;
         }
 
         .chat-header {
@@ -305,9 +305,25 @@
 
         .input-control-bar { padding: 12px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; background: var(--bg-surface); z-index: 2; flex-shrink: 0; }
         .input-row { display: flex; gap: 8px; align-items: center; width: 100%; }
-        #user-input { flex: 1; min-width: 0; padding: 11px 14px; background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light); font-size: 13px; border-radius: 10px; }
+        #user-input { flex: 1; min-width: 0; padding: 11px 14px; background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light); font-size: 13px; border-radius: 10px; resize: none; min-height: 42px; max-height: 120px; line-height: 1.4; overflow-y: auto; font-family: inherit; }
         #user-input:focus { outline: none; border-color: var(--state-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--state-color) 18%, transparent); }
         #user-input::placeholder { color: #7a5550; }
+        #send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .message.msg-enter { animation: msgFadeIn 0.28s ease both; }
+        @keyframes msgFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: none; }
+        }
+        .thinking-indicator .thinking-copy { display: inline-flex; align-items: center; gap: 8px; color: var(--gold); font-weight: 600; }
+        .thinking-dots { display: inline-flex; gap: 4px; }
+        .thinking-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: block; animation: thinkingBounce 1s ease-in-out infinite; }
+        .thinking-dots i:nth-child(2) { animation-delay: 0.15s; }
+        .thinking-dots i:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes thinkingBounce {
+            0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
+            40% { opacity: 1; transform: translateY(-3px); }
+        }
+        .retry-chip { border-color: var(--gold) !important; color: var(--gold) !important; }
 
         .multimedia-toolbar { display: flex; gap: 6px; align-items: center; font-size: 10px; flex-wrap: wrap; }
         .multimedia-toolbar .push-right { margin-left: auto; }
@@ -325,7 +341,14 @@
             html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
             .main-workspace { flex-direction: column; height: auto; overflow: visible; }
             .matrix-command-pane { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 14px; overflow: visible; }
-            .chat-console-pane { width: 100%; height: 92vh; height: 92dvh; }
+            .chat-console-pane { width: 100%; height: 92vh; height: 92dvh; height: var(--vv-height, 92dvh); max-height: var(--vv-height, 92dvh); }
+            .input-control-bar { padding: 8px 10px; gap: 6px; }
+            html.is-keyboard-open .voice-call-bar,
+            html.is-keyboard-open .quick-launch-bar,
+            html.is-keyboard-open .multimedia-toolbar { display: none; }
+            html.is-keyboard-open .chat-header { padding: 8px 12px; }
+            html.is-keyboard-open .input-control-bar { padding: 8px 10px; gap: 6px; }
+            html.is-keyboard-open #user-input { max-height: 72px; }
             .brand-text h1 { font-size: 21px; }
             .brand-logo { width: 72px; height: 72px; object-fit: contain; }
             .agents-matrix-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -353,6 +376,8 @@
             .nav-chip:hover, .flavor-card:hover, .scene-card:hover, .feature-card:hover, .agent-hud-card:hover, .site-nav a:hover {
                 transform: none !important;
             }
+            .message.msg-enter { animation: none !important; }
+            .thinking-dots i { animation: none !important; }
         }
 
         /* ---------- Portal hero (page scrolls; app below) ---------- */
@@ -650,16 +675,17 @@
         @media (min-width: 1120px) {
             .page-stage {
                 grid-template-columns: minmax(300px, 0.82fr) minmax(620px, 1.28fr);
-                grid-template-rows: auto auto 1fr auto auto;
+                grid-template-rows: auto auto auto 1fr auto auto;
                 gap: 14px 20px;
                 align-items: stretch;
             }
             .page-stage > .hero-top { grid-column: 1; grid-row: 1; }
             .page-stage > .nav-chips { grid-column: 1; grid-row: 2; margin-top: 0; }
-            .page-stage > .app-shell { grid-column: 2; grid-row: 1 / 4; }
-            .page-stage > .feature-cards { grid-column: 1; grid-row: 3; margin-top: 0; grid-template-columns: 1fr; }
-            .page-stage > .flavors { grid-column: 1 / -1; grid-row: 4; }
-            .page-stage > .scene-strip { grid-column: 1 / -1; grid-row: 5; }
+            .page-stage > .what-we-do { grid-column: 1; grid-row: 3; }
+            .page-stage > .app-shell { grid-column: 2; grid-row: 1 / 5; }
+            .page-stage > .feature-cards { grid-column: 1; grid-row: 4; margin-top: 0; grid-template-columns: 1fr; }
+            .page-stage > .flavors { grid-column: 1 / -1; grid-row: 5; }
+            .page-stage > .scene-strip { grid-column: 1 / -1; grid-row: 6; }
             .page-stage .hero-top, .page-stage .nav-chips { max-width: none; }
             .page-stage .main-workspace {
                 height: 100%;
@@ -678,6 +704,58 @@
             .page-stage .matrix-visual-container { min-height: 280px; }
         }
 
+
+        /* ---------- What we do strip + leave-a-message + share ---------- */
+        .what-we-do { margin-top: 0; }
+        .wwd-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .wwd-card {
+            background: linear-gradient(160deg, rgba(150,10,16,.35), rgba(16,6,6,.82) 60%);
+            border: 1px solid color-mix(in srgb, var(--gold) 25%, var(--line));
+            border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden;
+        }
+        .wwd-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--heat-gradient); }
+        .wwd-kicker { font-size: 10px; letter-spacing: 1.4px; font-weight: 700; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+        .wwd-card h2 { font-size: 16px; font-weight: 800; letter-spacing: 0.3px; color: #fff; margin: 0 0 6px; }
+        .wwd-card p, .wwd-card li { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .wwd-card b { color: var(--text-light); font-weight: 700; }
+        .wwd-flavors { margin: 8px 0 0; padding-left: 18px; }
+        .wwd-flavors li { margin: 2px 0; }
+        .wwd-note { margin-top: 8px; color: var(--text-light); font-size: 12px; }
+        .wwd-bots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .wwd-bot {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line);
+            background: var(--bg-dark); color: var(--text-light); font-size: 11px; font-weight: 700;
+            text-decoration: none;
+        }
+        .wwd-bot:hover { border-color: var(--gold); color: var(--gold); }
+        .wwd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+        .share-x-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+            text-decoration: none; color: var(--text-light);
+            background: #000; border: 1px solid color-mix(in srgb, var(--gold) 40%, #333);
+        }
+        .share-x-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .anna-msg-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .anna-msg-form label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.4px; }
+        .anna-msg-form input, .anna-msg-form textarea {
+            width: 100%; padding: 8px 10px; background: var(--bg-dark); border: 1px solid var(--line);
+            color: var(--text-light); font-size: 13px; border-radius: 8px; font-family: var(--font-ui);
+        }
+        .anna-msg-form input:focus, .anna-msg-form textarea:focus { outline: none; border-color: var(--state-color); }
+        .anna-msg-form textarea { min-height: 72px; resize: vertical; }
+        .anna-msg-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .anna-msg-count { font-size: 10px; color: var(--text-muted); margin-left: auto; }
+        .anna-msg-status { font-size: 12px; min-height: 1.2em; }
+        .anna-msg-status.is-ok { color: #c6e6a5; font-weight: 700; }
+        .anna-msg-status.is-error { color: #ff8a7a; font-weight: 700; }
+        .hp-field { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+        @media (max-width: 860px) {
+            .wwd-card { padding: 12px; }
+            .wwd-card h2 { font-size: 15px; }
+            .anna-msg-form textarea { min-height: 56px; }
+        }
 
         /* ---------- Hands-free Voice Mode (live call) ---------- */
         .voice-call-bar {
@@ -1107,12 +1185,60 @@
             <a class="nav-chip" href="https://x.com/LittleManPower" target="_blank" rel="noopener">𝕏 @LittleManPower</a>
             <a class="nav-chip" href="#sauces">🌶️ The Sauces</a>
             <a class="nav-chip" href="#crew">💬 Meet the crew</a>
+            <a class="nav-chip" href="#leave-message">✉️ Leave a message</a>
             <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
             <div class="status-bar-indicator">
                 <div class="status-dot"></div>
                 <span id="state-text">Standby</span>
             </div>
         </nav>
+        <section class="what-we-do reveal" id="what-we-do" aria-label="What we do">
+            <div class="wwd-grid">
+                <div class="wwd-card">
+                    <div class="wwd-kicker">What we do</div>
+                    <h2>World Famous Cool Hot Sauce</h2>
+                    <p><b>Thailand National Hot Sauce Brand.</b> Just chili, salt and vinegar. No sugar added. No artificial preservatives.</p>
+                    <ul class="wwd-flavors">
+                        <li>Black Smoked Red Jalapeno</li>
+                        <li>Green Jalapeno</li>
+                        <li>Red fermented Prick chi fa</li>
+                    </ul>
+                </div>
+                <div class="wwd-card">
+                    <div class="wwd-kicker">The crew</div>
+                    <h2>Chat 24/7</h2>
+                    <p>Talk with Anna, Mr. Preach X and Martin Strayd any time - sauce questions, streams, or music.</p>
+                    <div class="wwd-bots">
+                        <a class="wwd-bot" href="#crew" onclick="selectAgentAndChat('AA01'); return false;">Anna</a>
+                        <a class="wwd-bot" href="#crew" onclick="selectAgentAndChat('AA02'); return false;">Mr. Preach X</a>
+                        <a class="wwd-bot" href="#crew" onclick="selectAgentAndChat('AA03'); return false;">Martin Strayd</a>
+                    </div>
+                    <div class="wwd-actions">
+                        <a class="share-x-btn" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20Built%20by%20%40LittleManPower.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
+                    </div>
+                </div>
+                <div class="wwd-card" id="leave-message">
+                    <div class="wwd-kicker">Inbox</div>
+                    <h2>Leave Anna a message</h2>
+                    <p>Chat is live, but this note is saved so nothing gets lost. Anna will pass it on.</p>
+                    <form class="anna-msg-form" id="anna-message-form" onsubmit="submitAnnaMessage(event)">
+                        <label for="anna-msg-name">Name (optional)</label>
+                        <input type="text" id="anna-msg-name" name="name" maxlength="80" autocomplete="name">
+                        <label for="anna-msg-contact">Contact (optional)</label>
+                        <input type="text" id="anna-msg-contact" name="contact" maxlength="200" autocomplete="email" placeholder="Email or X handle">
+                        <label class="hp-field" for="anna-msg-company">Company</label>
+                        <input class="hp-field" type="text" id="anna-msg-company" name="company" tabindex="-1" autocomplete="off">
+                        <label for="anna-msg-body">Message</label>
+                        <textarea id="anna-msg-body" name="message" required maxlength="1000" rows="3" placeholder="Write a note for Anna..."></textarea>
+                        <div class="anna-msg-row">
+                            <button type="submit" class="ctrl-btn btn-hot" id="anna-message-submit">Send to Anna</button>
+                            <span class="anna-msg-count" id="anna-msg-count">0 / 1000</span>
+                        </div>
+                        <div class="anna-msg-status" id="anna-message-status" role="status" aria-live="polite"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
         <!-- AGENT CONSOLE (top right on desktop; first after header on mobile) -->
     <div class="app-shell reveal" id="crew">
     <div class="main-workspace">
@@ -1238,8 +1364,8 @@
                 </div>
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
-                    <input type="text" id="user-input" placeholder="Message Anna... (Enter to send)" onkeypress="handleKey(event)" onpaste="handleClipboardPaste(event)">
-                    <button class="ctrl-btn btn-hot" onclick="sendMessage()">SEND 🌶️</button>
+                    <textarea id="user-input" rows="1" placeholder="Message Anna... (Enter to send, Shift+Enter for a new line)" onkeydown="handleKey(event)" oninput="autosizeUserInput()" onpaste="handleClipboardPaste(event)" aria-label="Message Anna"></textarea>
+                    <button type="button" class="ctrl-btn btn-hot" id="send-btn" onclick="sendMessage()">SEND 🌶️</button>
                 </div>
             </div>
         </div>
@@ -1351,7 +1477,8 @@
                     'apikey': ANNA_ANON,
                     'Authorization': 'Bearer ' + ANNA_ANON
                 },
-                body: opts.body ? JSON.stringify(opts.body) : undefined
+                body: opts.body ? JSON.stringify(opts.body) : undefined,
+                signal: opts.signal
             });
         }
 
@@ -1431,6 +1558,8 @@
                 window.speechSynthesis.onvoiceschanged = loadVoices;
             }
             initPageMotion();
+            initChatComposer();
+            initAnnaMessageForm();
         });
 
         function loadVoices() {
@@ -1458,6 +1587,8 @@
             if (stateText) stateText.textContent = label;
             const presenceLabel = document.getElementById('presence-label-text');
             if (presenceLabel) presenceLabel.textContent = label;
+            if (presence === 'thinking') showThinkingIndicator();
+            else removeThinkingIndicator();
         }
 
         function cancelPresenceIdle() {
@@ -1905,12 +2036,10 @@
                 // speakText will resume listening when the confirmation finishes.
                 return;
             }
-            const input = document.getElementById('user-input');
-            if (input) input.value = spoken;
             voiceSending = true;
             stopVoiceRec();
             setVoicePill('thinking');
-            Promise.resolve(sendMessage()).catch(() => {}).finally(() => { voiceSending = false; });
+            Promise.resolve(sendMessage(spoken)).catch(() => {}).finally(() => { voiceSending = false; });
         }
 
         function triggerFadeBanner(text) {
@@ -2114,13 +2243,182 @@
         }
 
         /* STANDARD CHAT SEND FUNCTION */
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const query = input ? input.value.trim() : "";
-            if (!query && !lastPastedImageData) return;
+        let CHAT_TIMEOUT_MS = 25000;
+        let chatBusy = false;
+        let chatPinnedToBottom = true;
+        let chatAbort = null;
 
-            appendMsg(query, 'user', getTalkerLabel(), { image: lastPastedImageData });
-            input.value = '';
+        function isChatNearBottom(el) {
+            return !!el && (el.scrollHeight - el.scrollTop - el.clientHeight) < 80;
+        }
+        function scrollChatToBottom() {
+            const container = document.getElementById('chat-container');
+            if (!container) return;
+            container.scrollTop = container.scrollHeight;
+        }
+        function scrollChatIfPinned() {
+            if (chatPinnedToBottom) scrollChatToBottom();
+        }
+        function bindChatScroll() {
+            const container = document.getElementById('chat-container');
+            if (!container || container.dataset.scrollBound) return;
+            container.dataset.scrollBound = '1';
+            container.addEventListener('scroll', function () {
+                chatPinnedToBottom = isChatNearBottom(container);
+            }, { passive: true });
+        }
+        function autosizeUserInput() {
+            const input = document.getElementById('user-input');
+            if (!input) return;
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+        }
+        function setChatBusy(busy) {
+            chatBusy = !!busy;
+            const btn = document.getElementById('send-btn');
+            if (btn) {
+                btn.disabled = chatBusy;
+                btn.setAttribute('aria-busy', chatBusy ? 'true' : 'false');
+            }
+        }
+        function isVoiceListeningNow() {
+            return !!(typeof voiceModeActive !== 'undefined' && voiceModeActive && !voicePausedForSpeech && !voiceSending);
+        }
+        function refocusUserInput() {
+            const input = document.getElementById('user-input');
+            if (!input) return;
+            if (isVoiceListeningNow() && document.activeElement !== input) return;
+            try { input.focus({ preventScroll: true }); } catch (e) { try { input.focus(); } catch (e2) {} }
+        }
+        function showThinkingIndicator() {
+            const container = document.getElementById('chat-container');
+            if (!container) return;
+            let el = document.getElementById('thinking-indicator');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'thinking-indicator';
+                el.className = 'message assistant thinking-indicator';
+                el.setAttribute('aria-live', 'polite');
+                container.appendChild(el);
+            }
+            const name = (typeof talkName === 'function' ? talkName() : 'Anna');
+            el.innerHTML = '<div class="msg-header">' + escapeHtml(name) + '</div><div class="msg-body"><span class="thinking-copy"><span class="thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span> Thinking…</span></div>';
+            scrollChatIfPinned();
+        }
+        function removeThinkingIndicator() {
+            const el = document.getElementById('thinking-indicator');
+            if (el) el.remove();
+        }
+        function keepComposerInView() {
+            if (!window.visualViewport) return;
+            const vv = window.visualViewport;
+            const height = Math.round(vv.height);
+            const keyboardUp = height && window.innerHeight && (window.innerHeight - height > 80);
+            document.documentElement.classList.toggle('is-keyboard-open', !!keyboardUp);
+            if (keyboardUp) document.documentElement.style.setProperty('--vv-height', height + 'px');
+            else document.documentElement.style.removeProperty('--vv-height');
+            const input = document.getElementById('user-input');
+            const bar = document.querySelector('.input-control-bar');
+            if (keyboardUp && bar && input && document.activeElement === input) {
+                const bottom = bar.getBoundingClientRect().bottom;
+                const vvBottom = vv.offsetTop + vv.height;
+                if (bottom > vvBottom - 8 || bar.getBoundingClientRect().top < vv.offsetTop) {
+                    bar.scrollIntoView({ block: 'end', inline: 'nearest', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+                }
+            }
+        }
+        function initChatComposer() {
+            bindChatScroll();
+            autosizeUserInput();
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', keepComposerInView);
+                window.visualViewport.addEventListener('scroll', keepComposerInView);
+            }
+            const input = document.getElementById('user-input');
+            if (input) input.addEventListener('focus', function () { setTimeout(keepComposerInView, 50); });
+        }
+        const ANNA_MSG_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-message';
+        const ANNA_MSG_MAX = 1000;
+        function updateAnnaMessageCount() {
+            const body = document.getElementById('anna-msg-body');
+            const count = document.getElementById('anna-msg-count');
+            if (body && count) count.textContent = String(body.value.length) + ' / ' + ANNA_MSG_MAX;
+        }
+        function initAnnaMessageForm() {
+            const body = document.getElementById('anna-msg-body');
+            if (body) body.addEventListener('input', updateAnnaMessageCount);
+            updateAnnaMessageCount();
+        }
+        async function submitAnnaMessage(ev) {
+            ev.preventDefault();
+            const form = document.getElementById('anna-message-form');
+            const status = document.getElementById('anna-message-status');
+            const btn = document.getElementById('anna-message-submit');
+            if (!form || !status) return;
+            const body = (form.elements.message && form.elements.message.value || '').trim();
+            const name = (form.elements.name && form.elements.name.value || '').trim();
+            const contact = (form.elements.contact && form.elements.contact.value || '').trim();
+            const honey = (form.elements.company && form.elements.company.value || '').trim();
+            status.textContent = '';
+            status.className = 'anna-msg-status';
+            if (!body) {
+                status.textContent = 'Please write a message for Anna.';
+                status.className = 'anna-msg-status is-error';
+                return;
+            }
+            if (body.length > ANNA_MSG_MAX) {
+                status.textContent = 'Message is too long (max ' + ANNA_MSG_MAX + ' characters).';
+                status.className = 'anna-msg-status is-error';
+                return;
+            }
+            if (btn) btn.disabled = true;
+            try {
+                if (honey) {
+                    form.reset();
+                    updateAnnaMessageCount();
+                    status.textContent = 'Got it - Anna will pass this on.';
+                    status.className = 'anna-msg-status is-ok';
+                    return;
+                }
+                const res = await fetch(ANNA_MSG_FN, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': ANNA_ANON,
+                        'Authorization': 'Bearer ' + ANNA_ANON
+                    },
+                    body: JSON.stringify({ name: name, contact: contact, message: body })
+                });
+                const data = await res.json().catch(function () { return {}; });
+                if (!res.ok) throw new Error(data.message || 'Could not send your message. Try again in a moment.');
+                form.reset();
+                updateAnnaMessageCount();
+                status.textContent = 'Got it - Anna will pass this on.';
+                status.className = 'anna-msg-status is-ok';
+            } catch (e) {
+                const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not send your message. Try again in a moment.';
+                status.textContent = msg;
+                status.className = 'anna-msg-status is-error';
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        async function sendMessage(overrideText) {
+            if (chatBusy) return;
+            const input = document.getElementById('user-input');
+            const fromOverride = (typeof overrideText === 'string');
+            const query = (fromOverride ? overrideText : (input ? input.value : '')).trim();
+            const pasted = fromOverride ? null : lastPastedImageData;
+            if (!query && !pasted) return;
+
+            setChatBusy(true);
+            chatPinnedToBottom = true;
+            appendMsg(query, 'user', getTalkerLabel(), { image: pasted, forceScroll: true });
+            if (!fromOverride && input) {
+                input.value = '';
+                autosizeUserInput();
+            }
             lastPastedImageData = null;
 
             setMoodState('thinking');
@@ -2153,9 +2451,12 @@ ${annaRules}`,
             hist.push({ role: "user", content: query });
             while (hist.length > 12) hist.shift();
 
+            chatAbort = new AbortController();
+            const timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
             try {
                 const res = await annaApi('chat', {
                     method: 'POST',
+                    signal: chatAbort.signal,
                     body: {
                         messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (typeof voiceModeActive !== 'undefined' && voiceModeActive ? "\n\nYou are on a live voice call. Keep this reply short, spoken, and conversational - one or two sentences." : "") }, ...hist],
                         temperature: 0.2, max_tokens: 400
@@ -2167,7 +2468,7 @@ ${annaRules}`,
                     try { data = await res.json(); } catch (_) {}
                     if (data.error === 'no_key') {
                         showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
-                        appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
+                        appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
                         if (typeof voiceModeActive !== 'undefined' && voiceModeActive) speakText('Chat is offline. Open Keys and add your Dahl key.');
                         else setMoodState('standby');
                         hist.pop();
@@ -2183,13 +2484,22 @@ ${annaRules}`,
                 setMoodState('responding');
                 appendMsg(reply, 'assistant', `${currentAgentId} [Response]`);
                 speakText(reply);
+                refocusUserInput();
             } catch (e) {
                 hist.pop();
-                const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.';
+                const timedOut = !!(chatAbort && chatAbort.signal && chatAbort.signal.aborted) || (e && (e.name === 'AbortError' || e === 'timeout'));
+                const msg = timedOut
+                    ? 'That took too long. Try again in a moment.'
+                    : ((e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.');
                 showNotice(msg);
-                appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`);
+                appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
                 if (voiceModeActive) speakText(msg);
                 else setMoodState('standby');
+            } finally {
+                clearTimeout(timeoutId);
+                chatAbort = null;
+                setChatBusy(false);
+                refocusUserInput();
             }
         }
 
@@ -2473,7 +2783,7 @@ ${annaRules}`,
             const plain = String(text == null ? '' : text);
             messagePayloadStore[id] = plain;
             const div = document.createElement('div');
-            div.className = `message ${sender === 'user' ? 'user' : 'assistant'}`;
+            div.className = `message ${sender === 'user' ? 'user' : 'assistant'} msg-enter`;
             div.id = id;
             div.innerHTML = `<div class="msg-header">${escapeHtml(label)}</div><div class="msg-body">${escapeHtml(plain).replace(/\r?\n/g, '<br>')}</div>
             <div class="action-row">
@@ -2492,11 +2802,29 @@ ${annaRules}`,
                 if (plain) body.appendChild(document.createElement('br'));
                 body.appendChild(img);
             }
+            const retryQuery = opts && opts.retryQuery;
+            if (typeof retryQuery === 'string' && retryQuery) {
+                const row = div.querySelector('.action-row');
+                const retry = document.createElement('button');
+                retry.type = 'button';
+                retry.className = 'action-chip retry-chip';
+                retry.textContent = 'Retry';
+                retry.addEventListener('click', function () { sendMessage(retryQuery); });
+                if (row) row.insertBefore(retry, row.firstChild);
+            }
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            if ((opts && opts.forceScroll) || sender === 'user' || chatPinnedToBottom) {
+                chatPinnedToBottom = true;
+                scrollChatToBottom();
+            }
         }
 
-        function clearLogs() { document.getElementById('chat-container').innerHTML = ''; messagePayloadStore = {}; }
+        function clearLogs() {
+            const box = document.getElementById('chat-container');
+            if (box) box.innerHTML = '';
+            messagePayloadStore = {};
+            chatPinnedToBottom = true;
+        }
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
         function saveCredentials() {
@@ -2526,8 +2854,14 @@ ${annaRules}`,
                 }
             })();
         }
-        function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; scrollToChatAndFocus(); sendMessage(); }
-        function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
+        function quickAsk(q) { const el = document.getElementById('user-input'); if (el) { el.value = q; autosizeUserInput(); } scrollToChatAndFocus(); sendMessage(); }
+        function handleKey(e) {
+            if (e.key !== 'Enter') return;
+            if (e.isComposing || e.keyCode === 229) return;
+            if (e.shiftKey) return;
+            e.preventDefault();
+            sendMessage();
+        }
     </script>
 </body>
 </html>
