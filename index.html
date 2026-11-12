@@ -299,6 +299,7 @@
             padding: 5px 9px; font-size: 10px; font-weight: 600; cursor: pointer; border-radius: 999px; transition: all 0.2s ease;
         }
         .action-chip:hover { border-color: var(--state-color); color: var(--state-color); }
+        .icon-chip { display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; line-height: 0; }
         .del-btn { color: #ff6b5b !important; border-color: rgba(255, 59, 59, 0.35) !important; }
         .del-btn:hover { border-color: #ff3b3b !important; background: rgba(255, 59, 59, 0.08); }
 
@@ -943,7 +944,7 @@
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
                     <div><span class="thai-hello">สวัสดีค่ะ!</span> Sawasdee ka! 🙏 I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
                     <div class="action-row">
-                        <button class="action-chip" onclick="speakStoredMessage('msg_init')">SPEECH READOUT</button>
+                        <button class="action-chip icon-chip" onclick="speakStoredMessage('msg_init')" aria-label="Speech" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
                         <button class="action-chip" onclick="copyToClipboard('msg_init', this)">COPY</button>
                         <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
                         <button class="action-chip del-btn" onclick="deleteMessage('msg_init')">🗑️ DEL</button>
@@ -2088,7 +2089,7 @@ ${annaRules}`,
             div.id = id;
             div.innerHTML = `<div class="msg-header">${escapeHtml(label)}</div><div class="msg-body">${escapeHtml(plain).replace(/\r?\n/g, '<br>')}</div>
             <div class="action-row">
-                <button class="action-chip" onclick="speakStoredMessage('${id}')">SPEECH READOUT</button>
+                <button class="action-chip icon-chip" onclick="speakStoredMessage('${id}')" aria-label="Speech" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
                 <button class="action-chip" onclick="copyToClipboard('${id}', this)">COPY</button>
                 <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
                 <button class="action-chip del-btn" onclick="deleteMessage('${id}')">🗑️ DEL</button>
