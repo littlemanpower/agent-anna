@@ -15,11 +15,12 @@ Open the live page, click **KEYS**, paste your Dahl API key once, and click **SA
 
 ## Changes from the original
 - Removed the fake canned chat replies shown when no API key is set.
-- Cool Hot Sauce red/black/gold Thailand theme: diamond "THAILAND 100ML" logo recreated as inline SVG (header + favicon), Kanit font, Thai kanok borders, photo hero and scenes, flavour cards (Smoked Black, Green Jalapeño, Red Thai Chili) with "Buy on Lazada" links (URL decoded from the brand's own Lazada QR code).
+- Cool Hot Sauce red/black/gold Thailand theme: the real Cool Hot Sauce diamond logo (header + favicon), Kanit font, Thai kanok borders, photo hero and scenes, flavour cards (Smoked Black, Green Jalapeño, Red Thai Chili) with "Buy on Lazada" links (URL decoded from the brand's own Lazada QR code).
 - Agent roster is Anna, Mr. Preach X, and Martin Strayd.
 
 ## Assets and credits
 - `assets/bottle-*.png`: Cool Hot Sauce product photos, cropped from images supplied by the brand owner (Mr. Preach X / CoolHotSauce). Brand assets; all rights reserved by the owner.
+- `assets/coolhotsauce-logo.png` and `assets/coolhotsauce-favicon-*.png`: the real Cool Hot Sauce diamond logo, cropped from a brand image supplied by the owner (Mr. Preach X / CoolHotSauce). Brand asset; all rights reserved by the owner.
 - Scenery photos from Wikimedia Commons, resized and compressed for the web (adaptations of the originals; the CC BY-SA image stays under CC BY-SA 4.0):
   - `assets/white-temple.jpg`: "Chiang Rai - Wat Rong Khun (2026) - img 11" by Chainwit., CC BY 4.0. https://commons.wikimedia.org/wiki/File:Chiang_Rai_-_Wat_Rong_Khun_%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%B8%E0%B9%88%E0%B8%99_(2026)_-_img_11.jpg (https://creativecommons.org/licenses/by/4.0)
   - `assets/tea-hills.jpg`: "Hills & tea farms of Chiang Rai" by cloud.shepherd, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Hills_%26_tea_farms_of_Chiang_Rai_(18197802634).jpg (https://creativecommons.org/licenses/by/2.0)
