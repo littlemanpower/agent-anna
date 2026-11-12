@@ -1262,23 +1262,33 @@ ${annaRules}`,
                 const maleRanked = [
                     /Andrew.*(Online|Natural|Multilingual)/i, /Brian.*(Online|Natural|Multilingual)/i, /Guy.*(Online|Natural)/i,
                     /Christopher.*(Online|Natural)/i, /Ryan.*(Online|Natural)/i, /Eric.*(Online|Natural)/i, /Davis.*(Online|Natural)/i,
-                    /Daniel \((Premium|Enhanced)\)/i, /Evan \((Premium|Enhanced)\)/i, /Google UK English Male/i,
-                    /^Daniel\b/i, /^Alex\b/i, /^Aaron\b/i, /David/i, /Mark/i, /\bmale\b/i
+                    /Daniel \((Premium|Enhanced)\)/i, /Evan \((Premium|Enhanced)\)/i, /Nathan \((Premium|Enhanced)\)/i, /Google UK English Male/i, /^Google .*Male/i,
+                    /en-us-x-(tpd|iom|iol)-network/i, /en-gb-x-(gbb|gbd|rjs)-network/i, /en-us-x-(tpd|iom|iol)/i,
+                    /^Daniel\b/i, /^Alex\b/i, /^Aaron\b/i, /^Fred\b/i, /^Rishi\b/i, /David/i, /Mark/i, /\bmale\b/i
                 ];
                 const ranked = maleAgent ? maleRanked : [
+                    // Edge / Windows 11 neural voices (closest to a real assistant voice)
                     /Ava.*(Online|Natural|Multilingual)/i, /Emma.*(Online|Natural|Multilingual)/i, /Jenny.*(Online|Natural)/i,
-                    /Aria.*(Online|Natural)/i, /Sonia.*(Online|Natural)/i, /Libby.*(Online|Natural)/i, /Natasha.*(Online|Natural)/i,
-                    /Michelle.*(Online|Natural)/i, /(Female|Woman).*(Online|Natural)/i,
-                    /Ava \((Premium|Enhanced)\)/i, /Samantha \((Premium|Enhanced)\)/i, /Zoe \((Premium|Enhanced)\)/i,
-                    /Google UK English Female/i, /Google US English(?! Male)/i,
-                    /^Ava\b/i, /^Samantha\b/i, /^Victoria\b/i, /^Karen\b/i, /^Moira\b/i, /Zira/i, /Hazel/i, /Susan/i, /Emma/i
+                    /Aria.*(Online|Natural)/i, /Michelle.*(Online|Natural)/i, /Sonia.*(Online|Natural)/i, /Libby.*(Online|Natural)/i,
+                    /(Female|Woman).*(Online|Natural)/i,
+                    // Apple premium / enhanced voices (Mac, iPhone, iPad)
+                    /Ava \((Premium|Enhanced)\)/i, /Zoe \((Premium|Enhanced)\)/i, /Samantha \((Premium|Enhanced)\)/i,
+                    /Allison \((Premium|Enhanced)\)/i, /Nicky \((Premium|Enhanced)\)/i,
+                    // Google voices (Chrome on PC/Mac)
+                    /^Google US English$/i, /Google UK English Female/i, /^Google .*English(?!.*Male)/i,
+                    // Android Google network voices (higher quality than local)
+                    /en-us-x-(sfg|tpc|iob|iog)-network/i, /en-gb-x-(gba|gbc|gbg)-network/i, /en-us-x-(sfg|tpc|iob|iog)/i,
+                    // Classic fallbacks
+                    /^Ava\b/i, /^Samantha\b/i, /^Nicky\b/i, /^Allison\b/i, /^Victoria\b/i, /^Karen\b/i, /^Moira\b/i,
+                    /Zira/i, /Hazel/i, /Susan/i, /Emma/i
                 ];
                 const en = voices.filter(v => v.lang && /^en/i.test(v.lang));
                 let voice = null;
+                if (currentAgentId === 'AA04' && !window.__preachVoice) { for (const re of maleRanked) { const pv = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (pv) { window.__preachVoice = pv.name; break; } } }
                 const pool = (currentAgentId === 'AA04') ? [...ranked.slice(1), ranked[0]] : ranked;
                 for (const re of pool) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
                 if (!voice) voice = en.find(v => (maleAgent ? /\bmale\b/i : /female/i).test(v.name)) || en[0] || voices[0];
-                const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced)/i.test(voice.name);
+                const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced|network|^Google )/i.test(voice.name);
 
                 // Speak sentence by sentence so she breathes between thoughts instead of rushing.
                 const parts = (sanitized.match(/[^.!?]+[.!?]*/g) || [sanitized]).map(t => t.trim()).filter(Boolean);
@@ -1287,6 +1297,9 @@ ${annaRules}`,
                     if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
                     // Neural voices already sound human, so only a light touch; classic voices get a bit more warmth.
                     utterance.pitch = maleAgent ? (isNeural ? 0.98 : 0.92) : (isNeural ? 1.04 : 1.12);
+                    // If Martin ends up on the same voice as Mr. Preach (few voices on the device), shift him so they still sound different.
+                    if (currentAgentId === 'AA04') { const pv = (window.__preachVoice || ''); if (voice && voice.name === pv) utterance.pitch = Math.max(0.7, utterance.pitch - 0.14); }
+                    if (currentAgentId === 'AA02' && voice) window.__preachVoice = voice.name;
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
                     if (i === parts.length - 1) {
