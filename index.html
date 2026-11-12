@@ -2591,7 +2591,21 @@ ${annaRules}`,
                     hookReplyLoudness(a);
                     a.onended = () => { if (gen !== speakGen) return; if (next) playFrom(i + 1, next); else finish(); };
                     a.onerror = fallback;
-                    a.play().then(() => { started = true; window.__annaTtsPath = 'clone'; }).catch(fallback);
+                    const armWatch = function () {
+                        if (gen !== speakGen || a.__watchArmed) return;
+                        a.__watchArmed = true;
+                        const dur = (isFinite(a.duration) && a.duration > 0) ? (a.duration * 1000 + 1200) : 20000;
+                        setTimeout(function () {
+                            if (gen !== speakGen) return;
+                            if (cloudAudio === a && !a.ended) {
+                                try { a.onended = null; a.pause(); } catch (e) {}
+                                if (next) playFrom(i + 1, next); else finish();
+                            }
+                        }, Math.min(Math.max(dur, 2000), 30000));
+                    };
+                    a.addEventListener('loadedmetadata', armWatch, { once: true });
+                    if (a.readyState >= 1) armWatch();
+                    a.play().then(() => { started = true; window.__annaTtsPath = 'clone'; armWatch(); }).catch(fallback);
                 }).catch(fallback);
             };
             playFrom(0, fetchClonedAudio(agentId, chunks[0]));
@@ -2659,6 +2673,7 @@ ${annaRules}`,
 
                 // Speak sentence by sentence so she breathes between thoughts instead of rushing.
                 const parts = (sanitized.match(/[^.!?]+[.!?]*/g) || [sanitized]).map(t => t.trim()).filter(Boolean);
+                const safety = setTimeout(function () { if (gen !== speakGen) return; finishSpeak(); }, Math.min(30000, Math.max(4000, sanitized.length * 80)));
                 parts.forEach((part, i) => {
                     const utterance = new SpeechSynthesisUtterance(part);
                     if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
@@ -2670,8 +2685,8 @@ ${annaRules}`,
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
                     if (i === parts.length - 1) {
-                        utterance.onend = () => { if (gen !== speakGen) return; finishSpeak(); };
-                        utterance.onerror = () => { if (gen !== speakGen) return; finishSpeak(); };
+                        utterance.onend = () => { if (gen !== speakGen) return; clearTimeout(safety); finishSpeak(); };
+                        utterance.onerror = () => { if (gen !== speakGen) return; clearTimeout(safety); finishSpeak(); };
                     }
                     window.speechSynthesis.speak(utterance);
                 });
