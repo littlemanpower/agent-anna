@@ -1,4 +1,4 @@
-# Martin Strayd (AA04) character
+# Martin Strayd (AA03) character
 
 Music & Strayd. suzukistrayd on GitHub/X. Male voice (Brian in Edge).
 

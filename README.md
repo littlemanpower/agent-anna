@@ -1,6 +1,6 @@
 # Agent Anna
 
-A single-page Cool Hot Sauce (Thailand) portal and chat dashboard for Agent Anna and her crew (AA01 Anna, AA02 Mr. Preach X, AA04 Martin Strayd), with a live crypto ticker, an agent phonebook, and a chat console with voice readout.
+A single-page Cool Hot Sauce (Thailand) portal and chat dashboard for Agent Anna and her crew (AA01 Anna, AA02 Mr. Preach X, AA03 Martin Strayd), with a live crypto ticker, an agent phonebook, and a chat console with voice readout.
 
 Copied from https://agent-anna.github.io/agent-anna/agent-anna/index.html (original by the agent-anna GitHub account).
 

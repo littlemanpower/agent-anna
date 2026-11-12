@@ -10,7 +10,7 @@ Public facts the agent should know. Drawn from @LittleManPower on X, his public 
 - **X:** [@LittleManPower](https://x.com/LittleManPower) — public account, created May 15, 2013. Observed Nov 12 2026: about 4,071 followers and a large public post history (tens of thousands of posts).
 - **Public bio, kept to non-private lines:** "Not everyone is born into love so be that." "Still here. Still building." "Believe & SHI\* HAPPENS." Location field: "United & FREE." Website field: [linktr.ee/MrPreach](https://linktr.ee/MrPreach).
 - **Avatar:** the Preacher dog, Mr. Preach X. He refers to that character in clip titles and posts ("Mr. Preach the Dog," "the Preacher").
-- **Role on this site:** AA02, founder and gamer; teammate of Agent Anna (AA01) and Martin Strayd (AA04).
+- **Role on this site:** AA02, founder and gamer; teammate of Agent Anna (AA01) and Martin Strayd (AA03).
 
 ## Public links
 

@@ -854,7 +854,7 @@
                     <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
                         <option value="AA01">Agent Anna</option>
                         <option value="AA02">Mr. Preach X</option>
-                        <option value="AA04">Martin Strayd</option>
+                        <option value="AA03">Martin Strayd</option>
                     </select>
                     <button class="ctrl-btn military-btn" onclick="nextAgent()">NEXT ▶</button>
                 </div>
@@ -876,8 +876,8 @@
                         <a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener" title="TikTok @mr.preachx" aria-label="TikTok @mr.preachx">♪</a>
                     </div>
                 </div>
-                <div class="agent-hud-card" id="card-AA04" role="button" tabindex="0" onclick="selectAgentAndChat('AA04')">
-                    <img src="assets/martin.jpg" alt="AA04">
+                <div class="agent-hud-card" id="card-AA03" role="button" tabindex="0" onclick="selectAgentAndChat('AA03')">
+                    <img src="assets/martin.jpg" alt="AA03">
                     <h5>MARTIN STRAYD</h5>
                     <p>Music & Strayd</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
@@ -1049,7 +1049,7 @@
         const AGENTS = {
             "AA01": { talk: "Anna", title: "AGENT ANNA // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
             "AA02": { talk: "Mr. Preach", title: "MR. PREACH X // FOUNDER", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
-            "AA04": { talk: "Martin Strayd", title: "MARTIN STRAYD // MUSIC", role: "Musician & Music Archives", img: "assets/martin.jpg" },
+            "AA03": { talk: "Martin Strayd", title: "MARTIN STRAYD // MUSIC", role: "Musician & Music Archives", img: "assets/martin.jpg" },
         };
 
         const AGENT_KEYS = Object.keys(AGENTS);
@@ -1684,7 +1684,7 @@
                     `REAL REPOSITORY & MASTER SWARM DIAGNOSTIC REPORT\n` +
                     `═══════════════════════════════════════════════════════════\n` +
                     `1. Repository Hub: littlemanpower/agent-anna (GitHub Pages Deployment)\n` +
-                    `2. Agents: AA01 Anna, AA02 Mr. Preach X, AA04 Martin Strayd (3 agents)\n` +
+                    `2. Agents: AA01 Anna, AA02 Mr. Preach X, AA03 Martin Strayd (3 agents)\n` +
                     `3. Financial Core: 4-Person Streamlined Treasury Team\n` +
                     `4. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
                     `[DIAGNOSTIC STATUS]: All subsystem nodes nominal.`;
@@ -1762,7 +1762,7 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
                 AA02: `You are roleplaying purely as MR. PREACH X, founder of Cool Hot Sauce and the gamer and streamer behind @LittleManPower on X (Arc Raiders, Rob Run, CS2). Your name is strictly Mr. Preach X. Laid-back, real, funny, a believer who keeps it humble. Talk about the sauces, gaming and the streams. Never invent stats, schedules or personal details.
 
 ${annaRules}`,
-                AA04: `You are roleplaying purely as MARTIN STRAYD, a musician and teammate of Agent Anna and Mr. Preach X. Your name is strictly Martin Strayd. Calm, creative, friendly. Talk about music and the team. STRICT: never invent song titles, releases, dates or personal details; if you don't know, say so.
+                AA03: `You are roleplaying purely as MARTIN STRAYD, a musician and teammate of Agent Anna and Mr. Preach X. Your name is strictly Martin Strayd. Calm, creative, friendly. Talk about music and the team. STRICT: never invent song titles, releases, dates or personal details; if you don't know, say so.
 
 ${annaRules}`,
             };
@@ -1836,7 +1836,7 @@ ${annaRules}`,
                 if (!voices || voices.length === 0) voices = cachedVoices;
 
                 // Pick the most natural-sounding female voice the device offers (neural voices first).
-                const maleAgent = (currentAgentId === 'AA02' || currentAgentId === 'AA04');
+                const maleAgent = (currentAgentId === 'AA02' || currentAgentId === 'AA03');
                 const maleRanked = [
                     /Andrew.*(Online|Natural|Multilingual)/i, /Brian.*(Online|Natural|Multilingual)/i, /Guy.*(Online|Natural)/i,
                     /Christopher.*(Online|Natural)/i, /Ryan.*(Online|Natural)/i, /Eric.*(Online|Natural)/i, /Davis.*(Online|Natural)/i,
@@ -1862,8 +1862,8 @@ ${annaRules}`,
                 ];
                 const en = voices.filter(v => v.lang && /^en/i.test(v.lang));
                 let voice = null;
-                if (currentAgentId === 'AA04' && !window.__preachVoice) { for (const re of maleRanked) { const pv = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (pv) { window.__preachVoice = pv.name; break; } } }
-                const pool = (currentAgentId === 'AA04') ? [...ranked.slice(1), ranked[0]] : ranked;
+                if (currentAgentId === 'AA03' && !window.__preachVoice) { for (const re of maleRanked) { const pv = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (pv) { window.__preachVoice = pv.name; break; } } }
+                const pool = (currentAgentId === 'AA03') ? [...ranked.slice(1), ranked[0]] : ranked;
                 for (const re of pool) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
                 if (!voice) voice = en.find(v => (maleAgent ? /\bmale\b/i : /female/i).test(v.name)) || en[0] || voices[0];
                 const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced|network|^Google )/i.test(voice.name);
@@ -1876,7 +1876,7 @@ ${annaRules}`,
                     // Neural voices already sound human, so only a light touch; classic voices get a bit more warmth.
                     utterance.pitch = maleAgent ? (isNeural ? 0.98 : 0.92) : (isNeural ? 1.04 : 1.12);
                     // If Martin ends up on the same voice as Mr. Preach (few voices on the device), shift him so they still sound different.
-                    if (currentAgentId === 'AA04') { const pv = (window.__preachVoice || ''); if (voice && voice.name === pv) utterance.pitch = Math.max(0.7, utterance.pitch - 0.14); }
+                    if (currentAgentId === 'AA03') { const pv = (window.__preachVoice || ''); if (voice && voice.name === pv) utterance.pitch = Math.max(0.7, utterance.pitch - 0.14); }
                     if (currentAgentId === 'AA02' && voice) window.__preachVoice = voice.name;
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
