@@ -859,9 +859,9 @@
                 <div class="phonebook-controls">
                     <button class="ctrl-btn military-btn" onclick="prevAgent()">◀ PREV</button>
                     <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
-                        <option value="AA01">AA01 // ANNA (Master Core)</option>
-                        <option value="AA02">AA02 // MR. PREACH X (Founder)</option>
-                        <option value="AA04">AA04 // MARTIN STRAYD (Music)</option>
+                        <option value="AA01">Agent Anna</option>
+                        <option value="AA02">Mr. Preach X</option>
+                        <option value="AA04">Martin Strayd</option>
                     </select>
                     <button class="ctrl-btn military-btn" onclick="nextAgent()">NEXT ▶</button>
                 </div>
@@ -870,12 +870,12 @@
             <div class="agents-matrix-grid">
                 <div class="agent-hud-card active-node" id="card-AA01" role="button" tabindex="0" onclick="selectAgentAndChat('AA01')">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="AA01">
-                    <h5>AA01 // ANNA</h5>
+                    <h5>AGENT ANNA</h5>
                     <p>Core & Telemetry</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
                     <img src="assets/preach.jpg" alt="AA02">
-                    <h5>AA02 // MR. PREACH X</h5>
+                    <h5>MR. PREACH X</h5>
                     <p>Founder & Gamer</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/LittleManPower" target="_blank" rel="noopener" title="Mr. Preach X on X" aria-label="Mr. Preach X on X">𝕏</a>
@@ -885,10 +885,10 @@
                 </div>
                 <div class="agent-hud-card" id="card-AA04" role="button" tabindex="0" onclick="selectAgentAndChat('AA04')">
                     <img src="assets/martin.jpg" alt="AA04">
-                    <h5>AA04 // MARTIN STRAYD</h5>
+                    <h5>MARTIN STRAYD</h5>
                     <p>Music & Strayd</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
-                        <a href="https://x.com/suzukistrayd" target="_blank" rel="noopener" title="Martin Strayd on X" aria-label="Martin Strayd on X">𝕏</a>
+                        <a href="https://x.com/iamMartinStrayd" target="_blank" rel="noopener" title="Martin Strayd on X" aria-label="Martin Strayd on X">𝕏</a>
                         <a href="https://github.com/suzukistrayd" target="_blank" rel="noopener" title="Martin Strayd on GitHub" aria-label="Martin Strayd on GitHub">GH</a>
                     </div>
                 </div>
@@ -1052,10 +1052,11 @@
 
     <script>
         let currentAgentId = "AA01";
+        function talkName() { return (typeof AGENTS !== "undefined" && AGENTS[currentAgentId] && AGENTS[currentAgentId].talk) || "Anna"; }
         const AGENTS = {
-            "AA01": { title: "AGENT ANNA 01 // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
-            "AA02": { title: "MR. PREACH X // FOUNDER", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
-            "AA04": { title: "MARTIN STRAYD // MUSIC", role: "Musician & Music Archives", img: "assets/martin.jpg" },
+            "AA01": { talk: "Anna", title: "AGENT ANNA // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
+            "AA02": { talk: "Mr. Preach", title: "MR. PREACH X // FOUNDER", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
+            "AA04": { talk: "Martin Strayd", title: "MARTIN STRAYD // MUSIC", role: "Musician & Music Archives", img: "assets/martin.jpg" },
         };
 
         const AGENT_KEYS = Object.keys(AGENTS);
@@ -1201,7 +1202,7 @@
 
         function toggleMicrophone() {
             if (voiceModeActive) {
-                showNotice("Voice Mode is already listening. Tap TALK TO ANNA to hang up.");
+                showNotice("Voice Mode is already listening. Tap the talk button to hang up.");
                 return;
             }
             if (!recognition) {
@@ -1273,7 +1274,7 @@
             if (!btn) return;
             btn.classList.toggle('is-on', voiceModeActive);
             btn.setAttribute('aria-pressed', voiceModeActive ? 'true' : 'false');
-            btn.textContent = voiceModeActive ? '🎙 ON THE CALL — TAP TO HANG UP' : '🎙 TALK TO ANNA';
+            btn.textContent = voiceModeActive ? '🎙 ON THE CALL WITH ' + talkName().toUpperCase() + ' — TAP TO HANG UP' : '🎙 TALK TO ' + talkName().toUpperCase();
         }
 
         function voiceModeSupported() {
@@ -1569,7 +1570,8 @@
             document.getElementById('agent-phonebook-select').value = id;
             document.getElementById('active-agent-title').innerText = data.title;
             document.getElementById('active-agent-desc').innerText = `${data.role} // VIEWPORT ACTIVE`;
-            document.getElementById('console-header-label').innerText = `CONSOLE [${id} // TELECOM LINE]`;
+            document.getElementById('console-header-label').innerText = `CONSOLE [${data.talk.toUpperCase()} // TELECOM LINE]`;
+            { const tb = document.getElementById('voice-talk-btn'); if (tb && !voiceModeActive) tb.textContent = '🎙 TALK TO ' + data.talk.toUpperCase(); }
 
             if (currentViewportMode === 'portrait') {
                 const portraitEl = document.getElementById('active-portrait');
