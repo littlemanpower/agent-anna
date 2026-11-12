@@ -69,7 +69,6 @@
 
         body.is-standby { --state-color: var(--chili); }
         body.is-thinking { --state-color: var(--gold); }
-        body.is-scraping { --state-color: var(--habanero); }
         body.is-responding { --state-color: var(--chili); }
         body.is-speaking, body.is-listening { --state-color: var(--rose); }
 
@@ -855,7 +854,6 @@
             </div>
 
             <div class="quick-launch-bar">
-                <button class="ctrl-btn military-btn btn-red" onclick="launchServerAction()">🚀 SERVER UPLINK</button>
                 <button class="ctrl-btn" onclick="triggerCryptoMarket(true)">📊 RATES</button>
                 <button class="ctrl-btn military-btn btn-warm" onclick="runSystemReport()">🔍 REPO REPORT</button>
             </div>
@@ -865,8 +863,6 @@
                 <input type="password" id="api-key" placeholder="Paste Dahl API Key...">
                 <div class="settings-title">GITHUB PAT TOKEN</div>
                 <input type="password" id="gh-token" placeholder="Paste GitHub PAT Token...">
-                <div class="settings-title">SERVER UPLINK URL (HTTPS)</div>
-                <input type="url" id="bridge-url" placeholder="https://your-bridge.example.com">
                 <div class="settings-hint">Saved in this browser only (localStorage). Nothing is stored in the site code.</div>
                 <button class="ctrl-btn btn-hot" onclick="saveCredentials()" style="width:100%;">SAVE KEYS</button>
             </div>
@@ -878,7 +874,6 @@
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
                     <div><span class="thai-hello">สวัสดีค่ะ!</span> Sawasdee ka! 🙏 I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
                     <div class="action-row">
-                        <button class="action-chip" onclick="summarizeMessage('msg_init')">SUMMARIZE (PRESS RELEASE & TWEETS)</button>
                         <button class="action-chip" onclick="speakStoredMessage('msg_init')">SPEECH READOUT</button>
                         <button class="action-chip" onclick="copyToClipboard('msg_init', this)">COPY</button>
                         <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
@@ -893,7 +888,6 @@
                     <button class="ctrl-btn military-btn" onclick="setViewportMode('portrait')">👤 AGENT</button>
                     <button class="ctrl-btn" onclick="setViewportMode('video')">🎥 LOAD VIDEO</button>
                     <button class="ctrl-btn" onclick="setViewportMode('audio')">🎵 LOAD AUDIO</button>
-                    <button class="ctrl-btn military-btn btn-rose push-right" onclick="scrapeWebPage()">🌐 GOOGLE SCRAPE</button>
                 </div>
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
@@ -979,13 +973,6 @@
         All via Wikimedia Commons, resized/compressed for web.</details></footer>
 
     <script>
-        // Server Uplink address: set it in KEYS (saved in this browser only). Must be https when the page is served over https.
-        let BRIDGE_BASE = (localStorage.getItem('bridge_url') || '').trim().replace(/\/+$/, '');
-        function bridgeReady() {
-            if (!BRIDGE_BASE) { showNotice("UPLINK NOT CONFIGURED: add an https bridge URL in KEYS."); return false; }
-            if (location.protocol === 'https:' && !BRIDGE_BASE.startsWith('https://')) { showNotice("UPLINK BLOCKED: bridge URL must start with https:// on this page."); return false; }
-            return true;
-        }
         let currentAgentId = "AA01";
         const AGENTS = {
             "AA01": { title: "AGENT ANNA 01 // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
@@ -1004,7 +991,7 @@
         let isListening = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('bridge-url').value = BRIDGE_BASE;
+            try { localStorage.removeItem('bridge_url'); } catch (e) {}
             messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
             initCanvas();
             triggerCryptoMarket(false);
@@ -1025,7 +1012,7 @@
         }
 
         function setMoodState(stateName) {
-            document.body.classList.remove('is-standby', 'is-thinking', 'is-scraping', 'is-responding', 'is-speaking', 'is-listening');
+            document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening');
             document.body.classList.add(`is-${stateName}`);
             document.getElementById('state-text').innerText = stateName.toUpperCase();
         }
@@ -1207,73 +1194,6 @@
             }
         }
 
-        async function launchServerAction() {
-            if (!bridgeReady()) { appendMsg('[SERVER UPLINK]: No reachable bridge configured. Open KEYS and enter an https:// bridge URL.', 'assistant', `${currentAgentId} [Uplink]`); return; }
-            setMoodState('thinking');
-            showNotice(`PINGING BRIDGE AT ${BRIDGE_BASE}...`);
-
-            try {
-                const res = await fetch(`${BRIDGE_BASE}/`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setMoodState('responding');
-                    showNotice("BRIDGE ONLINE.");
-                    appendMsg(`[SERVER UPLINK SUCCESS] - Bridge active at ${BRIDGE_BASE}.\nTelemetry: ${JSON.stringify(data, null, 2)}`, 'assistant', `${currentAgentId} [Server Uplink]`);
-                    speakText("Server uplink handshake confirmed.");
-                    return;
-                }
-                throw new Error();
-            } catch (e) {
-                setMoodState('standby');
-                showNotice("UPLINK ERROR: bridge not reachable.");
-                appendMsg(`[SERVER UPLINK ERROR]: Unable to reach ${BRIDGE_BASE}. Check the bridge is running, served over https, and allows CORS from this page.`, 'assistant', `${currentAgentId} [Uplink Error]`);
-                speakText("Server uplink error.");
-            }
-        }
-
-        async function scrapeWebPage() {
-            if (!bridgeReady()) return;
-            setMoodState('scraping');
-            showNotice("ANNA EXECUTING GOOGLE INTEL EXTRACTION...");
-            
-            let userInput = document.getElementById('user-input').value.trim();
-            if (!userInput) {
-                userInput = "martin strayd";
-            }
-
-            try {
-                const res = await fetch(`${BRIDGE_BASE}/?q=${encodeURIComponent(userInput)}`);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                
-                const data = await res.json();
-                let rawPayload = data.result || data.content || JSON.stringify(data, null, 2);
-
-                if (data.status === "ERROR" || rawPayload.includes("Failed to scrape")) {
-                    throw new Error(rawPayload);
-                }
-
-                rawPayload = rawPayload.replace(/All Regions.*?(?:United Kingdom|Vietnam)/gi, '')
-                                       .replace(/Argentina Australia Austria.*?(?:United Kingdom|Vietnam)/gi, '')
-                                       .replace(/Any Time Past Day Past Week Past Month Past Year/gi, '')
-                                       .replace(/DuckDuckGo/gi, '')
-                                       .replace(/at DuckDuckGo/gi, '');
-
-                setMoodState('responding');
-                let report = `═══════════════════════════════════════════════════════════════════\n` +
-                    `GOOGLE RESEARCH INTEL [TARGET: "${userInput}"]\n` +
-                    `═══════════════════════════════════════════════════════════════════\n\n` +
-                    `${rawPayload.trim()}\n\n` +
-                    `[STATUS]: Clean research data captured. Click "SUMMARIZE" below to generate military-grade press release.`;
-                
-                appendMsg(report, 'assistant', `AA01 [Google Clean Scrape]`);
-                speakText("Google research intel successfully acquired.");
-            } catch (err) {
-                setMoodState('standby');
-                showNotice("BRIDGE ERROR: Verify bridge.ps1 is active!");
-                appendMsg(`[ANNA BRIDGE ERROR]: Unable to acquire clean research.\nDetails: ${err.message}`, 'assistant', `AA01 [Connection Error]`);
-            }
-        }
-
         async function runSystemReport() {
             setMoodState('thinking');
             showNotice("RUNNING SYSTEM DIAGNOSTIC & REPO AUDIT...");
@@ -1283,12 +1203,11 @@
                 let systemReportText = `═══════════════════════════════════════════════════════════\n` +
                     `REAL REPOSITORY & MASTER SWARM DIAGNOSTIC REPORT\n` +
                     `═══════════════════════════════════════════════════════════\n` +
-                    `1. Bridge Endpoint: ` + BRIDGE_BASE + (BRIDGE_BASE ? ' (configured, not verified)' : ' (not configured)') + `\n` +
-                    `2. Repository Hub: littlemanpower/agent-anna (GitHub Pages Deployment)\n` +
-                    `3. Agents: AA01 Anna, AA02 Mr. Preach X, AA04 Martin Strayd (3 agents)\n` +
-                    `4. Financial Core: 4-Person Streamlined Treasury Team\n` +
-                    `5. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
-                    `[DIAGNOSTIC STATUS]: All subsystem nodes nominal. Report is static; use SERVER UPLINK to actually test the bridge.`;
+                    `1. Repository Hub: littlemanpower/agent-anna (GitHub Pages Deployment)\n` +
+                    `2. Agents: AA01 Anna, AA02 Mr. Preach X, AA04 Martin Strayd (3 agents)\n` +
+                    `3. Financial Core: 4-Person Streamlined Treasury Team\n` +
+                    `4. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
+                    `[DIAGNOSTIC STATUS]: All subsystem nodes nominal.`;
 
                 appendMsg(systemReportText, 'assistant', `${currentAgentId} [System Repo Report]`);
                 speakText("System diagnostic report generated successfully.");
@@ -1327,7 +1246,7 @@
             }
         }
 
-        /* STANDARD CHAT SEND FUNCTION (NO SCRAPE) */
+        /* STANDARD CHAT SEND FUNCTION */
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const query = input ? input.value.trim() : "";
@@ -1409,49 +1328,6 @@ ${annaRules}`,
                 const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.';
                 showNotice(msg);
                 appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`);
-            }
-        }
-
-        async function summarizeMessage(messageId) {
-            const fullText = messagePayloadStore[messageId] || "";
-            setMoodState('thinking');
-            showNotice("DAHL AI GENERATING FORENSIC BRIEF (ANTI-HALLUCINATION LOCKED)...");
-
-            const apiKey = localStorage.getItem('dahl_key') || document.getElementById('api-key').value;
-
-            if (!apiKey) {
-                setMoodState('standby');
-                showNotice("NO DAHL API KEY: open KEYS and paste your key.");
-                appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
-                return;
-            }
-
-            try {
-                const res = await fetch("https://inference.dahl.global/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: "MiniMaxAI/MiniMax-M2.7",
-                        messages: [
-                            { role: "system", content: "You are Agent Anna 07, a master forensic intelligence officer. CRITICAL RULE: Strictly rely ONLY on the provided scraped text. Do NOT hallucinate cities, locations, or biographical details not explicitly present in the source text. Generate a comprehensive Press Release paragraph (FOR IMMEDIATE RELEASE...) followed by a detailed 4-part tweet thread (Dispatch 1/4 through 4/4) with clean hashtags. Exclude any search engine footers, DuckDuckGo references, or navigational junk." },
-                            { role: "user", content: `Convert this clean scraped intelligence into a strict, factually grounded Press Release and 4-part tweet thread:\n\n${fullText}` }
-                        ],
-                        temperature: 0.1, max_tokens: 800
-                    })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    let reply = data.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-                    setMoodState('responding');
-                    appendMsg(reply, 'assistant', `${currentAgentId} [Dahl AI Press Release Lab]`);
-                    speakText("Press release and tweet thread compiled successfully with strict factual verification.");
-                } else {
-                    throw new Error("Dahl API error");
-                }
-            } catch (e) {
-                setMoodState('standby');
-                showNotice("Dahl API error. Check your Dahl key in settings!");
             }
         }
 
@@ -1542,7 +1418,6 @@ ${annaRules}`,
 
             const isSpeaking = document.body.classList.contains('is-speaking');
             const isThinking = document.body.classList.contains('is-thinking');
-            const isScraping = document.body.classList.contains('is-scraping');
             const isResponding = document.body.classList.contains('is-responding');
             const isListeningState = document.body.classList.contains('is-listening');
 
@@ -1553,9 +1428,6 @@ ${annaRules}`,
             if (isThinking) {
                 color1 = '#d9a84a'; color2 = '#e3121b';
                 amp1 = 28; amp2 = 20; speed = 0.05; // Subtle, smooth pulsing so operator knows it's active
-            } else if (isScraping) {
-                color1 = '#f08a24'; color2 = '#d9a84a';
-                amp1 = 35; amp2 = 25; speed = 0.08;
             } else if (isResponding) {
                 color1 = '#ff3b2f'; color2 = '#ff8a7a';
                 amp1 = 44; amp2 = 32; speed = 0.10; // Emotional motion
@@ -1567,7 +1439,7 @@ ${annaRules}`,
             wavePhase += speed;
             const centerY = canvas.height / 2;
 
-            ctx.shadowBlur = isSpeaking || isThinking || isScraping || isResponding || isListeningState ? 22 : 8;
+            ctx.shadowBlur = isSpeaking || isThinking || isResponding || isListeningState ? 22 : 8;
             ctx.shadowColor = color1;
             ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color1;
             for (let x = 0; x < canvas.width; x += 2) {
@@ -1628,7 +1500,6 @@ ${annaRules}`,
             div.id = id;
             div.innerHTML = `<div class="msg-header">${label}</div><div>${htmlContent}</div>
             <div class="action-row">
-                <button class="action-chip" onclick="summarizeMessage('${id}')">SUMMARIZE (PRESS RELEASE & TWEETS)</button>
                 <button class="action-chip" onclick="speakStoredMessage('${id}')">SPEECH READOUT</button>
                 <button class="action-chip" onclick="copyToClipboard('${id}', this)">COPY</button>
                 <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
@@ -1641,7 +1512,7 @@ ${annaRules}`,
         function clearLogs() { document.getElementById('chat-container').innerHTML = ''; messagePayloadStore = {}; }
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-        function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); BRIDGE_BASE = document.getElementById('bridge-url').value.trim().replace(/\/+$/, ''); localStorage.setItem('bridge_url', BRIDGE_BASE); toggleSettings(); showNotice("Credentials Secured."); }
+        function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); try { localStorage.removeItem('bridge_url'); } catch (e) {} toggleSettings(); showNotice("Credentials Secured."); }
         function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; scrollToChatAndFocus(); sendMessage(); }
         function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
