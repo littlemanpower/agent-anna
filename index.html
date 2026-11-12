@@ -767,6 +767,55 @@
             .anna-msg-form textarea { min-height: 56px; }
         }
 
+
+        /* ---------- FAQ + email updates ---------- */
+        .faq-page, .updates-page {
+            max-width: 1360px; margin: 0 auto; padding: 8px 20px 18px;
+        }
+        .faq-page .section-title, .updates-page .section-title { margin-top: 10px; }
+        .faq-lead, .updates-lead { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin: 0 0 12px; max-width: 720px; }
+        .faq-list { display: flex; flex-direction: column; gap: 8px; }
+        .faq-item {
+            background: linear-gradient(160deg, rgba(150,10,16,.35), rgba(16,6,6,.82) 60%);
+            border: 1px solid color-mix(in srgb, var(--gold) 25%, var(--line));
+            border-radius: 14px; overflow: hidden; position: relative;
+        }
+        .faq-item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--heat-gradient); }
+        .faq-item summary {
+            cursor: pointer; list-style: none; padding: 12px 42px 12px 16px;
+            font-family: var(--font-brand); font-size: 15px; font-weight: 700; color: #fff;
+            position: relative;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: "+"; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--gold); font-weight: 700; font-size: 18px; line-height: 1;
+        }
+        .faq-item[open] summary::after { content: "–"; }
+        .faq-item summary:hover { color: var(--gold); }
+        .faq-item summary:focus-visible, .updates-page input:focus-visible, .updates-page button:focus-visible, .anna-consent input:focus-visible {
+            outline: 2px solid var(--gold); outline-offset: 2px;
+        }
+        .faq-a { padding: 0 16px 14px 16px; font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+        .faq-a a { color: var(--flame); font-weight: 700; text-decoration: none; }
+        .faq-a a:hover { text-decoration: underline; }
+        .updates-card {
+            background: linear-gradient(160deg, rgba(150,10,16,.35), rgba(16,6,6,.82) 60%);
+            border: 1px solid color-mix(in srgb, var(--gold) 25%, var(--line));
+            border-radius: 14px; padding: 16px 18px; position: relative; max-width: 560px;
+        }
+        .updates-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--heat-gradient); }
+        .anna-consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted); line-height: 1.45; font-weight: 500; letter-spacing: 0; }
+        .anna-consent input { width: auto; margin-top: 2px; flex-shrink: 0; accent-color: var(--gold); }
+        .anna-msg-status.is-soon { color: var(--gold); font-weight: 700; }
+        @media (max-width: 860px) {
+            .faq-page, .updates-page { padding: 8px 14px 14px; }
+            .faq-item summary { font-size: 14px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .faq-item summary::after { transition: none; }
+        }
+
         /* ---------- Hands-free Voice Mode (live call) ---------- */
         .voice-call-bar {
             display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
@@ -1156,6 +1205,8 @@
         <a href="#sauces" data-section="sauces">Sauces</a>
         <a href="#scenes" data-section="scenes">Thailand</a>
         <a href="#crew" data-section="crew">Crew &amp; Chat</a>
+        <a href="#faq" data-section="faq">FAQ</a>
+        <a href="#updates" data-section="updates">Updates</a>
         <a class="nav-ext" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Lazada Shop</a>
         <a class="nav-ext hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
     </nav>
@@ -1224,6 +1275,8 @@
             <a class="nav-chip" href="#sauces">🌶️ The Sauces</a>
             <a class="nav-chip" href="#crew">💬 Meet the crew</a>
             <a class="nav-chip" href="#leave-message">✉️ Leave a message</a>
+            <a class="nav-chip" href="#faq">❓ FAQ</a>
+            <a class="nav-chip" href="#updates">✉️ Email updates</a>
             <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
             <div class="status-bar-indicator">
                 <div class="status-dot"></div>
@@ -1471,9 +1524,72 @@
     </header>
 
 
+
+    <section class="faq-page reveal" id="faq" aria-labelledby="faq-title">
+        <h2 class="section-title" id="faq-title">FAQ <span>// common questions</span></h2>
+        <p class="faq-lead">Short answers about Agent Anna, the crew, and Cool Hot Sauce. Open a question to read more.</p>
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>What is Agent Anna?</summary>
+                <div class="faq-a">Agent Anna is your Cool Hot Sauce guide on this page. Chat with her and her crew any time about the sauce, streams, or music.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Who are the three agents?</summary>
+                <div class="faq-a">Anna is the Cool Hot Sauce guide. Mr. Preach X is the founder of Cool Hot Sauce, a gamer and streamer at <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a>. Martin Strayd is a musician and teammate. Choose any of them in <a href="#crew">Crew &amp; Chat</a>.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Can I type and use voice at the same time?</summary>
+                <div class="faq-a">No. Typing and voice are one at a time. While a voice chat is on, the page says “Voice chat on - end voice to type.” Hang up voice to type again.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Are you around 24/7?</summary>
+                <div class="faq-a">Yes. Talk with Anna, Mr. Preach X, and Martin Strayd any time.</div>
+            </details>
+            <details class="faq-item">
+                <summary>What is Cool Hot Sauce?</summary>
+                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavors are Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented Prick chi fa. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
+            </details>
+            <details class="faq-item">
+                <summary>How do I leave Anna a message?</summary>
+                <div class="faq-a">Use <a href="#leave-message">Leave a message</a> on this page. The note is saved so nothing gets lost, and Anna will pass it on. You will see “Got it - Anna will pass this on.” Chat is still live if you would rather talk now.</div>
+            </details>
+            <details class="faq-item">
+                <summary>How do you handle privacy, and what does Forget me do?</summary>
+                <div class="faq-a">Anna’s opening line may use the time of day and, if available, an approximate city and weather from your IP. Location is approximate, from IP, used only to show the weather, and not stored. A short visit note can stay in this browser only. <strong>Forget me</strong> clears that note on this device. Chat you type is sent so Anna can reply. Notes left in the message form are saved for the team and are not readable from the browser.</div>
+            </details>
+            <details class="faq-item">
+                <summary>How does Share on X work?</summary>
+                <div class="faq-a">Share on X opens your own X compose window with a prefilled line about Agent Anna and Cool Hot Sauce. Nothing is posted by this site.</div>
+            </details>
+        </div>
+    </section>
+
+    <section class="updates-page reveal" id="updates" aria-labelledby="updates-title">
+        <h2 class="section-title" id="updates-title">Email updates <span>// stay in the loop</span></h2>
+        <p class="updates-lead">Get occasional notes about Agent Anna and Cool Hot Sauce. Signups are not open yet.</p>
+        <div class="updates-card">
+            <form class="anna-msg-form" id="anna-subscribe-form" novalidate>
+                <label for="anna-sub-email">Email</label>
+                <input type="email" id="anna-sub-email" name="email" maxlength="200" autocomplete="email" required placeholder="you@example.com">
+                <label class="hp-field" for="anna-sub-company">Company</label>
+                <input class="hp-field" type="text" id="anna-sub-company" name="company" tabindex="-1" autocomplete="off">
+                <label class="anna-consent" for="anna-sub-consent">
+                    <input type="checkbox" id="anna-sub-consent" name="consent" value="1">
+                    <span>I agree to be emailed updates about Agent Anna and Cool Hot Sauce. We will only use this address for those updates.</span>
+                </label>
+                <div class="anna-msg-row">
+                    <button type="submit" class="ctrl-btn btn-hot" id="anna-subscribe-submit">Sign up</button>
+                </div>
+                <div class="anna-msg-status" id="anna-subscribe-status" role="status" aria-live="polite"></div>
+            </form>
+        </div>
+    </section>
+
     <div class="kanok-strip"></div>
     <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; paste your Dahl key once in KEYS
         <div class="foot-links">
+            <a href="#faq">FAQ</a>
+            <a href="#updates">Email updates</a>
             <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a>
             <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>
             <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a>
@@ -1620,6 +1736,7 @@
             initPageMotion();
             initChatComposer();
             initAnnaMessageForm();
+            initAnnaSubscribeForm();
             warmAnnaFunctions();
         });
 
@@ -2562,7 +2679,7 @@
             const updateActiveNav = () => {
                 const offset = 96;
                 let current = 'top';
-                for (const id of ['top', 'sauces', 'scenes', 'crew']) {
+                for (const id of ['top', 'sauces', 'scenes', 'crew', 'faq', 'updates']) {
                     const el = document.getElementById(id);
                     if (el && el.getBoundingClientRect().top - offset <= 0) current = id;
                 }
@@ -2828,6 +2945,81 @@
                 const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not send your message. Try again in a moment.';
                 status.textContent = msg;
                 status.className = 'anna-msg-status is-error';
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+
+        // Email updates signup. The function and table are in the repo but are not live yet.
+        // Keep this flag false until the owner approves a deploy; do not fake a successful signup.
+        const ANNA_SUBSCRIBE_LIVE = false;
+        const ANNA_SUBSCRIBE_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-subscribe';
+        window.ANNA_SUBSCRIBE_LIVE = ANNA_SUBSCRIBE_LIVE;
+
+        function validSubscribeEmail(value) {
+            const email = (value || '').trim();
+            if (!email || email.length > 200) return false;
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function setSubscribeStatus(text, kind) {
+            const status = document.getElementById('anna-subscribe-status');
+            if (!status) return;
+            status.textContent = text || '';
+            status.className = 'anna-msg-status' + (kind ? ' ' + kind : '');
+        }
+
+        function initAnnaSubscribeForm() {
+            const form = document.getElementById('anna-subscribe-form');
+            if (!form || form.__bound) return;
+            form.__bound = true;
+            form.addEventListener('submit', submitAnnaSubscribe);
+        }
+
+        async function submitAnnaSubscribe(ev) {
+            ev.preventDefault();
+            const form = document.getElementById('anna-subscribe-form');
+            const btn = document.getElementById('anna-subscribe-submit');
+            const emailInput = document.getElementById('anna-sub-email');
+            const consent = document.getElementById('anna-sub-consent');
+            const honey = document.getElementById('anna-sub-company');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (!validSubscribeEmail(email)) {
+                setSubscribeStatus('Please enter a valid email address.', 'is-error');
+                if (emailInput) emailInput.focus();
+                return;
+            }
+            if (!consent || !consent.checked) {
+                setSubscribeStatus('Please confirm you want email updates.', 'is-error');
+                if (consent) consent.focus();
+                return;
+            }
+            if (!ANNA_SUBSCRIBE_LIVE) {
+                setSubscribeStatus('Signups open soon', 'is-soon');
+                return;
+            }
+            if (btn) btn.disabled = true;
+            setSubscribeStatus('');
+            try {
+                const res = await fetch(ANNA_SUBSCRIBE_FN, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'apikey': ANNA_ANON, 'Authorization': 'Bearer ' + ANNA_ANON },
+                    body: JSON.stringify({
+                        email: email,
+                        consent: true,
+                        company: honey ? honey.value : ''
+                    })
+                });
+                const data = await res.json().catch(function () { return {}; });
+                if (!res.ok) {
+                    setSubscribeStatus((data && data.message) || 'Something went wrong. Try again in a moment.', 'is-error');
+                    return;
+                }
+                setSubscribeStatus("You're on the list. Thank you.", 'is-ok');
+                if (form) form.reset();
+            } catch (e) {
+                setSubscribeStatus('Signups open soon', 'is-soon');
             } finally {
                 if (btn) btn.disabled = false;
             }
