@@ -1,19 +1,34 @@
 # Agent Anna
 
-A single-page "command matrix" dashboard for an AI chat assistant swarm (agents AA01–AA08), with a live crypto ticker, an agent phonebook, a chat console with voice readout, and media/scrape tools.
+A single-page Cool Hot Sauce (Thailand) portal and chat dashboard for Agent Anna and her crew of 4 agents (AA01 Anna, AA02 Fin, AA04 Social, AA05 Scrape), with a live crypto ticker, an agent phonebook, a chat console with voice readout, and media/scrape tools.
 
 Copied from https://agent-anna.github.io/agent-anna/agent-anna/index.html (original by the agent-anna GitHub account).
 
 ## How it works
-- Everything (HTML, CSS, JavaScript) lives in `index.html`; there are no other files.
+- All HTML, CSS and JavaScript live in `index.html`; images live in `assets/`.
 - Chat sends messages to the Dahl inference API (`https://inference.dahl.global/v1/chat/completions`, model `MiniMaxAI/MiniMax-M2.7`).
 - Without a key, the chat says it is offline and asks for a key (no fake replies).
 - The "Server Uplink" (and Google Scrape) talk to a bridge URL you set in **KEYS**. It must be **https://** when the page is served over https (e.g. GitHub Pages), because browsers block https pages from calling plain `http://localhost`. The bridge must also allow CORS from the page's origin. A Cloudflare Tunnel or similar can expose a local bridge over https.
 
 ## Setup
-Open `index.html` in a browser, click **KEYS**, and paste your own Dahl API key, a GitHub token if you want repo reports, and your https bridge URL if you run one. Click **SECURE CREDENTIALS**. Keys, token and bridge URL are saved only in your browser's localStorage. No keys or tokens are included in this repo.
+Open `index.html` in a browser, click **KEYS**, and paste your own Dahl API key, a GitHub token if you want repo reports, and your https bridge URL if you run one. Click **SAVE KEYS**. Keys, token and bridge URL are saved only in your browser's localStorage. No keys or tokens are included in this repo.
 
 ## Changes from the original
 - Server Uplink address is configurable in KEYS instead of hard-coded to `http://localhost:8000`, with https enforcement and clear errors.
 - Removed the fake canned chat and press-release replies shown when no API key is set.
 - Repo report no longer claims the bridge is "verified".
+- Cool Hot Sauce red/black/gold Thailand theme: diamond "THAILAND 100ML" logo recreated as inline SVG (header + favicon), Kanit font, Thai kanok borders, photo hero and scenes, flavour cards (Smoked Black, Green Jalapeño, Red Thai Chili) with "Buy on Lazada" links (URL decoded from the brand's own Lazada QR code).
+- Agent roster trimmed to 4 agents.
+
+## Assets and credits
+- `assets/bottle-*.png`: Cool Hot Sauce product photos, cropped from images supplied by the brand owner (Mr. Preach X / CoolHotSauce). Brand assets; all rights reserved by the owner.
+- Scenery photos from Wikimedia Commons, resized and compressed for the web (adaptations of the originals; the CC BY-SA image stays under CC BY-SA 4.0):
+  - `assets/white-temple.jpg`: "Chiang Rai - Wat Rong Khun (2026) - img 11" by Chainwit., CC BY 4.0. https://commons.wikimedia.org/wiki/File:Chiang_Rai_-_Wat_Rong_Khun_%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%B8%E0%B9%88%E0%B8%99_(2026)_-_img_11.jpg (https://creativecommons.org/licenses/by/4.0)
+  - `assets/tea-hills.jpg`: "Hills & tea farms of Chiang Rai" by cloud.shepherd, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Hills_%26_tea_farms_of_Chiang_Rai_(18197802634).jpg (https://creativecommons.org/licenses/by/2.0)
+  - `assets/golden-temple.jpg`: "Wat Rong Khun golden toilet building" by BrokenSphere, CC BY 3.0. https://commons.wikimedia.org/wiki/File:Wat_Rong_Khun_golden_toilet_building.JPG (https://creativecommons.org/licenses/by/3.0)
+  - `assets/night-market.jpg`: "DZ6 1772 Twilight market bustle lanterns glow above a lively street..." by PattayaPatrol, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:DZ6_1772_Twilight_market_bustle_lanterns_glow_above_a_lively_street_filled_with_food_stalls_shoppers_and_evening_chatter.jpg (https://creativecommons.org/licenses/by-sa/4.0)
+- Agent portraits are Unsplash photos loaded from images.unsplash.com.
+
+## TODO
+- The owner also sent 4 of his own Thailand photos (White Temple, tea hills, golden temple, night market) that did not reach the build machine. Their copyright is unknown (likely third-party). Only swap them in for the Commons photos once he confirms he took them or has the rights.
+- Better product cut-outs: the bottle images are cropped from a chat screenshot and are low resolution. Replace with original high-res product photos.
