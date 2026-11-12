@@ -937,10 +937,11 @@
 
             <div id="settings-panel">
                 <div class="settings-title">DAHL API KEY</div>
-                <input type="password" id="api-key" placeholder="Paste Dahl API Key...">
+                <input type="password" id="api-key" placeholder="Paste Dahl API Key once..." autocomplete="off">
+                <div id="dahl-key-status" class="settings-hint">Checking key status...</div>
                 <div class="settings-title">GITHUB PAT TOKEN</div>
                 <input type="password" id="gh-token" placeholder="Paste GitHub PAT Token...">
-                <div class="settings-hint">Saved in this browser only (localStorage). Nothing is stored in the site code.</div>
+                <div class="settings-hint">The Dahl key is saved once on the server, not in this browser. The GitHub token stays in this browser only. Nothing secret is stored in the site code.</div>
                 <button class="ctrl-btn btn-hot" onclick="saveCredentials()" style="width:100%;">SAVE KEYS</button>
             </div>
 
@@ -1033,7 +1034,7 @@
 
 
     <div class="kanok-strip"></div>
-    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only
+    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; paste your Dahl key once in KEYS
         <div class="foot-links">
             <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a>
             <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>
@@ -1067,8 +1068,84 @@
         let recognition = null;
         let isListening = false;
 
+
+        const ANNA_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-chat';
+        const ANNA_ANON = 'sb_publishable_HZhfHAFHsPPG7txc5R_Iog__Ligubqq';
+
+        async function annaApi(route, opts) {
+            opts = opts || {};
+            return fetch(ANNA_FN + '/' + route, {
+                method: opts.method || (opts.body ? 'POST' : 'GET'),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': ANNA_ANON,
+                    'Authorization': 'Bearer ' + ANNA_ANON
+                },
+                body: opts.body ? JSON.stringify(opts.body) : undefined
+            });
+        }
+
+        async function refreshKeyStatus() {
+            const status = document.getElementById('dahl-key-status');
+            const input = document.getElementById('api-key');
+            try {
+                const res = await annaApi('status');
+                const data = await res.json();
+                const has = !!(data && data.hasKey);
+                if (status) status.textContent = has ? 'Key saved on server' : 'No key on server yet. Paste it once below.';
+                if (input) input.placeholder = has ? 'Key already saved on the server' : 'Paste Dahl API Key once...';
+                return has;
+            } catch (e) {
+                if (status) status.textContent = 'Could not reach the key server.';
+                return false;
+            }
+        }
+
+        async function migrateAndClearLocalKey() {
+            let localKey = '';
+            try { localKey = (localStorage.getItem('dahl_key') || '').trim(); } catch (e) {}
+            let has = false;
+            try { has = await refreshKeyStatus(); } catch (e) {}
+            if (localKey && !has) {
+                try { await annaApi('set-key', { method: 'POST', body: { key: localKey } }); } catch (e) {}
+            }
+            try { localStorage.removeItem('dahl_key'); } catch (e) {}
+            const input = document.getElementById('api-key');
+            if (input) input.value = '';
+            try { await refreshKeyStatus(); } catch (e) {}
+        }
+
+        function officialRelayName(name) {
+            const n = (name || '').trim();
+            if (n === 'Martin' || n === 'martin') return 'Martin Strayd';
+            if (n === 'Preach' || n === 'preach' || n === 'Mr. Preach' || n === 'Mr Preach X') return 'Mr. Preach X';
+            if (n === 'anna' || n === 'Agent Anna' || n === 'AA01') return 'Anna';
+            return n;
+        }
+
+        async function pollTeamInbox() {
+            if (typeof getTalkerLabel !== 'function') return;
+            const name = officialRelayName(getTalkerLabel());
+            if (['Mr. Preach X', 'Martin Strayd', 'Anna'].indexOf(name) === -1) return;
+            try {
+                const res = await annaApi('inbox', { method: 'POST', body: { name: name } });
+                const data = await res.json().catch(function () { return {}; });
+                const messages = Array.isArray(data.messages) ? data.messages : [];
+                for (let i = 0; i < messages.length; i++) {
+                    const m = messages[i];
+                    const fromShort = m.from_name === 'Martin Strayd' ? 'Martin' : (m.from_name || 'teammate');
+                    const line = 'Message from ' + fromShort + ': ' + (m.body || '');
+                    appendMsg(line, 'assistant', 'AA01 [Relay]');
+                    if (typeof speakText === 'function') speakText(line);
+                }
+            } catch (e) {}
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             try { localStorage.removeItem('bridge_url'); } catch (e) {}
+            migrateAndClearLocalKey();
+            pollTeamInbox();
+            setInterval(pollTeamInbox, 60000);
             initVoiceTalker();
             messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
             initCanvas();
@@ -1406,25 +1483,31 @@
             return { to, text: msg };
         }
 
-        // TODO: another worker will add the Supabase team-inbox backend later.
-        // This only stores the note locally for now. Do not claim cross-device delivery.
-        function relayMessage(to, from, text) {
-            let pendingRelay = [];
-            try { pendingRelay = JSON.parse(localStorage.getItem('pendingRelay') || '[]'); } catch (e) { pendingRelay = []; }
-            if (!Array.isArray(pendingRelay)) pendingRelay = [];
-            pendingRelay.push({ to, from, text, at: new Date().toISOString() });
-            try { localStorage.setItem('pendingRelay', JSON.stringify(pendingRelay)); } catch (e) {}
-            return pendingRelay;
+        async function relayMessage(to, from, text) {
+            const toName = officialRelayName(to);
+            const fromName = officialRelayName(from);
+            const res = await annaApi('relay', { method: 'POST', body: { to: toName, from: fromName, text: text } });
+            const data = await res.json().catch(function () { return {}; });
+            if (!res.ok) throw new Error(data.message || 'Could not deliver that message.');
+            return data;
         }
 
-        function handleRelayUtterance(intent) {
+        async function handleRelayUtterance(intent) {
             const from = getTalkerLabel();
-            relayMessage(intent.to, from, intent.text);
-            const first = (intent.to === 'Mr. Preach X') ? 'Preach' : intent.to;
-            const reply = `Got it, I'll pass that to ${first}. Saved, delivers once team inbox is on.`;
+            const first = (intent.to === 'Mr. Preach X') ? 'Preach' : (intent.to === 'Martin Strayd' || intent.to === 'Martin') ? 'Martin' : intent.to;
             appendMsg(intent.text, 'user', from);
-            appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
-            speakText(reply);
+            try {
+                await relayMessage(intent.to, from, intent.text);
+                const reply = `Got it, I'll pass that to ${first}. The message was delivered.`;
+                appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
+                speakText(reply);
+            } catch (e) {
+                const reply = (from === 'Guest')
+                    ? "Pick Mr. Preach X or Martin under Who's talking? so I can deliver this."
+                    : 'I could not deliver that message. Try again in a moment.';
+                appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
+                speakText(reply);
+            }
         }
 
         function commitVoiceUtterance(text) {
@@ -1451,10 +1534,9 @@
                 stopVoiceRec();
                 setVoicePill('thinking');
                 setMoodState('thinking');
-                handleRelayUtterance(intent);
                 const input = document.getElementById('user-input');
                 if (input) input.value = '';
-                voiceSending = false;
+                Promise.resolve(handleRelayUtterance(intent)).catch(function () {}).finally(function () { voiceSending = false; });
                 // speakText will resume listening when the confirmation finishes.
                 return;
             }
@@ -1666,15 +1748,6 @@
 
             setMoodState('thinking');
 
-            const apiKey = localStorage.getItem('dahl_key') || document.getElementById('api-key').value;
-            if (!apiKey) {
-                showNotice("NO DAHL API KEY: open KEYS and paste your key.");
-                appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
-                if (voiceModeActive) speakText('Chat is offline. Open Keys and add your Dahl key.');
-                else setMoodState('standby');
-                return;
-            }
-
             const nowStr = new Date().toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             const annaRules = `RESPONSE RULES:
 - Output ONLY your direct answer.
@@ -1704,20 +1777,27 @@ ${annaRules}`,
             while (hist.length > 12) hist.shift();
 
             try {
-                const res = await fetch("https://inference.dahl.global/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${apiKey.trim()}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: "MiniMaxAI/MiniMax-M2.7",
-                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (voiceModeActive ? "\n\nYou are on a live voice call. Keep this reply short, spoken, and conversational - one or two sentences." : "") }, ...hist],
-                        temperature: 0.2, max_tokens: 700
-                    })
+                const res = await annaApi('chat', {
+                    method: 'POST',
+                    body: {
+                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (typeof voiceModeActive !== 'undefined' && voiceModeActive ? "\n\nYou are on a live voice call. Keep this reply short, spoken, and conversational - one or two sentences." : "") }, ...hist],
+                        temperature: 0.2, max_tokens: 400
+                    }
                 });
 
                 if (!res.ok) {
-                    let detail = '';
-                    try { detail = (await res.json()).error?.message || ''; } catch (_) {}
-                    throw new Error(res.status === 401 || res.status === 403 ? 'Your Dahl key was rejected. Open KEYS and paste a valid key.' : `Dahl server error ${res.status}${detail ? ': ' + detail : ''}. Try again in a moment.`);
+                    let data = {};
+                    try { data = await res.json(); } catch (_) {}
+                    if (data.error === 'no_key') {
+                        showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
+                        appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
+                        if (typeof voiceModeActive !== 'undefined' && voiceModeActive) speakText('Chat is offline. Open Keys and add your Dahl key.');
+                        else setMoodState('standby');
+                        hist.pop();
+                        return;
+                    }
+                    const detail = data.message || '';
+                    throw new Error(res.status === 401 || res.status === 403 ? (detail || 'Your Dahl key was rejected. Open KEYS and paste a valid key.') : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.')));
                 }
                 const data = await res.json();
                 let reply = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/[\u2014\u2013]/g, '-').trim();
@@ -1926,7 +2006,36 @@ ${annaRules}`,
         function clearLogs() { document.getElementById('chat-container').innerHTML = ''; messagePayloadStore = {}; }
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-        function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); try { localStorage.removeItem('bridge_url'); } catch (e) {} toggleSettings(); showNotice("Credentials Secured."); }
+        function saveCredentials() {
+            const input = document.getElementById('api-key');
+            const key = (input && input.value || '').trim();
+            const ghInput = document.getElementById('gh-token');
+            const gh = ghInput ? ghInput.value : '';
+            if (gh) localStorage.setItem('gh_pat_token', gh);
+            try { localStorage.removeItem('bridge_url'); } catch (e) {}
+            if (!key) {
+                toggleSettings();
+                showNotice(gh ? 'GitHub token saved in this browser.' : 'Paste a Dahl API key to save it on the server.');
+                return;
+            }
+            (async function () {
+                try {
+                    const res = await annaApi('set-key', { method: 'POST', body: { key: key } });
+                    const data = await res.json().catch(function () { return {}; });
+                    if (!res.ok) {
+                        showNotice(data.message || 'Could not save the key on the server.');
+                        return;
+                    }
+                    if (input) input.value = '';
+                    try { localStorage.removeItem('dahl_key'); } catch (e) {}
+                    await refreshKeyStatus();
+                    toggleSettings();
+                    showNotice('Key saved on server');
+                } catch (e) {
+                    showNotice('Could not reach the key server. Try again.');
+                }
+            })();
+        }
         function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; scrollToChatAndFocus(); sendMessage(); }
         function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
