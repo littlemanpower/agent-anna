@@ -5,38 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGENT ANNA // COOL HOT SAUCE</title>
     <meta name="description" content="Agent Anna, your Cool Hot Sauce guide. Chat with Anna, by Mr. Preach X.">
-    <meta name="theme-color" content="#0a0b0a">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M40 10c-2 4-6 6-6 6' stroke='%233ddc5a' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M34 18c10 0 18 8 14 20-4 12-20 20-36 18 14-6 18-14 16-24-1-8 0-14 6-14z' fill='%23ff2d1a'/%3E%3C/svg%3E">
+    <meta name="theme-color" content="#e3121b">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='31' fill='#e3121b'/%3E%3Cg fill='#f2c76b' stroke='#f2c76b'%3E%3Cpath d='M32 46c-6-4-9-10-9-17 0-5 4-12 9-17 5 5 9 12 9 17 0 7-3 13-9 17z'/%3E%3Cpath d='M30 47c-8-1-15-6-18-13-1-3-1-6 0-9 6 1 12 4 15 9 2 4 3 9 3 13z'/%3E%3Cpath d='M34 47c8-1 15-6 18-13 1-3 1-6 0-9-6 1-12 4-15 9-2 4-3 9-3 13z'/%3E%3Cpath d='M14 50c6 2 12 3 18 3s12-1 18-3' fill='none' stroke-width='2.5' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* ===== AGENT ANNA // COOL HOT SAUCE EDITION =====
-           Palette from @CoolHotSauce brand: chili red, jalapeño green, black. */
+           Red + black Thailand edition: chili red, black, Thai temple-gold trim. */
         :root {
-            --bg-dark: #0a0b0a;
-            --bg-surface: #121412;
-            --bg-raised: #191c19;
-            --line: #262b26;
-            --chili: #ff2d1a;          /* hot */
-            --flame: #ff7a1a;          /* hotter */
-            --habanero: #ffb020;       /* scraping */
-            --jalapeno: #3ddc5a;       /* cool */
-            --ice: #8ef0d4;            /* coolest */
+            --bg-dark: #080404;
+            --bg-surface: #140808;
+            --bg-raised: #1d0b0b;
+            --line: #3a1515;
+            --chili: #e3121b;          /* Cool Hot Sauce red */
+            --flame: #ff3b2f;          /* hotter */
+            --habanero: #f08a24;       /* scraping */
+            --gold: #d9a84a;           /* Thai temple gold */
+            --rose: #ff8a7a;           /* soft chili */
             /* legacy names kept so nothing else breaks */
-            --border-cyan: var(--jalapeno);
-            --border-blue: var(--ice);
+            --border-cyan: var(--gold);
+            --border-blue: var(--rose);
             --border-pink: var(--chili);
             --border-magenta: var(--flame);
             --border-gold: var(--habanero);
             --border-red: #ff3b3b;
-            --text-light: #f1efe9;
-            --text-muted: #8a918a;
-            --pane-bg: #0e100e;
-            --state-color: var(--jalapeno);
-            --heat-gradient: linear-gradient(90deg, var(--jalapeno) 0%, var(--habanero) 50%, var(--chili) 100%);
-            --font-ui: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            --font-brand: "Bungee", "Impact", "Arial Black", sans-serif;
+            --text-light: #f7ede6;
+            --text-muted: #b0918a;
+            --pane-bg: #0e0505;
+            --state-color: var(--chili);
+            --heat-gradient: linear-gradient(90deg, var(--gold) 0%, var(--chili) 30%, var(--chili) 70%, var(--gold) 100%);
+            --font-ui: "Kanit", "Segoe UI", Roboto, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --font-brand: "Kanit", "Arial Black", sans-serif;
             --radius: 10px;
             --glow: 0 0 0 1px color-mix(in srgb, var(--state-color) 55%, transparent), 0 0 18px color-mix(in srgb, var(--state-color) 28%, transparent);
         }
@@ -60,16 +61,17 @@
             flex-direction: column;
             padding-top: 32px !important;
             background:
-                radial-gradient(1200px 500px at 0% 0%, rgba(61, 220, 90, 0.07), transparent 60%),
-                radial-gradient(1000px 500px at 100% 100%, rgba(255, 45, 26, 0.08), transparent 60%),
+                radial-gradient(1200px 520px at 80% -5%, rgba(227, 18, 27, 0.22), transparent 60%),
+                radial-gradient(900px 500px at 0% 100%, rgba(227, 18, 27, 0.12), transparent 60%),
+                var(--thai-lattice),
                 var(--bg-dark);
         }
 
-        body.is-standby { --state-color: var(--jalapeno); }
-        body.is-thinking { --state-color: var(--ice); }
+        body.is-standby { --state-color: var(--chili); }
+        body.is-thinking { --state-color: var(--gold); }
         body.is-scraping { --state-color: var(--habanero); }
         body.is-responding { --state-color: var(--chili); }
-        body.is-speaking, body.is-listening { --state-color: var(--flame); }
+        body.is-speaking, body.is-listening { --state-color: var(--rose); }
 
         *::-webkit-scrollbar { width: 8px; height: 8px; }
         *::-webkit-scrollbar-track { background: transparent; }
@@ -105,7 +107,8 @@
         .ticker-item { display: inline-flex; gap: 6px; align-items: center; margin-right: 36px; cursor: pointer; text-decoration: none; }
         .ticker-item::before { content: "🌶"; font-size: 10px; opacity: 0.7; }
         .ticker-label { color: var(--text-muted); }
-        .ticker-val { color: var(--jalapeno); font-weight: 700; }
+        .ticker-val { color: var(--gold); font-weight: 700; }
+        .financial-ticker-bar { font-family: var(--font-mono); }
         .ticker-item:hover .ticker-val { text-decoration: underline; color: var(--flame); }
 
         /* ---------- Layout ---------- */
@@ -125,8 +128,8 @@
         .brand-lockup { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .brand-logo { width: 44px; height: 44px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255, 45, 26, 0.35)); }
         .brand-text h1 {
-            font-family: var(--font-brand); font-weight: 400; font-size: 26px; line-height: 1; letter-spacing: 1px;
-            background: linear-gradient(90deg, var(--text-light) 0%, var(--text-light) 55%, var(--flame) 80%, var(--chili) 100%);
+            font-family: var(--font-brand); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: 1px;
+            background: linear-gradient(90deg, #fff 0%, var(--text-light) 100%);
             -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .brand-text .brand-sub {
@@ -136,7 +139,7 @@
         .brand-flag { display: inline-flex; gap: 3px; }
         .brand-flag i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
         .brand-flag i:nth-child(1) { background: var(--chili); }
-        .brand-flag i:nth-child(2) { background: var(--jalapeno); }
+        .brand-flag i:nth-child(2) { background: var(--gold); }
         .brand-flag i:nth-child(3) { background: #000; border: 1px solid #444; }
         .brand-handle { color: var(--flame); text-decoration: none; font-weight: 700; }
         .brand-handle:hover { text-decoration: underline; }
@@ -211,8 +214,8 @@
         .viewport-screen img, .viewport-screen video { width: 100%; height: 100%; object-fit: cover; }
         .viewport-audio-placeholder { font-size: 11px; color: var(--state-color); text-align: center; padding: 20px; }
 
-        .matrix-nameplate { text-align: center; z-index: 2; background: rgba(10, 11, 10, 0.7); padding: 8px 14px; border-radius: 10px; backdrop-filter: blur(4px); }
-        .matrix-nameplate h2 { font-family: var(--font-brand); font-weight: 400; font-size: 15px; color: var(--text-light); letter-spacing: 1px; }
+        .matrix-nameplate { text-align: center; z-index: 2; background: rgba(8, 4, 4, 0.75); padding: 8px 14px; border-radius: 10px; backdrop-filter: blur(4px); }
+        .matrix-nameplate h2 { font-family: var(--font-brand); font-weight: 700; font-size: 15px; color: var(--text-light); letter-spacing: 1px; }
         .matrix-nameplate p { font-size: 10px; color: var(--state-color); letter-spacing: 1.5px; margin-top: 4px; transition: color 0.4s ease; }
 
         /* ---------- Chat pane ---------- */
@@ -243,8 +246,8 @@
         .ctrl-btn:hover { border-color: var(--state-color); color: var(--state-color); }
         .ctrl-btn:active { transform: translateY(1px); }
         .military-btn { border-color: color-mix(in srgb, var(--state-color) 55%, var(--line)); color: var(--state-color); }
-        .btn-cool { border-color: color-mix(in srgb, var(--jalapeno) 60%, var(--line)) !important; color: var(--jalapeno) !important; }
-        .btn-ice { border-color: color-mix(in srgb, var(--ice) 60%, var(--line)) !important; color: var(--ice) !important; }
+        .btn-red { border-color: color-mix(in srgb, var(--gold) 60%, var(--line)) !important; color: var(--gold) !important; }
+        .btn-rose { border-color: color-mix(in srgb, var(--rose) 60%, var(--line)) !important; color: var(--rose) !important; }
         .btn-warm { border-color: color-mix(in srgb, var(--habanero) 60%, var(--line)) !important; color: var(--habanero) !important; }
         .btn-hot {
             background: linear-gradient(135deg, var(--flame), var(--chili)) !important; border-color: transparent !important;
@@ -269,13 +272,13 @@
 
         .message { padding: 12px 14px; border-radius: 12px; max-width: 92%; font-size: 12.5px; line-height: 1.6; z-index: 2; position: relative; backdrop-filter: blur(6px); word-wrap: break-word; overflow-wrap: anywhere; }
         .message.user { align-self: flex-end; background: rgba(255, 45, 26, 0.12); border: 1px solid rgba(255, 45, 26, 0.35); border-bottom-right-radius: 4px; }
-        .message.assistant { align-self: flex-start; background: rgba(18, 20, 18, 0.92); border: 1px solid var(--line); border-left: 3px solid var(--state-color); border-bottom-left-radius: 4px; transition: border-color 0.4s ease; }
+        .message.assistant { align-self: flex-start; background: rgba(22, 8, 8, 0.92); border: 1px solid var(--line); border-left: 3px solid var(--state-color); border-bottom-left-radius: 4px; transition: border-color 0.4s ease; }
         .msg-header { font-size: 10px; color: var(--state-color); margin-bottom: 6px; font-weight: 700; letter-spacing: 1px; transition: color 0.4s ease; }
         .message.user .msg-header { color: var(--flame); }
 
         .telecom-fade-banner {
             position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-            background: rgba(18, 20, 18, 0.96); border: 1px solid var(--state-color); color: var(--state-color);
+            background: rgba(22, 8, 8, 0.96); border: 1px solid var(--state-color); color: var(--state-color);
             padding: 8px 14px; font-size: 11px; border-radius: 999px; z-index: 999; max-width: 90%;
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5); text-align: center; pointer-events: none;
             animation: fadeInOut 5s forwards;
@@ -302,7 +305,7 @@
         .input-row { display: flex; gap: 8px; align-items: center; width: 100%; }
         #user-input { flex: 1; min-width: 0; padding: 11px 14px; background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light); font-size: 13px; border-radius: 10px; }
         #user-input:focus { outline: none; border-color: var(--state-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--state-color) 18%, transparent); }
-        #user-input::placeholder { color: #5f665f; }
+        #user-input::placeholder { color: #7a5550; }
 
         .multimedia-toolbar { display: flex; gap: 6px; align-items: center; font-size: 10px; flex-wrap: wrap; }
         .multimedia-toolbar .push-right { margin-left: auto; }
@@ -353,7 +356,7 @@
         .hero-top .brand-logo { width: 64px; height: 64px; }
         .hero-top .brand-text h1 { font-size: 40px; }
         .hero-top .brand-text h1 .h1-sep { color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); }
-        .hero-top .brand-text h1 .h1-hot { background: linear-gradient(90deg, var(--jalapeno), var(--habanero) 45%, var(--chili)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-top .brand-text h1 .h1-hot { background: linear-gradient(90deg, var(--flame), var(--chili) 55%, #b30d15); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .credential-line { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-top: 8px; }
         .credential-line b { color: var(--text-light); font-weight: 700; }
         .nav-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
@@ -381,7 +384,7 @@
         .app-shell { max-width: 1400px; margin: 16px auto 20px; padding: 0 20px; }
         .main-workspace {
             height: calc(100vh - 64px); min-height: 620px; max-height: 900px;
-            border: 1px solid var(--line); border-radius: 16px; background: rgba(14, 16, 14, 0.6);
+            border: 1px solid var(--line); border-radius: 16px; background: rgba(14, 5, 5, 0.7);
         }
         .site-foot { padding: 0 20px 22px; }
         @media (max-width: 960px) { .feature-cards { grid-template-columns: 1fr; } }
@@ -392,6 +395,53 @@
             .app-shell { padding: 0 10px; }
             .main-workspace { height: auto; max-height: none; min-height: 0; }
             .feature-cards { gap: 10px; }
+        }
+
+        /* ---------- Thai ornament layer (original CSS/SVG art) ---------- */
+        :root {
+            --thai-lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath d='M18 2 34 18 18 34 2 18Z' fill='none' stroke='%23e3121b' stroke-opacity='0.07'/%3E%3Ccircle cx='18' cy='18' r='2' fill='%23d9a84a' fill-opacity='0.06'/%3E%3C/svg%3E");
+            --kanok: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'%3E%3Cpath d='M0 16.5H40' stroke='%23d9a84a' stroke-width='1'/%3E%3Cpath d='M20 1.5c1.2 3 5.5 5.2 5.5 9.2a5.5 5.5 0 0 1-11 0c0-2.4 1.6-3.6 2.6-5.2.4 1.8 1.2 2.8 2.4 3.2-.8-2.4-.4-4.8.5-7.2z' fill='none' stroke='%23d9a84a' stroke-width='1.1'/%3E%3Cpath d='M20 9.5c.8 1 1.8 1.8 1.8 3a1.8 1.8 0 0 1-3.6 0c0-1.2 1-2 1.8-3z' fill='%23d9a84a'/%3E%3Cpath d='M0 12l3-3 3 3-3 3zM34 12l3-3 3 3-3 3z' fill='%23d9a84a'/%3E%3Cpath d='M8 14c1-3 3-4 5-4M32 14c-1-3-3-4-5-4' fill='none' stroke='%23d9a84a' stroke-width='1'/%3E%3C/svg%3E");
+            --thai-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Cpath d='M45 1H22c-6 0-9 3-9 8 0 4 3 6 6 6 2.5 0 4-1.6 4-3.6 0-1.6-1.2-2.6-2.6-2.6' fill='none' stroke='%23d9a84a' stroke-width='1.4' stroke-linecap='round'/%3E%3Cpath d='M45 1v23c0 6-3 9-8 9-4 0-6-3-6-6 0-2.5 1.6-4 3.6-4 1.6 0 2.6 1.2 2.6 2.6' fill='none' stroke='%23d9a84a' stroke-width='1.4' stroke-linecap='round'/%3E%3Cpath d='M39 7l2.5-2.5L44 7l-2.5 2.5z' fill='%23d9a84a'/%3E%3C/svg%3E");
+        }
+        h1, h2, h3, h5, .phonebook-title, .ctrl-btn, .nav-chip { font-family: var(--font-brand); }
+        .chat-header, .msg-header, #latency-display, .action-chip, #user-input, #settings-panel input { font-family: var(--font-mono); }
+        .message { font-family: var(--font-ui); font-size: 13.5px; font-weight: 300; }
+        .portal-hero { position: relative; overflow: hidden; }
+        .portal-hero > *:not(.wat-art) { position: relative; z-index: 1; }
+        .wat-art { position: absolute; right: 10px; top: 4px; width: 440px; max-width: 46%; height: auto; z-index: 0; opacity: .95; pointer-events: none; }
+        .hero-top { padding-right: 0; min-height: 96px; }
+        .hero-top .status-bar-indicator { position: relative; z-index: 2; }
+        .thai-sub { font-family: "Kanit", sans-serif; font-weight: 300; font-size: 14px; color: var(--gold); letter-spacing: 1px; margin-top: 6px; }
+        .thai-hello { font-family: "Kanit", sans-serif; font-weight: 600; color: var(--gold); }
+        .hero-top .brand-text h1 { font-weight: 800; letter-spacing: .5px; text-shadow: none; }
+        .hero-top .brand-text h1 .h1-sep { color: var(--gold); -webkit-text-fill-color: var(--gold); }
+        .kanok-strip { height: 18px; margin: 18px 0 0; background: var(--kanok) repeat-x center; opacity: .85; }
+        footer.site-foot { padding-top: 12px; }
+        body > .kanok-strip { max-width: 1360px; margin: 0 auto; }
+        .feature-card, .agent-hud-card, .matrix-visual-container, .main-workspace { position: relative; }
+        .feature-card::after {
+            content: ""; position: absolute; top: 6px; right: 6px; width: 46px; height: 46px; background: var(--thai-corner) no-repeat; opacity: .8; pointer-events: none;
+        }
+        .main-workspace { border-color: color-mix(in srgb, var(--gold) 35%, var(--line)); box-shadow: 0 0 0 4px rgba(227,18,27,.06), 0 20px 60px rgba(0,0,0,.5); }
+        .feature-card { background: linear-gradient(160deg, rgba(227,18,27,.12), var(--bg-surface) 55%); border-color: color-mix(in srgb, var(--gold) 25%, var(--line)); }
+        .feature-card h3 { color: #fff; font-weight: 600; font-size: 16px; }
+        .nav-chip { font-weight: 400; font-size: 13px; }
+        .nav-chip.hot { background: linear-gradient(135deg, #e3121b, #9e0b12); border-color: var(--gold); color: #fff; }
+        .nav-chip:hover { border-color: var(--gold); color: var(--gold); }
+        .matrix-visual-container { background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--state-color) 16%, transparent), transparent 60%), var(--thai-lattice), var(--bg-surface); }
+        .matrix-visual-container::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px; background: var(--kanok) repeat-x; opacity: .6; transform: scaleY(-1); }
+        .viewport-screen { outline: 1px dashed color-mix(in srgb, var(--gold) 60%, transparent); outline-offset: 10px; }
+        .agent-hud-card.active-node::before { height: 4px; }
+        .ctrl-btn { font-weight: 400; letter-spacing: .5px; }
+        .btn-hot { background: linear-gradient(135deg, #ff3b2f, #b30d15) !important; box-shadow: inset 0 0 0 1px rgba(217,168,74,.5); }
+        .message.user { background: rgba(227, 18, 27, 0.16); border-color: rgba(227, 18, 27, 0.45); }
+        .message.user .msg-header { color: var(--gold); }
+        .settings-title { color: var(--gold); }
+        @media (min-width: 861px) { .hero-top, .nav-chips { max-width: calc(100% - 430px); } }
+        @media (max-width: 860px) {
+            .wat-art { width: 300px; max-width: 80%; right: -20px; top: 0; opacity: .35; }
+            .thai-sub { font-size: 12px; }
+            .hero-top { min-height: 0; }
         }
 
     </style>
@@ -419,17 +469,55 @@
 
     <!-- PORTAL HERO -->
     <header class="portal-hero">
+        <svg class="wat-art" viewBox="0 0 420 190" aria-hidden="true">
+                <defs>
+                    <radialGradient id="sun-g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff4a2a"/><stop offset=".6" stop-color="#e3121b"/><stop offset="1" stop-color="#e3121b" stop-opacity="0"/></radialGradient>
+                </defs>
+                <circle cx="230" cy="92" r="88" fill="url(#sun-g)" opacity=".55"/>
+                <g fill="#0b0404" stroke="#d9a84a" stroke-width="1.6" stroke-linejoin="round">
+                    <!-- chedi (bell stupa), left -->
+                    <path d="M62 160V138h36v22z"/>
+                    <path d="M58 138c0-14 10-24 22-30 12 6 22 16 22 30z"/>
+                    <path d="M74 108h12v-6H74z"/>
+                    <path d="M80 102V44"/>
+                    <path d="M76 102l4-56 4 56z"/>
+                    <!-- main wat hall -->
+                    <path d="M120 176h240v-12H120z"/>
+                    <path d="M140 164v-48h200v48z"/>
+                    <path d="M222 164v-30a18 18 0 0 1 36 0v30z" fill="#1d0808"/>
+                    <path d="M160 140h24v-16h-24zM296 140h24v-16h-24z" fill="#1d0808"/>
+                    <!-- lower roof tier -->
+                    <path d="M118 120 240 62 362 120z"/>
+                    <!-- upper roof tier -->
+                    <path d="M160 92 240 34 320 92z"/>
+                    <!-- gable inner -->
+                    <path d="M206 92 240 50 274 92z" fill="#2a0b0b"/>
+                    <!-- chofa horns + hang hong (roof finials) -->
+                    <path d="M240 34c0-8 4-14 10-18-2 6-4 10-10 18z"/>
+                    <path d="M118 120c-8-2-12-8-12-16 4 6 8 9 14 10"/>
+                    <path d="M362 120c8-2 12-8 12-16-4 6-8 9-14 10"/>
+                    <path d="M160 92c-6-2-9-7-9-13 3 5 6 7 11 8"/>
+                    <path d="M320 92c6-2 9-7 9-13-3 5-6 7-11 8"/>
+                    <!-- prang spire, right -->
+                    <path d="M372 176v-44h24v44z"/>
+                    <path d="M370 132c2-20 8-36 14-50 6 14 12 30 14 50z"/>
+                    <path d="M384 82V58"/>
+                </g>
+                <g fill="#d9a84a">
+                    <circle cx="240" cy="72" r="3"/>
+                    <circle cx="80" cy="44" r="2.2"/>
+                    <circle cx="384" cy="58" r="2.2"/>
+                </g>
+                <path d="M0 184H420" stroke="#d9a84a" stroke-opacity=".5"/>
+            </svg>
         <div class="hero-top">
             <div class="brand-lockup">
-                <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="chili-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a1a"/><stop offset="1" stop-color="#ff2d1a"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="#121412" stroke="#262b26" stroke-width="2"/><path d="M38 12c-2 4-6 6-6 6" stroke="#3ddc5a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M33 18c4-1 9 1 10 3" stroke="#3ddc5a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M33 20c10 0 16 8 12 19-4 11-17 17-30 16 12-6 15-13 14-22-1-8-1-13 4-13z" fill="url(#chili-g)"/><path d="M36 26c2 2 3 6 1 10" stroke="#fff" stroke-opacity=".45" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+                <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="logo-r" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#ff3b2f"/><stop offset="1" stop-color="#9e0b12"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#logo-r)" stroke="#d9a84a" stroke-width="2"/><circle cx="32" cy="32" r="25.5" fill="none" stroke="#d9a84a" stroke-opacity=".55" stroke-dasharray="2 3"/><g fill="#f2c76b" stroke="#f2c76b"><path d="M32 46c-6-4-9-10-9-17 0-5 4-12 9-17 5 5 9 12 9 17 0 7-3 13-9 17z"/><path d="M30 47c-8-1-15-6-18-13-1-3-1-6 0-9 6 1 12 4 15 9 2 4 3 9 3 13z"/><path d="M34 47c8-1 15-6 18-13 1-3 1-6 0-9-6 1-12 4-15 9-2 4-3 9-3 13z"/><path d="M14 50c6 2 12 3 18 3s12-1 18-3" fill="none" stroke-width="2.5" stroke-linecap="round"/></g></svg>
                 <div class="brand-text">
                     <h1>AGENT ANNA <span class="h1-sep">//</span> <span class="h1-hot">COOL HOT SAUCE</span></h1>
-                    <div class="credential-line"><span class="brand-flag"><i></i><i></i><i></i></span>&nbsp; <b>Thailand National Hot Sauce Brand</b> &bull; World Famous 100ml &bull; Built by Mr. Preach X</div>
+                    <div class="thai-sub">สวัสดีค่ะ &nbsp;·&nbsp; Welcome to the Land of Smiles 🪷</div>
+                    <div class="credential-line"><b>Thailand National Hot Sauce Brand</b> &bull; World Famous 100ml &bull; Built by Mr. Preach X</div>
                 </div>
-            </div>
-            <div class="status-bar-indicator">
-                <div class="status-dot"></div>
-                <span id="state-text">STANDBY</span>
             </div>
         </div>
         <nav class="nav-chips" aria-label="Links">
@@ -439,11 +527,15 @@
             <a class="nav-chip" href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">🎵 TikTok @mr.preachx</a>
             <a class="nav-chip" href="https://x.com/LittleManPower" target="_blank" rel="noopener">𝕏 @LittleManPower</a>
             <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
+            <div class="status-bar-indicator">
+                <div class="status-dot"></div>
+                <span id="state-text">STANDBY</span>
+            </div>
         </nav>
         <section class="feature-cards">
             <div class="feature-card">
                 <h3>🔥 Cool Hot Sauce</h3>
-                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles in red, green and black.</p>
+                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles.</p>
                 <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
             </div>
             <div class="feature-card">
@@ -452,11 +544,12 @@
                 <div class="feature-links"><a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a><a href="https://x.com/LittleManPower" target="_blank" rel="noopener">X</a></div>
             </div>
             <div class="feature-card">
-                <h3>🌶️ Brand Colors</h3>
-                <p>The Cool Hot Sauce look: chili red, jalapeño green, and black. Cool on the outside, hot on the inside.</p>
-                <div class="swatches"><span class="swatch"><i style="background:#ff2d1a"></i>Chili</span><span class="swatch"><i style="background:#3ddc5a"></i>Jalapeño</span><span class="swatch"><i style="background:#000"></i>Black</span></div>
+                <h3>🪷 Brand Colors</h3>
+                <p>Cool Hot Sauce red and black, trimmed in Thai temple gold. Cool on the outside, hot on the inside.</p>
+                <div class="swatches"><span class="swatch"><i style="background:#e3121b"></i>Chili Red</span><span class="swatch"><i style="background:#000"></i>Black</span><span class="swatch"><i style="background:#d9a84a"></i>Temple Gold</span></div>
             </div>
         </section>
+        <div class="kanok-strip"></div>
     </header>
 
     <!-- MAIN WORKSPACE -->
@@ -465,7 +558,7 @@
         <div class="matrix-command-pane">
 
             <div class="phonebook-bar">
-                <div class="phonebook-title">📞 ANNA&#39;S CREW // 4 AGENTS</div>
+                <div class="phonebook-title">🪷 ANNA&#39;S CREW // 4 AGENTS</div>
                 <div class="phonebook-controls">
                     <button class="ctrl-btn military-btn" onclick="prevAgent()">◀ PREV</button>
                     <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
@@ -525,7 +618,7 @@
             </div>
 
             <div class="quick-launch-bar">
-                <button class="ctrl-btn military-btn btn-cool" onclick="launchServerAction()">🚀 SERVER UPLINK</button>
+                <button class="ctrl-btn military-btn btn-red" onclick="launchServerAction()">🚀 SERVER UPLINK</button>
                 <button class="ctrl-btn" onclick="triggerCryptoMarket(true)">📊 RATES</button>
                 <button class="ctrl-btn military-btn btn-warm" onclick="runSystemReport()">🔍 REPO REPORT</button>
             </div>
@@ -546,7 +639,7 @@
 
                 <div class="message assistant" id="msg_init">
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
-                    <div>Hey! I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
+                    <div><span class="thai-hello">สวัสดีค่ะ!</span> Sawasdee ka! 🙏 I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
                     <div class="action-row">
                         <button class="action-chip" onclick="summarizeMessage('msg_init')">SUMMARIZE (PRESS RELEASE & TWEETS)</button>
                         <button class="action-chip" onclick="speakStoredMessage('msg_init')">SPEECH READOUT</button>
@@ -563,7 +656,7 @@
                     <button class="ctrl-btn military-btn" onclick="setViewportMode('portrait')">👤 AGENT</button>
                     <button class="ctrl-btn" onclick="setViewportMode('video')">🎥 LOAD VIDEO</button>
                     <button class="ctrl-btn" onclick="setViewportMode('audio')">🎵 LOAD AUDIO</button>
-                    <button class="ctrl-btn military-btn btn-ice push-right" onclick="scrapeWebPage()">🌐 GOOGLE SCRAPE</button>
+                    <button class="ctrl-btn military-btn btn-rose push-right" onclick="scrapeWebPage()">🌐 GOOGLE SCRAPE</button>
                 </div>
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
@@ -574,7 +667,8 @@
         </div>
     </div>
     </div>
-    <footer class="site-foot">🌶️ Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only</footer>
+    <div class="kanok-strip"></div>
+    <footer class="site-foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only</footer>
 
     <script>
         // Server Uplink address: set it in KEYS (saved in this browser only). Must be https when the page is served over https.
@@ -604,7 +698,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bridge-url').value = BRIDGE_BASE;
-            messagePayloadStore['msg_init'] = "Hey! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
+            messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
             initCanvas();
             triggerCryptoMarket(false);
             setInterval(() => triggerCryptoMarket(false), 60000);
@@ -703,7 +797,7 @@
             }
 
             const chatBox = document.getElementById('chat-container');
-            chatBox.style.backgroundImage = `linear-gradient(rgba(14, 16, 14, 0.93), rgba(14, 16, 14, 0.93)), url('${data.img}')`;
+            chatBox.style.backgroundImage = `linear-gradient(rgba(14, 5, 5, 0.93), rgba(14, 5, 5, 0.93)), url('${data.img}')`;
 
             document.querySelectorAll('.agent-hud-card').forEach(c => c.classList.remove('active-node'));
             const card = document.getElementById(`card-${id}`);
@@ -1038,20 +1132,20 @@
             const isListeningState = document.body.classList.contains('is-listening');
 
             // Subtle & slow motion for thinking, emotional expression for responding/speaking
-            let color1 = '#3ddc5a', color2 = '#8ef0d4';
+            let color1 = '#e3121b', color2 = '#d9a84a';
             let amp1 = 18, amp2 = 12, speed = 0.03;
 
             if (isThinking) {
-                color1 = '#8ef0d4'; color2 = '#3ddc5a';
+                color1 = '#d9a84a'; color2 = '#e3121b';
                 amp1 = 28; amp2 = 20; speed = 0.05; // Subtle, smooth pulsing so operator knows it's active
             } else if (isScraping) {
-                color1 = '#ffb020'; color2 = '#3ddc5a';
+                color1 = '#f08a24'; color2 = '#d9a84a';
                 amp1 = 35; amp2 = 25; speed = 0.08;
             } else if (isResponding) {
-                color1 = '#ff2d1a'; color2 = '#ff7a1a';
+                color1 = '#ff3b2f'; color2 = '#ff8a7a';
                 amp1 = 44; amp2 = 32; speed = 0.10; // Emotional motion
             } else if (isSpeaking || isListeningState) {
-                color1 = '#ff7a1a'; color2 = '#ffb020';
+                color1 = '#ff8a7a'; color2 = '#d9a84a';
                 amp1 = 55; amp2 = 40; speed = 0.14;
             }
 
@@ -1104,8 +1198,8 @@
 
         function showNotice(msg) {
             const b = document.createElement('div');
-            b.style.cssText = `position:fixed;top:44px;right:16px;left:auto;max-width:min(360px,calc(100vw - 32px));z-index:999999;padding:12px 16px;background:#121412;border:1px solid var(--state-color);border-left:4px solid var(--state-color);color:var(--text-light);font-family:var(--font-ui);font-size:12px;line-height:1.5;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.55);`;
-            b.innerHTML = `<strong style="color:var(--state-color)">🌶️ ANNA</strong><br>${msg}`;
+            b.style.cssText = `position:fixed;top:44px;right:16px;left:auto;max-width:min(360px,calc(100vw - 32px));z-index:999999;padding:12px 16px;background:#140808;border:1px solid var(--state-color);border-left:4px solid var(--state-color);color:var(--text-light);font-family:var(--font-ui);font-size:12px;line-height:1.5;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.55);`;
+            b.innerHTML = `<strong style="color:var(--state-color)">🪷 ANNA</strong><br>${msg}`;
             document.body.appendChild(b);
             setTimeout(() => b.remove(), 3500);
         }
