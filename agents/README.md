@@ -4,7 +4,7 @@ One folder per agent, numbered AA01 to AA03. Each has a `character/` folder (per
 
 | Folder | Agent | What's inside |
 | --- | --- | --- |
-| `anna-AA01/` | Agent Anna | `character/README.md`, `knowledge/README.md` (character and knowledge files coming) |
+| `anna-AA01/` | Agent Anna | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. |
 | `mr-preach-x-AA02/` | Mr. Preach X | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. |
 | `martin-strayd-AA03/` | Martin Strayd | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. `Note-of-Today.md`: Martin's daily notes. |
 
