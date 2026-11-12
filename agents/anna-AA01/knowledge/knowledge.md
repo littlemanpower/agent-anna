@@ -24,7 +24,7 @@ Facts below are quoted or closely paraphrased from the two sources. Marketing cl
 
 ## The sauces
 
-The Agent Anna page lists three flavours, each with a bottle image, the line "100ML • Made in Thailand," and a buy button that goes to the same Lazada shop. No other flavour names appear in either source.
+The Agent Anna page lists three flavours, each with a bottle image, the line "100ML • Made in Thailand," and a buy button that goes to the same Lazada shop. A Nov 12 2026 premium sheet uses different names for what appears to be the same three-flavour lineup (see the premium sheet section below).
 
 | Flavour | How the page labels it | Size / origin, as stated | Source |
 | --- | --- | --- | --- |
@@ -34,22 +34,21 @@ The Agent Anna page lists three flavours, each with a bottle image, the line "10
 
 The AA01 prompt lists the same three names in a different order (Red Thai Chili, Green Jalapeno, Smoked Black). That is a list-order difference only, not a different lineup.
 
-**Not published on either source (do not invent):**
+**Still not published (do not invent):**
 
-- Prices, currency, or pack deals
-- Ingredients, allergen lists, or nutrition facts
 - Heat levels, Scoville numbers, or which flavour is milder or hotter
+- A full allergen or nutrition panel beyond the short ingredient line on the premium sheet
 - Official food pairings or recipes
-- Shipping times, shipping regions, or stock status
-- A fourth flavour, a gift set, or a white-label product
+- Postage amounts, shipping times, shipping regions, or stock status
+- A fourth flavour, a gift set, a baht price for the 48-piece box, or a white-label product
 
-coolhotsauce.com's visible homepage does not name the three flavours. Flavour names come from the Agent Anna page. The official site talks about a "hot sauce range" and "ingredient integrity" without listing ingredients. **UNVERIFIED:** any specific recipe or pepper beyond the flavour names themselves.
+Retail and wholesale baht prices, a short ingredient line, and a second set of flavour names now come from the Nov 12 2026 premium sheet below. coolhotsauce.com's visible homepage still does not name the three flavours or list prices or ingredients. **UNVERIFIED:** any recipe, pepper, or heat detail beyond what that sheet and the Agent Anna page actually name.
 
 ## Where to buy
 
 - The only buy link on the Agent Anna page is the Lazada shop [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe), labeled "Lazada Shop" / "Buy on Lazada." Each flavour card uses that same URL. The AA01 prompt repeats this as "WHERE TO BUY." (source: `index.html`)
 - coolhotsauce.com does not include a shop, cart, or price list on the homepage reviewed. Nav links go to Kunda Cafe and a TripAdvisor "Test Taste" page for Kunda Vegetarian Cafe, not to a sauce storefront. (source: coolhotsauce.com)
-- If asked for a price or whether a bottle is in stock, say you do not have that on file and point to the Lazada shop or coolhotsauce.com.
+- If asked for a price, quote the figures on the Nov 12 2026 premium sheet (RRP 200 baht; wholesale from 155 baht, with the volume prices listed below), say postage is not included, and note that live shop prices may differ. If asked whether a bottle is in stock, say you do not have stock on file and point to the Lazada shop or coolhotsauce.com.
 
 ## Standards, awards, and other site claims
 
@@ -122,11 +121,31 @@ These are KUNDA food-product facts from the KUNDA Co. Ltd. July 2026 newsletter,
 
 If asked about this product, say it is a KUNDA product described in their 2026 newsletter, and point people to [kundacafe.com](https://kundacafe.com) for current details. Do not invent prices or a sauce-and-patty bundle.
 
+## Premium Hot Sauce sheet (CoolHotSauce.com, received Nov 12 2026)
+
+Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026 (`/workspace/uploads/chs-1112/premium-hot-sauce.pdf`, verified with pdftotext). A personal name and phone number on the sheet are omitted. The business email printed on the sheet is not recorded in this public file. Figures and copy are as printed on that sheet and may change. Do not invent other prices.
+
+- Retail recommended price (RRP): 200 baht.
+- HACCP, GMP and GAP certification (the same three standards named on coolhotsauce.com; certificates were not attached to the sheet).
+- "8th year business." This is the sheet's wording. coolhotsauce.com says the brand was established in 2021. Those two lines do not clearly agree (a 2021 founding would not yet be an 8th year in November 2026). Record both; do not pick one or invent a founding year to close the gap.
+- "100ML bottle seen in over 60 countries around the world." coolhotsauce.com and the owners' Nov 12 call say "over 69 countries." Record both figures; do not collapse them. No country list is given. **UNVERIFIED.**
+- Travel size, OK for airports (sheet wording: "Travel size ok airport").
+- Thailand souvenir (sheet wording: "Souvenir Thailand tasty").
+- Wholesale starts at 155 baht. Volume prices on the sheet: 100+ pieces 145 baht; 500+ pieces 135 baht; 1000+ pieces 125 baht (sheet wording: "100 pc more," "500pc more," "1000pc more"). Postage is not included. Discount on 48-piece box orders; a 48-piece box is 4 x 12 packs. The sheet does not give a baht figure for the 48-piece box, so do not invent one. It also says larger orders have a discount, without a further price.
+- "Manufacturers can do 12,000 bottles per week if required. More by request."
+- Three flavors, quoted from the sheet: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa (usual Thai romanization is prik / phrik chi fa). These appear to be the same three-flavour lineup as the Agent Anna page (Smoked Black, Green Jalapeño, Red Thai Chili), with different wording. Do not treat that pairing as independently confirmed, and do not invent a fourth flavour.
+- No sugar added. Sweetness from chili.
+- Chili, salt, vinegar, no artificial preservatives.
+- No added color. The sheet also says "pure sunshine and seeds."
+- Farm to table. Made in Thailand.
+
+If asked for a price, quote the RRP and wholesale figures as printed on this Nov 12 2026 sheet, say postage is not included, and note that live shop prices may differ. If asked for a heat level or a full allergen or nutrition list, say those are not on the sheet.
+
 ## Gaps and uncertainties
 
 - **Homepage fetch:** [https://coolhotsauce.com](https://coolhotsauce.com) was fetched successfully on Nov 12 2026 (HTTP 200, HTML homepage, about 7.9 KB). A first WebFetch pass returned only a shortened extract; the full homepage was then read directly. `last-modified` on the response was Jul 9, 2026, 3:32 AM UTC (Jul 8, 2026, 11:32 PM ET).
 - **No product or about subpages:** `/shop`, `/shop/`, `/products`, `/about`, `/sauces`, `/buy`, `/sitemap.xml`, and `/robots.txt` all returned 404. There was no obvious product or about subpage to use beyond the homepage and its outbound links.
-- Prices, ingredients, heat levels, shipping, and stock are not on either primary source.
+- Heat levels, stock, and postage amounts are still unpublished. Retail/wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet, not on coolhotsauce.com or the Agent Anna page.
 - Award, ranking, #1, HACCP/GMP/GAP, "69 countries," "national brand," "vegan," and "world's 1st crypto-liquidity-utility" claims are site wording only (**UNVERIFIED**), with a #1 tagline that conflicts with "ranked among" in the body.
 - Flavour names appear on the Agent Anna page, not on the coolhotsauce.com homepage text reviewed.
 - Founder vs. "Established 2021 by KUNDA Co Ltd." vs. "Exclusively Licenced Distribution by KUNDA Co. Ltd." is not fully explained. **UNVERIFIED.**
@@ -142,3 +161,4 @@ If asked about this product, say it is a KUNDA product described in their 2026 n
 - Outbound links noted from that homepage: [https://kundacafe.com](https://kundacafe.com), the TripAdvisor "Test Taste" link for Kunda Vegetarian Cafe, and the three YouTube song links listed above
 - Owner-stated public-fit brand facts from the Nov 12 2026 call (see `agents/COOL-HOT-SAUCE-REFERENCE.md`); internal valuation, outreach, and named-company comparison lines were not copied here
 - KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
+- One-page PREMIUM HOT SAUCE CoolHotSauce.com sheet, received Nov 12 2026 (`/workspace/uploads/chs-1112/premium-hot-sauce.pdf`; personal name, phone, and the business email on the sheet omitted from this public file)

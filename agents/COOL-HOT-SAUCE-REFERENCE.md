@@ -19,7 +19,7 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
 - Cool Hot Sauce / CoolHotSauce. Official site: [https://coolhotsauce.com](https://coolhotsauce.com). Brand X: [https://x.com/coolhotsauce](https://x.com/coolhotsauce).
 - World Famous 100ml hot sauce. Established 2021, Chiang Rai, Thailand.
 - "Thailand National Hot Sauce Brand" appears on the Agent Anna page. Keep this wording as stated; do not soften it. It is site branding, not a verified government designation.
-- Flavours listed on the Agent Anna page, each 100ml, made in Thailand: Smoked Black, Green Jalapeño, and Red Thai Chili. The coolhotsauce.com homepage reviewed did not name the three flavours.
+- Flavours listed on the Agent Anna page, each 100ml, made in Thailand: Smoked Black, Green Jalapeño, and Red Thai Chili. The coolhotsauce.com homepage reviewed did not name the three flavours. A Nov 12 2026 premium sheet uses different names for what appears to be the same three (see below).
 - Buy link used on the Agent Anna page: [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe). coolhotsauce.com had no shop or price list on the homepage reviewed.
 - Seen in over 69 countries, as stated on coolhotsauce.com. No country list is given. **UNVERIFIED.**
 - HACCP, GMP and GAP, as stated on coolhotsauce.com. Certificates were not shown. **UNVERIFIED** as independently checked certificates.
@@ -28,7 +28,7 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
   - Vegan Millionaire Tuk Tuk — [https://youtu.be/7Xv9XY6Hr6E](https://youtu.be/7Xv9XY6Hr6E)
   - Cool Hot Hot Shots — [https://youtu.be/csNzQUK3kl0](https://youtu.be/csNzQUK3kl0)
   - Tuk Tuk Secret Spice (Muay Thailand) — [https://youtu.be/RbTVSL_4thw](https://youtu.be/RbTVSL_4thw)
-- Do not invent prices, ingredients, heat levels, shipping, stock, or extra flavours.
+- Do not invent heat levels, stock, postage amounts, a 48-piece box baht price, or extra flavours. Retail and wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet below; live shop prices may differ.
 
 ## Owner-stated brand facts (public-fit, Nov 12 2026 call)
 
@@ -62,6 +62,21 @@ KUNDA food-product facts, not Cool Hot Sauce bottle facts. Do not present the pa
 
 Point people to [kundacafe.com](https://kundacafe.com) for current KUNDA details.
 
+
+## Premium Hot Sauce sheet (CoolHotSauce.com, received Nov 12 2026)
+
+Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026. A personal name, phone number, and the business email on the sheet are omitted from this public file. Figures are as printed on that sheet and may change.
+
+- Retail recommended price (RRP): 200 baht.
+- HACCP, GMP and GAP certification (certificates were not attached).
+- "8th year business" (sheet wording). coolhotsauce.com says established 2021. Record both; those lines do not clearly agree. Do not invent a founding year to close the gap.
+- "100ML bottle seen in over 60 countries." The official site says over 69 countries. Record both figures; do not collapse them. **UNVERIFIED.**
+- Travel size, OK for airports. Thailand souvenir.
+- Wholesale from 155 baht. Volume prices: 100+ pieces 145 baht; 500+ pieces 135 baht; 1000+ pieces 125 baht. Postage not included. Discount on 48-piece boxes (4 x 12 packs); no baht figure is given for that box, so do not invent one.
+- Manufacturers can do 12,000 bottles per week, more on request.
+- Three flavors, quoted from the sheet: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa (usual romanization prik / phrik chi fa). These appear to match the Agent Anna page names (Smoked Black, Green Jalapeño, Red Thai Chili) with different wording. Do not invent a fourth flavour.
+- No sugar added (sweetness from chili). Chili, salt, vinegar, no artificial preservatives. No added color. Farm to table. Made in Thailand.
+
 ## Sources
 
 - [https://coolhotsauce.com](https://coolhotsauce.com) (homepage read Nov 12 2026)
@@ -69,3 +84,4 @@ Point people to [kundacafe.com](https://kundacafe.com) for current KUNDA details
 - Owner-stated public-fit facts from the Nov 12 2026 call
 - KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
 - Anna's full knowledge file: `anna-AA01/knowledge/knowledge.md`
+- One-page PREMIUM HOT SAUCE CoolHotSauce.com sheet, received Nov 12 2026 (personal name, phone, and business email omitted)
