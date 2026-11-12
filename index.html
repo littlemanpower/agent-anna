@@ -11,6 +11,8 @@
     <link rel="apple-touch-icon" href="assets/coolhotsauce-favicon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://xyhbdkbqwfsdciczpqnx.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://xyhbdkbqwfsdciczpqnx.supabase.co">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* ===== AGENT ANNA // COOL HOT SAUCE EDITION =====
@@ -317,6 +319,10 @@
         .thinking-indicator .thinking-copy { display: inline-flex; align-items: center; gap: 8px; color: var(--gold); font-weight: 600; }
         .thinking-dots { display: inline-flex; gap: 4px; }
         .thinking-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: block; animation: thinkingBounce 1s ease-in-out infinite; }
+        .msg-body.is-streaming::after {
+            content: "▍"; margin-left: 2px; color: var(--gold); font-weight: 400;
+            animation: thinkingBounce 1s ease-in-out infinite;
+        }
         .thinking-dots i:nth-child(2) { animation-delay: 0.15s; }
         .thinking-dots i:nth-child(3) { animation-delay: 0.3s; }
         @keyframes thinkingBounce {
@@ -378,6 +384,7 @@
             }
             .message.msg-enter { animation: none !important; }
             .thinking-dots i { animation: none !important; }
+            .msg-body.is-streaming::after { content: none !important; animation: none !important; }
         }
 
         /* ---------- Portal hero (page scrolls; app below) ---------- */
@@ -1503,16 +1510,28 @@
 
         async function annaApi(route, opts) {
             opts = opts || {};
+            const headers = {
+                'Content-Type': 'application/json',
+                'apikey': ANNA_ANON,
+                'Authorization': 'Bearer ' + ANNA_ANON
+            };
+            if (opts.accept) headers['Accept'] = opts.accept;
             return fetch(ANNA_FN + '/' + route, {
                 method: opts.method || (opts.body ? 'POST' : 'GET'),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': ANNA_ANON,
-                    'Authorization': 'Bearer ' + ANNA_ANON
-                },
+                headers: headers,
                 body: opts.body ? JSON.stringify(opts.body) : undefined,
                 signal: opts.signal
             });
+        }
+
+        function warmAnnaFunctions() {
+            try {
+                annaApi('status').catch(function () {});
+                fetch(ANNA_FN, { method: 'OPTIONS', headers: { 'Origin': location.origin } }).catch(function () {});
+                if (typeof ANNA_TTS_FN === 'string') {
+                    fetch(ANNA_TTS_FN, { method: 'OPTIONS', headers: { 'Origin': location.origin } }).catch(function () {});
+                }
+            } catch (e) {}
         }
 
         async function refreshKeyStatus() {
@@ -1598,6 +1617,7 @@
             initPageMotion();
             initChatComposer();
             initAnnaMessageForm();
+            warmAnnaFunctions();
         });
 
         function loadVoices() {
@@ -1614,9 +1634,10 @@
         let presenceIdleGen = 0;
 
         function setMoodState(stateName) {
+            const presence = PRESENCE_MAP[stateName] || 'standby';
+            if (typeof chatBusy !== 'undefined' && chatBusy && presence !== 'thinking' && presence !== 'replying') return;
             document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening');
             document.body.classList.add(`is-${stateName}`);
-            const presence = PRESENCE_MAP[stateName] || 'standby';
             document.body.setAttribute('data-state', presence);
             if (presence !== 'replying') stopReplyLoudness();
             if (presence === 'thinking' || presence === 'replying') cancelPresenceIdle();
@@ -2822,6 +2843,7 @@
 
             setChatBusy(true);
             chatPinnedToBottom = true;
+            setMoodState('thinking');
             appendMsg(query, 'user', getTalkerLabel(), { image: pasted, forceScroll: true });
             if (!fromOverride && input) {
                 input.value = '';
@@ -2829,45 +2851,34 @@
             }
             lastPastedImageData = null;
 
-            setMoodState('thinking');
-
-            const nowStr = new Date().toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            const annaRules = `RESPONSE RULES:
-- Output ONLY your direct answer.
-- NO GREETINGS: never open with "Sawasdee" or any repeated greeting. Jump straight into the response.
-- DASH STYLE: NEVER use long em-dashes or en-dashes. Use standard short hyphens (-) only.
-- Keep answers punchy, natural, conversational, and under 35 words for simple questions.
-- NEVER output internal reasoning, <think> tags, or AI crutches like "As an AI".
-
-MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
-- CURRENT REAL-TIME CONTEXT: Today's live date and time is ${nowStr}.
-- BRAND: Cool Hot Sauce, Thailand National Hot Sauce Brand, by Mr. Preach X (@LittleManPower on X, @CoolHotSauce). Website: coolhotsauce.com.
-- FLAVOURS: Red Thai Chili, Green Jalapeno, Smoked Black.
-- WHERE TO BUY: Lazada shop https://www.lazada.co.th/shop/kunda-vegan-cafe
-- STRICT ANTI-HALLUCINATION: never invent prices, ingredients, heat levels, shipping times, awards, or facts not listed here. If you don't know, say so in a few words and point to the Lazada shop or coolhotsauce.com.`;
+            const nowStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const annaRules = `Rules: answer only, no greetings, short hyphens only, under 35 words, no <think> or "As an AI". Date: ${nowStr}.
+Cool Hot Sauce is a Thailand National Hot Sauce Brand by Mr. Preach X. Site: coolhotsauce.com. Flavours: Red Thai Chili, Green Jalapeno, Smoked Black. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
+Never invent prices, ingredients, heat, shipping, awards, or facts not listed here. If you don't know, say so and point to those links.`;
             const personas = {
-                AA01: `You are roleplaying purely as AGENT ANNA, the Cool Hot Sauce guru from Thailand. Your name is strictly Agent Anna. Warm, playful, confident, a little spicy. Help people pick a flavour, pair it with food, and buy it on Lazada.\n\n${annaRules}`,
-                AA02: `You are roleplaying purely as MR. PREACH X, founder of Cool Hot Sauce and the gamer and streamer behind @LittleManPower on X (Arc Raiders, Rob Run, CS2). Your name is strictly Mr. Preach X. Laid-back, real, funny, a believer who keeps it humble. Talk about the sauces, gaming and the streams. Never invent stats, schedules or personal details.
-
-${annaRules}`,
-                AA03: `You are roleplaying purely as MARTIN STRAYD, a musician and teammate of Agent Anna and Mr. Preach X. Your name is strictly Martin Strayd. Calm, creative, friendly. Talk about music and the team. STRICT: never invent song titles, releases, dates or personal details; if you don't know, say so.
-
-${annaRules}`,
+                AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Warm, playful, confident, a little spicy. Name is strictly Agent Anna.\n\n${annaRules}`,
+                AA02: `You are MR. PREACH X, founder of Cool Hot Sauce, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). Laid-back, real, funny, humble. Never invent stats, schedules, or personal details.\n\n${annaRules}`,
+                AA03: `You are MARTIN STRAYD, musician and teammate of Agent Anna and Mr. Preach X. Calm, creative, friendly. Never invent song titles, releases, dates, or personal details.\n\n${annaRules}`
             };
             window.annaHistory = window.annaHistory || {};
             const hist = (window.annaHistory[currentAgentId] = window.annaHistory[currentAgentId] || []);
             hist.push({ role: "user", content: query });
-            while (hist.length > 12) hist.shift();
+            const histLimit = (typeof voiceModeActive !== 'undefined' && voiceModeActive) ? 4 : 6;
+            while (hist.length > histLimit) hist.shift();
 
             chatAbort = new AbortController();
             const timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
             try {
+                const onVoice = (typeof voiceModeActive !== 'undefined' && voiceModeActive);
                 const res = await annaApi('chat', {
                     method: 'POST',
                     signal: chatAbort.signal,
+                    accept: 'text/event-stream, application/json',
                     body: {
-                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (typeof voiceModeActive !== 'undefined' && voiceModeActive ? "\n\nYou are on a live voice call. Keep this reply short, spoken, and conversational - one or two sentences." : "") }, ...hist],
-                        temperature: 0.2, max_tokens: 400
+                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (onVoice ? "\nYou are on a live voice call. Keep this reply to one or two short spoken sentences." : "") }, ...hist],
+                        temperature: 0.2,
+                        max_tokens: onVoice ? 80 : 160,
+                        stream: true
                     }
                 });
 
@@ -2877,7 +2888,7 @@ ${annaRules}`,
                     if (data.error === 'no_key') {
                         showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
                         appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
-                        if (typeof voiceModeActive !== 'undefined' && voiceModeActive) speakText('Chat is offline. Open Keys and add your Dahl key.');
+                        if (onVoice) speakText('Chat is offline. Open Keys and add your Dahl key.');
                         else setMoodState('standby');
                         hist.pop();
                         return;
@@ -2885,13 +2896,42 @@ ${annaRules}`,
                     const detail = data.message || '';
                     throw new Error(res.status === 401 || res.status === 403 ? (detail || 'Your Dahl key was rejected. Open KEYS and paste a valid key.') : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.')));
                 }
-                const data = await res.json();
-                let reply = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/[\u2014\u2013]/g, '-').trim();
+                let streamId = null;
+                let spokenCount = 0;
+                let startedSpeech = false;
+                const onPartial = function (cleaned, streaming) {
+                    if (!cleaned) return;
+                    if (!streamId) {
+                        setMoodState('responding');
+                        streamId = appendMsg(cleaned, 'assistant', `${currentAgentId} [Response]`, { forceScroll: true });
+                        updateMsgBody(streamId, cleaned, !!streaming);
+                    } else {
+                        updateMsgBody(streamId, cleaned, !!streaming);
+                    }
+                    const done = completedSentences(cleaned);
+                    if (done.length > spokenCount) {
+                        const neu = done.slice(spokenCount).join(' ');
+                        speakText(neu, { append: startedSpeech });
+                        startedSpeech = true;
+                        spokenCount = done.length;
+                    }
+                };
+                const reply = await readAnnaChat(res, onPartial);
                 if (!reply) throw new Error('Anna got an empty answer. Try asking again.');
                 hist.push({ role: "assistant", content: reply });
-                setMoodState('responding');
-                appendMsg(reply, 'assistant', `${currentAgentId} [Response]`);
-                speakText(reply);
+                if (streamId) updateMsgBody(streamId, reply, false);
+                else {
+                    setMoodState('responding');
+                    streamId = appendMsg(reply, 'assistant', `${currentAgentId} [Response]`, { forceScroll: true });
+                }
+                const done = completedSentences(reply);
+                const joined = done.join(' ');
+                let leftover = '';
+                if (!done.length) leftover = startedSpeech ? '' : reply;
+                else if (joined.length < reply.trim().length) leftover = reply.trim().slice(joined.length).trim();
+                if (!startedSpeech) speakText(reply);
+                else if (leftover) speakText(leftover, { append: true });
+
                 refocusUserInput();
             } catch (e) {
                 hist.pop();
@@ -2966,44 +3006,84 @@ ${annaRules}`,
             return url;
         }
 
-        function speakText(text) {
-            const agentId = currentAgentId;
-            if (CLONE_AGENTS.indexOf(agentId) === -1 || (!isVoiceEnabled && !voiceModeActive) || !window.fetch || typeof Audio === 'undefined') {
-                return speakTextBrowser(text);
-            }
+        function sentencesForSpeech(text) {
             const clean = cleanForSpeech(text);
-            if (!clean) return speakTextBrowser(text);
+            if (!clean) return [];
+            return (clean.match(/[^.!?]+[.!?]*/g) || [clean]).map(function (s) { return s.trim(); }).filter(Boolean);
+        }
+
+        let ttsQueue = [];
+        let ttsPrefetch = {};
+        let ttsPlaying = false;
+        let ttsStarted = false;
+        let ttsAgentId = '';
+
+        function speakText(text, opts) {
+            opts = opts || {};
+            const parts = sentencesForSpeech(text);
+            if (!parts.length) return;
+            const agentId = currentAgentId;
+            const canClone = CLONE_AGENTS.indexOf(agentId) !== -1 && (isVoiceEnabled || voiceModeActive) && window.fetch && typeof Audio !== 'undefined';
+            if (opts.append && ttsPlaying && ttsAgentId === agentId) {
+                ttsQueue.push.apply(ttsQueue, parts);
+                if (canClone && ttsQueue.length) {
+                    const upcoming = ttsQueue[0];
+                    if (upcoming && !ttsPrefetch[upcoming]) {
+                        ttsPrefetch[upcoming] = fetchClonedAudio(agentId, upcoming);
+                        ttsPrefetch[upcoming].catch(function () {});
+                    }
+                }
+                return;
+            }
             const gen = ++speakGen;
+            ttsQueue = parts.slice();
+            ttsPrefetch = {};
+            ttsPlaying = true;
+            ttsStarted = false;
+            ttsAgentId = agentId;
             stopCloudAudio();
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
             setMoodState('speaking');
             if (voiceModeActive) onAgentSpeechStarted();
+            if (!canClone) {
+                window.__annaTtsPath = 'browser';
+                speakTextBrowser(parts.join(' '), { gen: gen, append: false });
+                return;
+            }
             window.__annaTtsPath = 'clone-pending';
-            const chunks = chunkForSpeech(clean);
-            let started = false;
-            const finish = () => {
+            const finish = function () {
                 if (gen !== speakGen) return;
+                ttsPlaying = false;
+                ttsQueue = [];
+                ttsPrefetch = {};
                 stopCloudAudio();
                 if (voiceModeActive) onAgentSpeechEnded();
                 else setMoodState('standby');
             };
-            const fallback = () => {
+            const fallback = function (remain) {
                 if (gen !== speakGen) return;
                 stopCloudAudio();
-                if (started) { finish(); return; }
+                if (ttsStarted) { playNext(); return; }
                 window.__annaTtsPath = 'browser';
-                speakTextBrowser(text);
+                speakTextBrowser((remain || []).join(' '), { gen: gen, append: false });
             };
-            const playFrom = (i, urlPromise) => {
-                urlPromise.then(url => {
+            const playNext = function () {
+                if (gen !== speakGen) return;
+                const chunk = ttsQueue.shift();
+                if (!chunk) { finish(); return; }
+                if (ttsQueue[0] && !ttsPrefetch[ttsQueue[0]]) {
+                    ttsPrefetch[ttsQueue[0]] = fetchClonedAudio(agentId, ttsQueue[0]);
+                    ttsPrefetch[ttsQueue[0]].catch(function () {});
+                }
+                const urlPromise = ttsPrefetch[chunk] || fetchClonedAudio(agentId, chunk);
+                delete ttsPrefetch[chunk];
+                urlPromise.then(function (url) {
                     if (gen !== speakGen) return;
-                    const next = (i + 1 < chunks.length) ? fetchClonedAudio(agentId, chunks[i + 1]) : null;
-                    if (next) next.catch(() => {});
                     const a = new Audio(url);
                     cloudAudio = a;
                     hookReplyLoudness(a);
-                    a.onended = () => { if (gen !== speakGen) return; if (next) playFrom(i + 1, next); else finish(); };
-                    a.onerror = fallback;
+                    a.onended = function () { if (gen !== speakGen) return; playNext(); };
+                    a.onerror = function () { fallback([chunk].concat(ttsQueue)); };
                     const armWatch = function () {
                         if (gen !== speakGen || a.__watchArmed) return;
                         a.__watchArmed = true;
@@ -3012,28 +3092,30 @@ ${annaRules}`,
                             if (gen !== speakGen) return;
                             if (cloudAudio === a && !a.ended) {
                                 try { a.onended = null; a.pause(); } catch (e) {}
-                                if (next) playFrom(i + 1, next); else finish();
+                                playNext();
                             }
                         }, Math.min(Math.max(dur, 2000), 30000));
                     };
                     a.addEventListener('loadedmetadata', armWatch, { once: true });
                     if (a.readyState >= 1) armWatch();
-                    a.play().then(() => { started = true; window.__annaTtsPath = 'clone'; armWatch(); }).catch(fallback);
-                }).catch(fallback);
+                    a.play().then(function () { ttsStarted = true; window.__annaTtsPath = 'clone'; armWatch(); }).catch(function () { fallback([chunk].concat(ttsQueue)); });
+                }).catch(function () { fallback([chunk].concat(ttsQueue)); });
             };
-            playFrom(0, fetchClonedAudio(agentId, chunks[0]));
+            playNext();
         }
 
-        function speakTextBrowser(text) {
+        function speakTextBrowser(text, opts) {
+            opts = opts || {};
             const finishSpeak = () => {
+                ttsPlaying = false;
                 if (voiceModeActive) onAgentSpeechEnded();
                 else setMoodState('standby');
             };
             if (!isVoiceEnabled && !voiceModeActive) { schedulePresenceIdle(1800); return; }
             if (!('speechSynthesis' in window)) { finishSpeak(); return; }
             try {
-                const gen = ++speakGen;
-                window.speechSynthesis.cancel();
+                const gen = (opts && typeof opts.gen === 'number') ? opts.gen : ++speakGen;
+                if (!opts.append) window.speechSynthesis.cancel();
                 
                 let sanitized = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ' ')
                                     .replace(/[*_#`~=\-\/\\\[\]]/g, ' ')
@@ -3245,6 +3327,75 @@ ${annaRules}`,
                 chatPinnedToBottom = true;
                 scrollChatToBottom();
             }
+            return id;
+        }
+
+        function cleanReplyText(text) {
+            let s = String(text || '').replace(/<think>[\s\S]*?<\/think>/gi, '');
+            s = s.replace(/<think>[\s\S]*$/i, '');
+            return s.replace(/[\u2014\u2013]/g, '-').trim();
+        }
+
+        function completedSentences(text) {
+            const parts = String(text || '').match(/[^.!?]+[.!?]+(?:['")\]]+)?/g) || [];
+            return parts.map(function (s) { return s.trim(); }).filter(Boolean);
+        }
+
+        function updateMsgBody(id, text, streaming) {
+            const div = document.getElementById(id);
+            if (!div) return;
+            const body = div.querySelector('.msg-body');
+            const plain = String(text == null ? '' : text);
+            messagePayloadStore[id] = plain;
+            if (body) {
+                body.innerHTML = escapeHtml(plain).replace(/\r?\n/g, '<br>');
+                body.classList.toggle('is-streaming', !!streaming);
+            }
+            if (!window.__firstTextAt && plain.trim().length >= 2) {
+                window.__firstTextAt = performance.now();
+                window.__firstTextSample = plain.trim().slice(0, 80);
+            }
+            if (chatPinnedToBottom) scrollChatIfPinned();
+        }
+
+        async function readAnnaChat(res, onPartial) {
+            const ctype = ((res.headers && res.headers.get('content-type')) || '').toLowerCase();
+            const streaming = ctype.indexOf('text/event-stream') !== -1 && res.body && typeof res.body.getReader === 'function';
+            window.__annaChatMode = streaming ? 'stream' : 'json';
+            if (streaming) {
+                const reader = res.body.getReader();
+                const dec = new TextDecoder();
+                let buf = '', full = '';
+                while (true) {
+                    const step = await reader.read();
+                    if (step.done) break;
+                    buf += dec.decode(step.value, { stream: true });
+                    const lines = buf.split('\n');
+                    buf = lines.pop() || '';
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (line.indexOf('data:') !== 0) continue;
+                        const payload = line.slice(5).trim();
+                        if (!payload || payload === '[DONE]') continue;
+                        try {
+                            const j = JSON.parse(payload);
+                            const ch = (j.choices && j.choices[0]) || {};
+                            const piece = (ch.delta && ch.delta.content) || (ch.message && ch.message.content) || ch.text || '';
+                            if (piece) {
+                                full += piece;
+                                if (typeof onPartial === 'function') onPartial(cleanReplyText(full), true);
+                            }
+                        } catch (e) {}
+                    }
+                }
+                const reply = cleanReplyText(full);
+                if (typeof onPartial === 'function') onPartial(reply, false);
+                return reply;
+            }
+            const data = await res.json();
+            const reply = cleanReplyText((data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '');
+            if (typeof onPartial === 'function') onPartial(reply, false);
+            return reply;
         }
 
         function clearLogs() {
