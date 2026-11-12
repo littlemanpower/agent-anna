@@ -803,9 +803,10 @@
         body[data-state="thinking"] {
             --state-color: #9AB1BF;
             --presence-core: #9AB1BF;
-            --presence-halo: #CFEEFD;
-            --presence-opa-min: 0.55;
-            --presence-opa-max: 0.95;
+            /* Mid cool blue-grey halo, not near-white #CFEEFD, so Thinking cannot read as white. */
+            --presence-halo: #7E96A3;
+            --presence-opa-min: 0.62;
+            --presence-opa-max: 0.92;
             --presence-scale-max: 1.05;
             --presence-dur-a: 2.6s;
             --presence-dur-b: 3.7s;
@@ -814,8 +815,9 @@
             --state-color: #D9452B;
             --presence-core: #D9452B;
             --presence-halo: #F2A65A;
-            --presence-opa-min: 0.60;
-            --presence-opa-max: 1.00;
+            /* Keep the red ring dense; never let the halo bloom to white. */
+            --presence-opa-min: 0.75;
+            --presence-opa-max: 0.95;
             --presence-scale-max: 1.06;
             --presence-dur-a: 1.8s;
             --presence-dur-b: 2.9s;
@@ -848,20 +850,20 @@
             will-change: opacity, transform;
             transition: box-shadow 600ms var(--presence-ease);
         }
-        /* Layer A: core glow */
+        /* Layer A: core glow — hard colored ring plus a saturated bloom (mix toward the core, not toward white). */
         .presence-ring::before {
             box-shadow:
-                0 0 0 8px color-mix(in srgb, var(--presence-core) 92%, transparent),
-                0 0 28px 8px var(--presence-core),
-                0 0 64px 18px color-mix(in srgb, var(--presence-core) 70%, transparent);
+                0 0 0 8px var(--presence-core),
+                0 0 24px 8px var(--presence-core),
+                0 0 48px 14px color-mix(in srgb, var(--presence-core) 85%, #000);
             animation: presenceBreathA var(--presence-dur-a) var(--presence-ease) infinite;
         }
-        /* Layer B: halo glow */
+        /* Layer B: halo glow — tighter, mixed with the core so a light halo cannot wash out to white. */
         .presence-ring::after {
             box-shadow:
-                0 0 0 16px color-mix(in srgb, var(--presence-halo) 70%, transparent),
-                0 0 48px 16px var(--presence-halo),
-                0 0 90px 28px color-mix(in srgb, var(--presence-halo) 45%, transparent);
+                0 0 0 14px color-mix(in srgb, var(--presence-halo) 75%, var(--presence-core)),
+                0 0 32px 12px color-mix(in srgb, var(--presence-halo) 70%, var(--presence-core)),
+                0 0 56px 18px color-mix(in srgb, var(--presence-core) 55%, var(--presence-halo));
             animation: presenceBreathB var(--presence-dur-b) var(--presence-ease) infinite;
         }
         @keyframes presenceBreathA {
@@ -875,8 +877,9 @@
         body[data-state="thinking"] .presence-ring {
             animation: thinkingHaloDrift 9s var(--presence-ease) infinite;
         }
+        /* Drift stays in cool blue-grey / sage. #CFEEFD is only a faint tint, never a white ring. */
         @keyframes thinkingHaloDrift {
-            0%, 100% { --presence-halo: #CFEEFD; }
+            0%, 100% { --presence-halo: #8AA3B0; }
             50% { --presence-halo: #78856E; }
         }
 
@@ -886,10 +889,55 @@
             border-width: 7px;
             border-style: solid;
             border-color: var(--presence-core);
+            /* Hard core ring first, then a halo mixed with the core — no pale 5px wash against the border. */
             box-shadow:
-                0 0 0 5px color-mix(in srgb, var(--presence-halo) 80%, transparent),
-                0 0 24px 6px color-mix(in srgb, var(--presence-core) 75%, transparent);
+                0 0 0 3px var(--presence-core),
+                0 0 0 8px color-mix(in srgb, var(--presence-halo) 65%, var(--presence-core)),
+                0 0 22px 6px color-mix(in srgb, var(--presence-core) 80%, #000);
             transition: border-color 600ms var(--presence-ease), box-shadow 600ms var(--presence-ease);
+        }
+
+        /* Replying: the 7px border is solid chili red at a glance; halo is warm ember mixed with red, never white. */
+        body[data-state="replying"] .presence-frame .viewport-screen {
+            border-color: #D9452B;
+            /* 7px solid chili red plus a 5px red echo, then ember — red reads first at a glance. */
+            box-shadow:
+                0 0 0 5px #D9452B,
+                0 0 0 11px #F2A65A,
+                0 0 28px 8px color-mix(in srgb, #D9452B 70%, #F2A65A);
+        }
+        body[data-state="replying"] .presence-ring::before {
+            box-shadow:
+                0 0 0 8px #D9452B,
+                0 0 26px 10px #D9452B,
+                0 0 50px 16px color-mix(in srgb, #D9452B 80%, #F2A65A);
+        }
+        body[data-state="replying"] .presence-ring::after {
+            box-shadow:
+                0 0 0 14px color-mix(in srgb, #F2A65A 70%, #D9452B),
+                0 0 34px 12px color-mix(in srgb, #F2A65A 65%, #D9452B),
+                0 0 58px 18px color-mix(in srgb, #D9452B 60%, #F2A65A);
+        }
+
+        /* Thinking: solid mist-blue border, cool blue-grey halo — distinct from Standby green and Replying red. */
+        body[data-state="thinking"] .presence-frame .viewport-screen {
+            border-color: #9AB1BF;
+            box-shadow:
+                0 0 0 3px #9AB1BF,
+                0 0 0 9px color-mix(in srgb, #7E96A3 70%, #9AB1BF),
+                0 0 24px 7px color-mix(in srgb, #9AB1BF 80%, #1a2428);
+        }
+        body[data-state="thinking"] .presence-ring::before {
+            box-shadow:
+                0 0 0 8px #9AB1BF,
+                0 0 24px 8px #9AB1BF,
+                0 0 44px 14px color-mix(in srgb, #9AB1BF 80%, #7E96A3);
+        }
+        body[data-state="thinking"] .presence-ring::after {
+            box-shadow:
+                0 0 0 14px color-mix(in srgb, var(--presence-halo) 70%, #9AB1BF),
+                0 0 30px 12px color-mix(in srgb, var(--presence-halo) 65%, #9AB1BF),
+                0 0 50px 16px color-mix(in srgb, #9AB1BF 55%, var(--presence-halo));
         }
 
         .presence-status {
