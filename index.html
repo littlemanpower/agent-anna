@@ -346,6 +346,11 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .ticker-track, .status-dot, .mic-btn.listening { animation: none !important; }
+            html { scroll-behavior: auto !important; }
+            .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+            .nav-chip:hover, .flavor-card:hover, .scene-card:hover, .feature-card:hover, .agent-hud-card:hover, .site-nav a:hover {
+                transform: none !important;
+            }
         }
 
         /* ---------- Portal hero (page scrolls; app below) ---------- */
@@ -483,7 +488,9 @@
         .scene-white { background-image: var(--img-hero); }
         .scene-gold { background-image: var(--img-gold); }
         .scene-tea { background-image: var(--img-tea); }
-        .scene-card figcaption { position: absolute; left: 16px; right: 16px; bottom: 14px; font-family: var(--font-brand); font-weight: 600; font-size: 16px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.7); }
+        .scene-card figcaption, .scene-card .scene-caption { position: absolute; left: 16px; right: 16px; bottom: 14px; font-family: var(--font-brand); font-weight: 600; font-size: 16px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.7); display: block; }
+        .scene-card .scene-kicker { position: absolute; left: 16px; right: 16px; bottom: 36px; z-index: 1; }
+        .scene-card .scene-caption { z-index: 1; }
         .scene-kicker { display: block; font-size: 10.5px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
         .matrix-visual-container {
             background:
@@ -550,6 +557,125 @@
         @media (max-width: 960px) { .flavor-grid { grid-template-columns: 1fr; } .flavor-card { min-height: 0; } .flavor-card img { height: 140px; } }
         @media (max-width: 860px) { .brand-logo { width: 60px; height: 60px; } .feature-card .bottle-shot { max-height: 150px; } }
 
+
+        /* ---------- Come alive: sticky nav, destinations, hover/press, reveal ---------- */
+        html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+        .site-nav {
+            position: sticky; top: 32px; z-index: 10000;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;
+            padding: 8px max(16px, calc((100% - 1360px) / 2));
+            background: rgba(8, 4, 4, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
+        }
+        .site-nav a {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 11px; border-radius: 999px; text-decoration: none; cursor: pointer;
+            font-family: var(--font-brand); font-size: 11.5px; font-weight: 600; letter-spacing: 0.3px;
+            color: var(--text-light); background: var(--bg-surface); border: 1px solid var(--line);
+            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+        }
+        .site-nav a:hover { border-color: var(--flame); color: var(--flame); transform: translateY(-1px); }
+        .site-nav a:active { transform: translateY(0); }
+        .site-nav a.is-active {
+            border-color: var(--gold); color: var(--gold);
+            background: color-mix(in srgb, var(--gold) 12%, var(--bg-surface));
+        }
+        .site-nav a.nav-ext { color: var(--text-light); }
+        .site-nav a.nav-ext.hot {
+            background: linear-gradient(135deg, rgba(255,122,26,0.18), rgba(255,45,26,0.18));
+            border-color: rgba(255,45,26,0.5);
+        }
+        a.brand-logo-link {
+            display: inline-flex; flex-shrink: 0; border-radius: 8px; line-height: 0;
+            text-decoration: none; cursor: pointer;
+        }
+        a.brand-logo-link:hover .brand-logo { filter: drop-shadow(0 6px 16px rgba(0,0,0,.65)) drop-shadow(0 0 16px rgba(227,18,27,.55)); }
+        .credential-line a { color: var(--flame); text-decoration: none; font-weight: 700; }
+        .credential-line a:hover { text-decoration: underline; }
+        .feature-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .feature-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); box-shadow: 0 12px 28px rgba(0,0,0,.4); }
+        .feature-card:active { transform: translateY(-1px); }
+        a.feature-card { text-decoration: none; color: inherit; cursor: pointer; }
+        a.flavor-card { text-decoration: none; color: inherit; cursor: pointer; }
+        .flavor-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
+        .flavor-card:hover { border-color: color-mix(in srgb, var(--gold) 70%, var(--line)); box-shadow: 0 16px 36px rgba(0,0,0,.5); }
+        .flavor-card:active { transform: translateY(-1px); }
+        .scene-card { cursor: pointer; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        a.scene-card { display: block; text-decoration: none; color: inherit; }
+        .scene-card:hover { border-color: color-mix(in srgb, var(--gold) 70%, transparent); box-shadow: 0 16px 36px rgba(0,0,0,.55); }
+        .scene-card:active { transform: translateY(-1px); }
+        .nav-chip:active, .lazada-btn:active, .action-chip:active { transform: translateY(1px); }
+        .site-foot a:hover { text-decoration: underline; }
+        .ticker-item { color: inherit; }
+        .agent-links {
+            display: flex; gap: 5px; justify-content: center; align-items: center;
+            margin-top: 7px; position: relative; z-index: 2;
+        }
+        .agent-links a {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 1px solid var(--line); background: var(--bg-dark);
+            color: var(--text-light); text-decoration: none; font-size: 10px; line-height: 1;
+            cursor: pointer; transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+        }
+        .agent-links a:hover { border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--bg-dark)); }
+        .agent-hud-card:focus-visible, .flavor-card:focus-visible, .scene-card:focus-visible, .feature-card:focus-visible, .nav-chip:focus-visible, .site-nav a:focus-visible {
+            outline: 2px solid var(--gold); outline-offset: 2px;
+        }
+        .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.is-in { opacity: 1; transform: none; }
+        .foot-links { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 8px; }
+        .foot-links a { font-weight: 700; }
+        @media (max-width: 860px) {
+            html { scroll-padding-top: 120px; }
+            .agent-links { margin-top: 5px; }
+        }
+
+
+        /* ---------- Combined stage: agent console top-right, products alongside + underneath ---------- */
+        .portal-hero { overflow: visible; }
+        .page-stage {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .page-stage > .app-shell { margin: 0; padding: 0; max-width: none; width: 100%; min-width: 0; }
+        .page-stage .main-workspace { width: 100%; }
+        @media (min-width: 1120px) {
+            .page-stage {
+                grid-template-columns: minmax(300px, 0.82fr) minmax(620px, 1.28fr);
+                grid-template-rows: auto auto 1fr auto auto;
+                gap: 14px 20px;
+                align-items: stretch;
+            }
+            .page-stage > .hero-top { grid-column: 1; grid-row: 1; }
+            .page-stage > .nav-chips { grid-column: 1; grid-row: 2; margin-top: 0; }
+            .page-stage > .app-shell { grid-column: 2; grid-row: 1 / 4; }
+            .page-stage > .feature-cards { grid-column: 1; grid-row: 3; margin-top: 0; grid-template-columns: 1fr; }
+            .page-stage > .flavors { grid-column: 1 / -1; grid-row: 4; }
+            .page-stage > .scene-strip { grid-column: 1 / -1; grid-row: 5; }
+            .page-stage .hero-top, .page-stage .nav-chips { max-width: none; }
+            .page-stage .main-workspace {
+                height: 100%;
+                min-height: 640px;
+                max-height: none;
+            }
+            .page-stage .feature-card .bottle-shot { max-height: 150px; }
+            .page-stage .feature-card:has(.bottle-shot) { padding-right: 86px; }
+        }
+        @media (max-width: 1119px) {
+            .page-stage .main-workspace { height: auto; min-height: 0; max-height: none; }
+            .page-stage .feature-cards { margin-top: 0; }
+        }
+        @media (min-width: 1120px) and (max-width: 1320px) {
+            .page-stage .viewport-screen { width: 210px; height: 210px; }
+            .page-stage .matrix-visual-container { min-height: 280px; }
+        }
+
     </style>
 </head>
 <body class="is-standby">
@@ -557,24 +683,33 @@
     <!-- LIVE COINGECKO & DOGGY MARKET TICKER BAR WITH LIVE LINKS -->
     <div class="financial-ticker-bar">
         <div class="ticker-track" id="ticker-track">
-            <a class="ticker-item" href="https://doggy.market/shi*" target="_blank"><span class="ticker-label">SHI* (DRC20):</span><span class="ticker-val" id="t-shi">$0.00000076</span></a>
-            <a class="ticker-item" href="https://doggy.market/2pay" target="_blank"><span class="ticker-label">2pay (DRC20):</span><span class="ticker-val" id="t-2pay">1.337T</span></a>
-            <span class="ticker-item"><span class="ticker-label">BTC:</span><span class="ticker-val" id="t-btc">$98,450.00</span></span>
-            <span class="ticker-item"><span class="ticker-label">ETH:</span><span class="ticker-val" id="t-eth">$2,850.00</span></span>
-            <span class="ticker-item"><span class="ticker-label">SOL:</span><span class="ticker-val" id="t-sol">$142.85</span></span>
-            <span class="ticker-item"><span class="ticker-label">DOGE:</span><span class="ticker-val" id="t-doge">$0.1850</span></span>
+            <a class="ticker-item" href="https://doggy.market/shi*" target="_blank" rel="noopener"><span class="ticker-label">SHI* (DRC20):</span><span class="ticker-val" id="t-shi">$0.00000076</span></a>
+            <a class="ticker-item" href="https://doggy.market/2pay" target="_blank" rel="noopener"><span class="ticker-label">2pay (DRC20):</span><span class="ticker-val" id="t-2pay">1.337T</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/bitcoin" target="_blank" rel="noopener"><span class="ticker-label">BTC:</span><span class="ticker-val" id="t-btc">$98,450.00</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/ethereum" target="_blank" rel="noopener"><span class="ticker-label">ETH:</span><span class="ticker-val" id="t-eth">$2,850.00</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/solana" target="_blank" rel="noopener"><span class="ticker-label">SOL:</span><span class="ticker-val" id="t-sol">$142.85</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/dogecoin" target="_blank" rel="noopener"><span class="ticker-label">DOGE:</span><span class="ticker-val" id="t-doge">$0.1850</span></a>
             <!-- Duplicate for infinite seamless scroll -->
-            <a class="ticker-item" href="https://doggy.market/shi*" target="_blank"><span class="ticker-label">SHI* (DRC20):</span><span class="ticker-val" id="t-shi-dup">$0.00000076</span></a>
-            <a class="ticker-item" href="https://doggy.market/2pay" target="_blank"><span class="ticker-label">2pay (DRC20):</span><span class="ticker-val" id="t-2pay-dup">1.337T</span></a>
-            <span class="ticker-item"><span class="ticker-label">BTC:</span><span class="ticker-val" id="t-btc-dup">$98,450.00</span></span>
-            <span class="ticker-item"><span class="ticker-label">ETH:</span><span class="ticker-val" id="t-eth-dup">$2,850.00</span></span>
-            <span class="ticker-item"><span class="ticker-label">SOL:</span><span class="ticker-val" id="t-sol-dup">$142.85</span></span>
-            <span class="ticker-item"><span class="ticker-label">DOGE:</span><span class="ticker-val" id="t-doge-dup">$0.1850</span></span>
+            <a class="ticker-item" href="https://doggy.market/shi*" target="_blank" rel="noopener"><span class="ticker-label">SHI* (DRC20):</span><span class="ticker-val" id="t-shi-dup">$0.00000076</span></a>
+            <a class="ticker-item" href="https://doggy.market/2pay" target="_blank" rel="noopener"><span class="ticker-label">2pay (DRC20):</span><span class="ticker-val" id="t-2pay-dup">1.337T</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/bitcoin" target="_blank" rel="noopener"><span class="ticker-label">BTC:</span><span class="ticker-val" id="t-btc-dup">$98,450.00</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/ethereum" target="_blank" rel="noopener"><span class="ticker-label">ETH:</span><span class="ticker-val" id="t-eth-dup">$2,850.00</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/solana" target="_blank" rel="noopener"><span class="ticker-label">SOL:</span><span class="ticker-val" id="t-sol-dup">$142.85</span></a>
+            <a class="ticker-item" href="https://www.coingecko.com/en/coins/dogecoin" target="_blank" rel="noopener"><span class="ticker-label">DOGE:</span><span class="ticker-val" id="t-doge-dup">$0.1850</span></a>
         </div>
     </div>
 
+    <nav class="site-nav" id="site-nav" aria-label="Page sections">
+        <a href="#top" data-section="top">Home</a>
+        <a href="#sauces" data-section="sauces">Sauces</a>
+        <a href="#scenes" data-section="scenes">Thailand</a>
+        <a href="#crew" data-section="crew">Crew &amp; Chat</a>
+        <a class="nav-ext" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Lazada Shop</a>
+        <a class="nav-ext hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
+    </nav>
+
     <!-- PORTAL HERO -->
-    <header class="portal-hero">
+    <header class="portal-hero" id="top">
         <svg class="wat-art" viewBox="0 0 420 190" aria-hidden="true">
                 <defs>
                     <radialGradient id="sun-g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff4a2a"/><stop offset=".6" stop-color="#e3121b"/><stop offset="1" stop-color="#e3121b" stop-opacity="0"/></radialGradient>
@@ -616,9 +751,10 @@
                 </g>
                 <path d="M0 184H420" stroke="#d9a84a" stroke-opacity=".5"/>
             </svg>
+        <div class="page-stage">
         <div class="hero-top">
             <div class="brand-lockup">
-                <svg class="brand-logo" viewBox="0 0 200 200" role="img" aria-label="Cool Hot Sauce Thailand 100ML logo"><defs><clipPath id="lgc"><circle cx="100" cy="108" r="40"/></clipPath>
+                <a class="brand-logo-link" href="https://coolhotsauce.com" target="_blank" rel="noopener" title="CoolHotSauce.com"><svg class="brand-logo" viewBox="0 0 200 200" role="img" aria-label="Cool Hot Sauce Thailand 100ML logo"><defs><clipPath id="lgc"><circle cx="100" cy="108" r="40"/></clipPath>
 <linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a8"/><stop offset=".45" stop-color="#e2b23c"/><stop offset="1" stop-color="#9a6a12"/></linearGradient></defs><polygon points="100,4 196,100 100,196 4,100" fill="#fff" stroke="#111" stroke-width="5" stroke-linejoin="round"/>
 <g clip-path="url(#lgc)"><rect x="50" y="68" width="100" height="14" fill="#e3121b"/><rect x="50" y="81" width="100" height="14" fill="#fff"/><rect x="50" y="94" width="100" height="28" fill="#2d2a8f"/><rect x="50" y="121" width="100" height="14" fill="#fff"/><rect x="50" y="134" width="100" height="14" fill="#e3121b"/></g>
 <circle cx="100" cy="108" r="40" fill="none" stroke="url(#lgg)" stroke-width="6"/>
@@ -627,74 +763,31 @@
 <text x="100" y="50" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="14" fill="#111" letter-spacing="1">THAILAND</text>
 <text x="100" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="11" fill="#111">100ML</text>
 <text transform="translate(17 107) rotate(45)" font-family="Arial, sans-serif" font-weight="700" font-size="4.7" fill="#111">THE COOLEST HOT SAUCE MADE IN THAILAND</text>
-<text transform="translate(109 183) rotate(-45)" font-family="Arial, sans-serif" font-weight="700" font-size="4.7" fill="#111">WARNING: <tspan fill="#e3121b">NOT HOT HOT</tspan>  COOLHOTSAUCE.COM</text></svg>
+<text transform="translate(109 183) rotate(-45)" font-family="Arial, sans-serif" font-weight="700" font-size="4.7" fill="#111">WARNING: <tspan fill="#e3121b">NOT HOT HOT</tspan>  COOLHOTSAUCE.COM</text></svg></a>
                 <div class="brand-text">
                     <h1>AGENT ANNA <span class="h1-sep">//</span> <span class="h1-hot">COOL HOT SAUCE</span></h1>
                     <div class="thai-sub">สวัสดีค่ะ &nbsp;·&nbsp; Welcome to the Land of Smiles 🪷</div>
-                    <div class="credential-line"><b>Thailand National Hot Sauce Brand</b> &bull; World Famous 100ml &bull; Built by Mr. Preach X</div>
+                    <div class="credential-line"><b>Thailand National Hot Sauce Brand</b> &bull; World Famous 100ml &bull; Built by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a></div>
                 </div>
             </div>
         </div>
         <nav class="nav-chips" aria-label="Links">
             <a class="nav-chip hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
+            <a class="nav-chip" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
             <a class="nav-chip" href="https://x.com/coolhotsauce" target="_blank" rel="noopener">𝕏 @CoolHotSauce</a>
             <a class="nav-chip" href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">▶️ YouTube @LittleManPower369</a>
             <a class="nav-chip" href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">🎵 TikTok @mr.preachx</a>
             <a class="nav-chip" href="https://x.com/LittleManPower" target="_blank" rel="noopener">𝕏 @LittleManPower</a>
+            <a class="nav-chip" href="#sauces">🌶️ The Sauces</a>
+            <a class="nav-chip" href="#crew">💬 Meet the crew</a>
             <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
             <div class="status-bar-indicator">
                 <div class="status-dot"></div>
                 <span id="state-text">STANDBY</span>
             </div>
         </nav>
-        <section class="feature-cards">
-            <div class="feature-card">
-                <img class="bottle-shot" src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle">
-                <h3>🔥 Cool Hot Sauce</h3>
-                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles.</p>
-                <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
-            </div>
-            <div class="feature-card">
-                <h3>🎮 Mr. Preach X Streams</h3>
-                <p>Gamer and believer. Arc Raiders, Rob Run and more: Shorts, clips and live streams.</p>
-                <div class="feature-links"><a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a><a href="https://x.com/LittleManPower" target="_blank" rel="noopener">X</a></div>
-            </div>
-            <div class="feature-card">
-                <h3>🪷 Brand Colors</h3>
-                <p>Cool Hot Sauce red and black, trimmed in Thai temple gold. Cool on the outside, hot on the inside.</p>
-                <div class="swatches"><span class="swatch"><i style="background:#e3121b"></i>Chili Red</span><span class="swatch"><i style="background:#000"></i>Black</span><span class="swatch"><i style="background:#d9a84a"></i>Temple Gold</span></div>
-            </div>
-        </section>
-        <section class="flavors" aria-label="Cool Hot Sauce flavours">
-            <h2 class="section-title">🌶️ The Sauces <span>// ซอสพริก</span></h2>
-            <div class="flavor-grid">
-            <div class="flavor-card flavor-smoked-black">
-                <img src="assets/bottle-smoked-black.png" alt="Cool Hot Sauce Smoked Black 100ml bottle" loading="lazy">
-                <div class="flavor-info"><span class="scene-kicker">Flavour 01</span><h3>Smoked Black</h3><p>100ML &bull; Made in Thailand</p>
-                <a class="lazada-btn" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a></div>
-            </div>
-            <div class="flavor-card flavor-green-jalapeno">
-                <img src="assets/bottle-green-jalapeno.png" alt="Cool Hot Sauce Green Jalapeño 100ml bottle" loading="lazy">
-                <div class="flavor-info"><span class="scene-kicker">Flavour 02</span><h3>Green Jalapeño</h3><p>100ML &bull; Made in Thailand</p>
-                <a class="lazada-btn" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a></div>
-            </div>
-            <div class="flavor-card flavor-red-thai-chili">
-                <img src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle" loading="lazy">
-                <div class="flavor-info"><span class="scene-kicker">Flavour 03</span><h3>Red Thai Chili</h3><p>100ML &bull; Made in Thailand</p>
-                <a class="lazada-btn" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a></div>
-            </div>
-            </div>
-        </section>
-        <section class="scene-strip" aria-label="Scenes of Thailand">
-            <figure class="scene-card scene-white"><figcaption><span class="scene-kicker">Chiang Rai</span>White Temple · Wat Rong Khun</figcaption></figure>
-            <figure class="scene-card scene-gold"><figcaption><span class="scene-kicker">Chiang Rai</span>Golden building · Wat Rong Khun</figcaption></figure>
-            <figure class="scene-card scene-tea"><figcaption><span class="scene-kicker">Chiang Rai</span>Hills &amp; tea farms</figcaption></figure>
-        </section>
-        <div class="kanok-strip"></div>
-    </header>
-
-    <!-- MAIN WORKSPACE -->
-    <div class="app-shell">
+        <!-- AGENT CONSOLE (top right on desktop; first after header on mobile) -->
+    <div class="app-shell reveal" id="crew">
     <div class="main-workspace">
         <div class="matrix-command-pane">
 
@@ -712,20 +805,29 @@
             </div>
 
             <div class="agents-matrix-grid">
-                <div class="agent-hud-card active-node" id="card-AA01" onclick="switchAgent('AA01')">
+                <div class="agent-hud-card active-node" id="card-AA01" role="button" tabindex="0" onclick="selectAgentAndChat('AA01')">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="AA01">
                     <h5>AA01 // ANNA</h5>
                     <p>Core & Telemetry</p>
                 </div>
-                <div class="agent-hud-card" id="card-AA02" onclick="switchAgent('AA02')">
+                <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
                     <img src="assets/preach.jpg" alt="AA02">
                     <h5>AA02 // MR. PREACH X</h5>
                     <p>Founder & Gamer</p>
+                    <div class="agent-links" onclick="event.stopPropagation()">
+                        <a href="https://x.com/LittleManPower" target="_blank" rel="noopener" title="Mr. Preach X on X" aria-label="Mr. Preach X on X">𝕏</a>
+                        <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener" title="YouTube @LittleManPower369" aria-label="YouTube @LittleManPower369">▶</a>
+                        <a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener" title="TikTok @mr.preachx" aria-label="TikTok @mr.preachx">♪</a>
+                    </div>
                 </div>
-                <div class="agent-hud-card" id="card-AA04" onclick="switchAgent('AA04')">
+                <div class="agent-hud-card" id="card-AA04" role="button" tabindex="0" onclick="selectAgentAndChat('AA04')">
                     <img src="assets/martin.jpg" alt="AA04">
                     <h5>AA04 // MARTIN STRAYD</h5>
                     <p>Music & Strayd</p>
+                    <div class="agent-links" onclick="event.stopPropagation()">
+                        <a href="https://x.com/suzukistrayd" target="_blank" rel="noopener" title="Martin Strayd on X" aria-label="Martin Strayd on X">𝕏</a>
+                        <a href="https://github.com/suzukistrayd" target="_blank" rel="noopener" title="Martin Strayd on GitHub" aria-label="Martin Strayd on GitHub">GH</a>
+                    </div>
                 </div>
              </div>
 
@@ -741,7 +843,7 @@
             </div>
         </div>
 
-        <div class="chat-console-pane">
+        <div class="chat-console-pane" id="chat">
             <div class="chat-header">
                 <span id="console-header-label">CONSOLE [AA01 // TELECOM LINE]</span>
                 <span id="latency-display" style="font-size:10px; color:var(--text-muted);">LATENCY: 0.00s</span>
@@ -802,8 +904,74 @@
         </div>
     </div>
     </div>
+        <section class="feature-cards" id="features">
+            <div class="feature-card reveal">
+                <img class="bottle-shot" src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle">
+                <h3>🔥 Cool Hot Sauce</h3>
+                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles.</p>
+                <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
+            </div>
+            <div class="feature-card reveal">
+                <h3>🎮 Mr. Preach X Streams</h3>
+                <p>Gamer and believer. Arc Raiders, Rob Run and more: Shorts, clips and live streams.</p>
+                <div class="feature-links"><a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a><a href="https://x.com/LittleManPower" target="_blank" rel="noopener">X</a></div>
+            </div>
+            <a class="feature-card reveal" href="#sauces">
+                <h3>🪷 Brand Colors</h3>
+                <p>Cool Hot Sauce red and black, trimmed in Thai temple gold. Cool on the outside, hot on the inside.</p>
+                <div class="swatches"><span class="swatch"><i style="background:#e3121b"></i>Chili Red</span><span class="swatch"><i style="background:#000"></i>Black</span><span class="swatch"><i style="background:#d9a84a"></i>Temple Gold</span></div>
+            </a>
+        </section>
+        <section class="flavors" id="sauces" aria-label="Cool Hot Sauce flavours">
+            <h2 class="section-title">🌶️ The Sauces <span>// ซอสพริก</span></h2>
+            <div class="flavor-grid">
+            <a class="flavor-card flavor-smoked-black reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Smoked Black — Buy on Lazada">
+                <img src="assets/bottle-smoked-black.png" alt="Cool Hot Sauce Smoked Black 100ml bottle" loading="lazy">
+                <div class="flavor-info"><span class="scene-kicker">Flavour 01</span><h3>Smoked Black</h3><p>100ML &bull; Made in Thailand</p>
+                <span class="lazada-btn">🛒 Buy on Lazada</span></div>
+            </a>
+            <a class="flavor-card flavor-green-jalapeno reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Green Jalapeño — Buy on Lazada">
+                <img src="assets/bottle-green-jalapeno.png" alt="Cool Hot Sauce Green Jalapeño 100ml bottle" loading="lazy">
+                <div class="flavor-info"><span class="scene-kicker">Flavour 02</span><h3>Green Jalapeño</h3><p>100ML &bull; Made in Thailand</p>
+                <span class="lazada-btn">🛒 Buy on Lazada</span></div>
+            </a>
+            <a class="flavor-card flavor-red-thai-chili reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Red Thai Chili — Buy on Lazada">
+                <img src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle" loading="lazy">
+                <div class="flavor-info"><span class="scene-kicker">Flavour 03</span><h3>Red Thai Chili</h3><p>100ML &bull; Made in Thailand</p>
+                <span class="lazada-btn">🛒 Buy on Lazada</span></div>
+            </a>
+            </div>
+        </section>
+        <section class="scene-strip" id="scenes" aria-label="Scenes of Thailand">
+            <a class="scene-card scene-white reveal" href="https://en.wikipedia.org/wiki/Wat_Rong_Khun" target="_blank" rel="noopener">
+                <span class="scene-kicker">Chiang Rai</span>
+                <span class="scene-caption">White Temple · Wat Rong Khun</span>
+            </a>
+            <a class="scene-card scene-gold reveal" href="https://en.wikipedia.org/wiki/Wat_Rong_Khun" target="_blank" rel="noopener">
+                <span class="scene-kicker">Chiang Rai</span>
+                <span class="scene-caption">Golden building · Wat Rong Khun</span>
+            </a>
+            <a class="scene-card scene-tea reveal" href="https://en.wikipedia.org/wiki/Chiang_Rai_province" target="_blank" rel="noopener">
+                <span class="scene-kicker">Chiang Rai</span>
+                <span class="scene-caption">Hills &amp; tea farms</span>
+            </a>
+        </section>
+        </div>
+        <div class="kanok-strip"></div>
+    </header>
+
+
     <div class="kanok-strip"></div>
-    <footer class="site-foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only<details class="photo-credits"><summary>Photo credits</summary>
+    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only
+        <div class="foot-links">
+            <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a>
+            <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>
+            <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a>
+            <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a>
+            <a href="https://x.com/suzukistrayd" target="_blank" rel="noopener">Martin on X</a>
+            <a href="https://github.com/suzukistrayd" target="_blank" rel="noopener">Martin on GitHub</a>
+        </div><details class="photo-credits"><summary>Photo credits</summary>
         White Temple, Wat Rong Khun: <a href="https://commons.wikimedia.org/wiki/File:Chiang_Rai_-_Wat_Rong_Khun_%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%B8%E0%B9%88%E0%B8%99_(2026)_-_img_11.jpg" target="_blank" rel="noopener">Chainwit.</a>, <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener">CC BY 4.0</a> &bull;
         Hills &amp; tea farms of Chiang Rai: <a href="https://commons.wikimedia.org/wiki/File:Hills_%26_tea_farms_of_Chiang_Rai_(18197802634).jpg" target="_blank" rel="noopener">cloud.shepherd</a>, <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a> &bull;
         Wat Rong Khun golden building: <a href="https://commons.wikimedia.org/wiki/File:Wat_Rong_Khun_golden_toilet_building.JPG" target="_blank" rel="noopener">BrokenSphere</a>, <a href="https://creativecommons.org/licenses/by/3.0" target="_blank" rel="noopener">CC BY 3.0</a> &bull;
@@ -848,6 +1016,7 @@
                 loadVoices();
                 window.speechSynthesis.onvoiceschanged = loadVoices;
             }
+            initPageMotion();
         });
 
         function loadVoices() {
@@ -956,6 +1125,52 @@
             let idx = AGENT_KEYS.indexOf(currentAgentId);
             idx = (idx + 1) % AGENT_KEYS.length;
             switchAgent(AGENT_KEYS[idx]);
+        }
+
+        function prefersReducedMotion() {
+            return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+        function scrollToChatAndFocus() {
+            const target = document.getElementById('chat') || document.getElementById('user-input');
+            if (target) target.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+            const input = document.getElementById('user-input');
+            if (input) setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }, prefersReducedMotion() ? 0 : 420);
+        }
+        function selectAgentAndChat(id) {
+            switchAgent(id);
+            scrollToChatAndFocus();
+        }
+        function initPageMotion() {
+            const reveals = document.querySelectorAll('.reveal');
+            if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
+                reveals.forEach(el => el.classList.add('is-in'));
+            } else {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); } });
+                }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+                reveals.forEach(el => io.observe(el));
+            }
+            const updateActiveNav = () => {
+                const offset = 96;
+                let current = 'top';
+                for (const id of ['top', 'sauces', 'scenes', 'crew']) {
+                    const el = document.getElementById(id);
+                    if (el && el.getBoundingClientRect().top - offset <= 0) current = id;
+                }
+                document.querySelectorAll('.site-nav a[data-section]').forEach(a => {
+                    a.classList.toggle('is-active', a.getAttribute('data-section') === current);
+                });
+            };
+            updateActiveNav();
+            window.addEventListener('scroll', updateActiveNav, { passive: true });
+            document.querySelectorAll('.agent-hud-card[role="button"]').forEach(card => {
+                card.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        card.click();
+                    }
+                });
+            });
         }
 
         async function triggerCryptoMarket(isManual = true) {
@@ -1427,7 +1642,7 @@ ${annaRules}`,
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
         function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); BRIDGE_BASE = document.getElementById('bridge-url').value.trim().replace(/\/+$/, ''); localStorage.setItem('bridge_url', BRIDGE_BASE); toggleSettings(); showNotice("Credentials Secured."); }
-        function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; sendMessage(); }
+        function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; scrollToChatAndFocus(); sendMessage(); }
         function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
 </body>
