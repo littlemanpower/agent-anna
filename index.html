@@ -171,7 +171,7 @@
         .phonebook-select:hover { border-color: var(--state-color); }
 
         .agents-matrix-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-shrink: 0;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex-shrink: 0;
         }
         .agent-hud-card {
             background: var(--bg-surface); border: 1px solid var(--line); border-radius: var(--radius);
@@ -316,7 +316,7 @@
 
         /* ---------- Responsive ---------- */
         @media (max-width: 1100px) {
-            .agents-matrix-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .agents-matrix-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .agent-hud-card p { display: none; }
         }
         @media (max-width: 860px) {
@@ -326,7 +326,7 @@
             .chat-console-pane { width: 100%; height: 92vh; height: 92dvh; }
             .brand-text h1 { font-size: 21px; }
             .brand-logo { width: 38px; height: 38px; }
-            .agents-matrix-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+            .agents-matrix-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .agent-hud-card { padding: 8px 4px; }
             .agent-hud-card img { width: 34px; height: 34px; }
             .agent-hud-card h5 { font-size: 9px; }
@@ -699,14 +699,13 @@
         <div class="matrix-command-pane">
 
             <div class="phonebook-bar">
-                <div class="phonebook-title">🪷 ANNA&#39;S CREW // 4 AGENTS</div>
+                <div class="phonebook-title">🪷 ANNA&#39;S CREW // 3 AGENTS</div>
                 <div class="phonebook-controls">
                     <button class="ctrl-btn military-btn" onclick="prevAgent()">◀ PREV</button>
                     <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
                         <option value="AA01">AA01 // ANNA (Master Core)</option>
-                        <option value="AA02">AA02 // FIN (Treasury & DRC-20)</option>
-                        <option value="AA04">AA04 // SOCIAL (Comms Dispatch)</option>
-                        <option value="AA05">AA05 // SCRAPE (Intel Bridge)</option>
+                        <option value="AA02">AA02 // MR. PREACH X (Founder)</option>
+                        <option value="AA04">AA04 // MARTIN STRAYD (Music)</option>
                     </select>
                     <button class="ctrl-btn military-btn" onclick="nextAgent()">NEXT ▶</button>
                 </div>
@@ -719,21 +718,16 @@
                     <p>Core & Telemetry</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA02" onclick="switchAgent('AA02')">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60" alt="AA02">
-                    <h5>AA02 // FIN</h5>
-                    <p>DRC-20 & Treasury</p>
+                    <img src="assets/preach.jpg" alt="AA02">
+                    <h5>AA02 // MR. PREACH X</h5>
+                    <p>Founder & Gamer</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA04" onclick="switchAgent('AA04')">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60" alt="AA04">
-                    <h5>AA04 // SOCIAL</h5>
-                    <p>Email & Comms Hub</p>
+                    <img src="assets/martin.jpg" alt="AA04">
+                    <h5>AA04 // MARTIN STRAYD</h5>
+                    <p>Music & Strayd</p>
                 </div>
-                <div class="agent-hud-card" id="card-AA05" onclick="switchAgent('AA05')">
-                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60" alt="AA05">
-                    <h5>AA05 // SCRAPE</h5>
-                    <p>Web Intel & Bridge</p>
-                </div>
-            </div>
+             </div>
 
             <div class="matrix-visual-container">
                 <canvas id="wav-canvas"></canvas>
@@ -827,9 +821,8 @@
         let currentAgentId = "AA01";
         const AGENTS = {
             "AA01": { title: "AGENT ANNA 01 // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
-            "AA02": { title: "AGENT ANNA 02 // TREASURY ENGINE", role: "DRC-20 & Treasury Ratios", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60" },
-            "AA04": { title: "AGENT ANNA 04 // SOCIAL DISPATCH", role: "Email & Comms Hub", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60" },
-            "AA05": { title: "AGENT ANNA 05 // INTEL SCRAPE", role: "Web Scrape & Bridge Node", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60" }
+            "AA02": { title: "MR. PREACH X // FOUNDER", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
+            "AA04": { title: "MARTIN STRAYD // MUSIC", role: "Musician & Music Archives", img: "assets/martin.jpg" },
         };
 
         const AGENT_KEYS = Object.keys(AGENTS);
@@ -1026,7 +1019,7 @@
         async function scrapeWebPage() {
             if (!bridgeReady()) return;
             setMoodState('scraping');
-            showNotice("AA05 EXECUTING GOOGLE INTEL EXTRACTION...");
+            showNotice("ANNA EXECUTING GOOGLE INTEL EXTRACTION...");
             
             let userInput = document.getElementById('user-input').value.trim();
             if (!userInput) {
@@ -1057,12 +1050,12 @@
                     `${rawPayload.trim()}\n\n` +
                     `[STATUS]: Clean research data captured. Click "SUMMARIZE" below to generate military-grade press release.`;
                 
-                appendMsg(report, 'assistant', `AA05 [Google Clean Scrape]`);
+                appendMsg(report, 'assistant', `AA01 [Google Clean Scrape]`);
                 speakText("Google research intel successfully acquired.");
             } catch (err) {
                 setMoodState('standby');
                 showNotice("BRIDGE ERROR: Verify bridge.ps1 is active!");
-                appendMsg(`[AA05 BRIDGE ERROR]: Unable to acquire clean research.\nDetails: ${err.message}`, 'assistant', `AA05 [Connection Error]`);
+                appendMsg(`[ANNA BRIDGE ERROR]: Unable to acquire clean research.\nDetails: ${err.message}`, 'assistant', `AA01 [Connection Error]`);
             }
         }
 
@@ -1077,7 +1070,7 @@
                     `═══════════════════════════════════════════════════════════\n` +
                     `1. Bridge Endpoint: ` + BRIDGE_BASE + (BRIDGE_BASE ? ' (configured, not verified)' : ' (not configured)') + `\n` +
                     `2. Repository Hub: littlemanpower/agent-anna (GitHub Pages Deployment)\n` +
-                    `3. Agents: AA01 Anna, AA02 Fin, AA04 Social, AA05 Scrape (4 agents)\n` +
+                    `3. Agents: AA01 Anna, AA02 Mr. Preach X, AA04 Martin Strayd (3 agents)\n` +
                     `4. Financial Core: 4-Person Streamlined Treasury Team\n` +
                     `5. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
                     `[DIAGNOSTIC STATUS]: All subsystem nodes nominal. Report is static; use SERVER UPLINK to actually test the bridge.`;
@@ -1160,9 +1153,12 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
 - STRICT ANTI-HALLUCINATION: never invent prices, ingredients, heat levels, shipping times, awards, or facts not listed here. If you don't know, say so in a few words and point to the Lazada shop or coolhotsauce.com.`;
             const personas = {
                 AA01: `You are roleplaying purely as AGENT ANNA, the Cool Hot Sauce guru from Thailand. Your name is strictly Agent Anna. Warm, playful, confident, a little spicy. Help people pick a flavour, pair it with food, and buy it on Lazada.\n\n${annaRules}`,
-                AA02: `You are roleplaying purely as FIN, Agent Anna's money and orders sidekick at Cool Hot Sauce. Explain buying on Lazada and simple price questions in plain words. Never give financial advice or invent numbers.\n\n${annaRules}`,
-                AA04: `You are roleplaying purely as SOCIAL, Agent Anna's social media sidekick at Cool Hot Sauce. Write short, catchy, truthful posts, captions and hashtags. You only draft; never claim anything was posted.\n\n${annaRules}`,
-                AA05: `You are roleplaying purely as SCRAPE, Agent Anna's research sidekick at Cool Hot Sauce. Summarize what you're given clearly and factually, and say plainly when you don't know.\n\n${annaRules}`
+                AA02: `You are roleplaying purely as MR. PREACH X, founder of Cool Hot Sauce and the gamer and streamer behind @LittleManPower on X (Arc Raiders, Rob Run, CS2). Your name is strictly Mr. Preach X. Laid-back, real, funny, a believer who keeps it humble. Talk about the sauces, gaming and the streams. Never invent stats, schedules or personal details.
+
+${annaRules}`,
+                AA04: `You are roleplaying purely as MARTIN STRAYD, a musician and teammate of Agent Anna and Mr. Preach X. Your name is strictly Martin Strayd. Calm, creative, friendly. Talk about music and the team. STRICT: never invent song titles, releases, dates or personal details; if you don't know, say so.
+
+${annaRules}`,
             };
             window.annaHistory = window.annaHistory || {};
             const hist = (window.annaHistory[currentAgentId] = window.annaHistory[currentAgentId] || []);
@@ -1262,7 +1258,14 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
                 if (!voices || voices.length === 0) voices = cachedVoices;
 
                 // Pick the most natural-sounding female voice the device offers (neural voices first).
-                const ranked = [
+                const maleAgent = (currentAgentId === 'AA02' || currentAgentId === 'AA04');
+                const maleRanked = [
+                    /Andrew.*(Online|Natural|Multilingual)/i, /Brian.*(Online|Natural|Multilingual)/i, /Guy.*(Online|Natural)/i,
+                    /Christopher.*(Online|Natural)/i, /Ryan.*(Online|Natural)/i, /Eric.*(Online|Natural)/i, /Davis.*(Online|Natural)/i,
+                    /Daniel \((Premium|Enhanced)\)/i, /Evan \((Premium|Enhanced)\)/i, /Google UK English Male/i,
+                    /^Daniel\b/i, /^Alex\b/i, /^Aaron\b/i, /David/i, /Mark/i, /\bmale\b/i
+                ];
+                const ranked = maleAgent ? maleRanked : [
                     /Ava.*(Online|Natural|Multilingual)/i, /Emma.*(Online|Natural|Multilingual)/i, /Jenny.*(Online|Natural)/i,
                     /Aria.*(Online|Natural)/i, /Sonia.*(Online|Natural)/i, /Libby.*(Online|Natural)/i, /Natasha.*(Online|Natural)/i,
                     /Michelle.*(Online|Natural)/i, /(Female|Woman).*(Online|Natural)/i,
@@ -1272,8 +1275,9 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
                 ];
                 const en = voices.filter(v => v.lang && /^en/i.test(v.lang));
                 let voice = null;
-                for (const re of ranked) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
-                if (!voice) voice = en.find(v => /female/i.test(v.name)) || en[0] || voices[0];
+                const pool = (currentAgentId === 'AA04') ? [...ranked.slice(1), ranked[0]] : ranked;
+                for (const re of pool) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
+                if (!voice) voice = en.find(v => (maleAgent ? /\bmale\b/i : /female/i).test(v.name)) || en[0] || voices[0];
                 const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced)/i.test(voice.name);
 
                 // Speak sentence by sentence so she breathes between thoughts instead of rushing.
@@ -1282,8 +1286,8 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
                     const utterance = new SpeechSynthesisUtterance(part);
                     if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
                     // Neural voices already sound human, so only a light touch; classic voices get a bit more warmth.
-                    utterance.pitch = isNeural ? 1.04 : 1.12;
-                    utterance.rate = isNeural ? 0.97 : 0.92;
+                    utterance.pitch = maleAgent ? (isNeural ? 0.98 : 0.92) : (isNeural ? 1.04 : 1.12);
+                    utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
                     if (i === parts.length - 1) {
                         utterance.onend = () => setMoodState('standby');
