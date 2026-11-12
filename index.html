@@ -816,8 +816,36 @@
             .voice-talker { margin-left: 0; width: 100%; }
             .voice-talk-btn { width: 100%; justify-content: center; }
         }
+        .voice-level {
+            display: inline-flex; width: 12px; height: 10px; align-items: flex-end;
+            flex-shrink: 0;
+        }
+        .voice-level i {
+            display: block; width: 100%; height: 100%;
+            background: currentColor; border-radius: 1px;
+            transform-origin: bottom center;
+            transform: scaleY(var(--voice-level, 0.22));
+            opacity: 0.85;
+        }
+        .voice-type-note {
+            display: none; font-size: 11px; color: var(--gold);
+            letter-spacing: 0.2px; font-weight: 600;
+        }
+        .voice-type-note.is-on { display: block; }
+        .anna-opening-meta {
+            margin-top: 8px; font-size: 11px; color: var(--text-muted);
+            display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center;
+        }
+        .anna-forget-link {
+            background: none; border: 0; padding: 0; color: var(--gold);
+            cursor: pointer; font-size: 11px; text-decoration: underline;
+            font-family: inherit;
+        }
+        .anna-privacy-line { font-size: 11px; color: var(--text-muted); }
         @media (prefers-reduced-motion: reduce) {
             .voice-talk-btn, .voice-pill.is-listening, .voice-pill.is-speaking { box-shadow: none; }
+            .voice-level { display: none !important; }
+            .voice-level i { transform: none; }
         }
 
 
@@ -1316,7 +1344,7 @@
 
             <div class="voice-call-bar" id="voice-call-bar">
                 <button type="button" class="voice-talk-btn" id="voice-talk-btn" onclick="toggleVoiceMode()" aria-pressed="false">🎙 TALK TO ANNA</button>
-                <span class="voice-pill" id="voice-pill" aria-live="polite">Idle</span>
+                <span class="voice-pill" id="voice-pill" aria-live="polite"><span class="voice-level" id="voice-level" aria-hidden="true"><i></i></span><span class="voice-pill-label" id="voice-pill-label">Idle</span></span>
                 <label class="voice-talker" for="voice-talker">Who's talking?
                     <select id="voice-talker" onchange="setVoiceTalker(this.value)">
                         <option value="preach">Mr. Preach X</option>
@@ -1345,7 +1373,11 @@
 
                 <div class="message assistant" id="msg_init">
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
-                    <div><span class="thai-hello">สวัสดีค่ะ!</span> Sawasdee ka! 🙏 I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
+                    <div class="msg-body" id="anna-opening-line">I&#39;m Anna, your Cool Hot Sauce guide. Ask me anything.</div>
+                    <div class="anna-opening-meta" id="anna-opening-meta">
+                        <button type="button" class="anna-forget-link" id="anna-forget-me">Forget me</button>
+                        <span class="anna-privacy-line">Location is approximate, from IP, used only to show the weather, and not stored.</span>
+                    </div>
                     <div class="action-row">
                         <button class="action-chip icon-chip" onclick="speakStoredMessage('msg_init')" aria-label="Speech" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
                         <button class="action-chip" onclick="copyToClipboard('msg_init', this)">COPY</button>
@@ -1367,6 +1399,7 @@
                     <textarea id="user-input" rows="1" placeholder="Message Anna... (Enter to send, Shift+Enter for a new line)" onkeydown="handleKey(event)" oninput="autosizeUserInput()" onpaste="handleClipboardPaste(event)" aria-label="Message Anna"></textarea>
                     <button type="button" class="ctrl-btn btn-hot" id="send-btn" onclick="sendMessage()">SEND 🌶️</button>
                 </div>
+                <div class="voice-type-note" id="voice-type-note" hidden>Voice chat on - end voice to type</div>
             </div>
         </div>
     </div>
@@ -1538,13 +1571,18 @@
             } catch (e) {}
         }
 
+        window.addEventListener('pointerdown', function annaPrewarmOnce() {
+            window.removeEventListener('pointerdown', annaPrewarmOnce);
+            if (typeof prewarmAudioContext === 'function') prewarmAudioContext();
+        }, { once: true, passive: true });
         window.addEventListener('DOMContentLoaded', () => {
             try { localStorage.removeItem('bridge_url'); localStorage.removeItem('gh_pat_token'); } catch (e) {}
             migrateAndClearLocalKey();
             pollTeamInbox();
             setInterval(pollTeamInbox, 60000);
             initVoiceTalker();
-            messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
+            messagePayloadStore['msg_init'] = "I'm Anna, your Cool Hot Sauce guide. Ask me anything.";
+            initAnnaOpeningLine();
             updateLocalTime();
             setInterval(updateLocalTime, 1000);
             initCanvas();
@@ -1727,7 +1765,7 @@
         let speakGen = 0;
         const TALKER_LABELS = { preach: 'Mr. Preach X', martin: 'Martin Strayd', guest: 'Guest' };
         const RELAY_NAMES = { anna: 'Anna', preach: 'Mr. Preach X', martin: 'Martin' };
-        window.VOICE_SILENCE_MS = window.VOICE_SILENCE_MS || 1200;
+        window.VOICE_SILENCE_MS = window.VOICE_SILENCE_MS || 800;
 
         function getTalkerId() {
             const sel = document.getElementById('voice-talker');
@@ -1753,7 +1791,10 @@
             if (!pill) return;
             pill.className = 'voice-pill' + (voiceModeActive || state ? ' is-visible' : '') + (state ? ' is-' + state : '');
             const labels = { listening: 'Listening', thinking: 'Thinking', speaking: 'Speaking' };
-            pill.textContent = labels[state] || (voiceModeActive ? 'Listening' : 'Idle');
+            const text = labels[state] || (voiceModeActive ? 'Listening' : 'Idle');
+            const labelEl = document.getElementById('voice-pill-label');
+            if (labelEl) labelEl.textContent = text;
+            else if (!pill.querySelector('.voice-level')) pill.textContent = text;
         }
         function setVoiceCaption(text, interim) {
             const cap = document.getElementById('voice-caption');
@@ -1774,33 +1815,388 @@
             return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
         }
 
+
+        const VOICE_MIC_CONSTRAINTS = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }, video: false };
+        window.__annaMicConstraints = VOICE_MIC_CONSTRAINTS;
+        const VOICE_MIN_ALNUM = 2;
+        const VOICE_VAD_THRESHOLD = 0.02;
+        let voiceLocksTyping = false;
+        let chatCancelForVoice = false;
+        let voiceMicStream = null;
+        let voiceMicCtx = null;
+        let voiceMicAnalyser = null;
+        let voiceMicSource = null;
+        let voiceLevelRaf = 0;
+        let voiceVadPeak = 0;
+        let pendingGreetingSpeech = null;
+
+        function syncComposerLock() {
+            const input = document.getElementById('user-input');
+            const btn = document.getElementById('send-btn');
+            const note = document.getElementById('voice-type-note');
+            const locked = !!voiceLocksTyping;
+            if (input) {
+                input.disabled = locked;
+                input.setAttribute('aria-disabled', locked ? 'true' : 'false');
+                input.placeholder = locked
+                    ? 'Voice chat on - end voice to type'
+                    : 'Message Anna... (Enter to send, Shift+Enter for a new line)';
+            }
+            if (btn) {
+                btn.disabled = locked || !!chatBusy;
+                btn.setAttribute('aria-busy', chatBusy ? 'true' : 'false');
+            }
+            if (note) {
+                note.hidden = !locked;
+                note.classList.toggle('is-on', locked);
+                note.textContent = locked ? 'Voice chat on - end voice to type' : '';
+            }
+        }
+
+        function cancelInflightTypedChat() {
+            if (typeof chatBusy === 'undefined' || !chatBusy) return Promise.resolve(false);
+            chatCancelForVoice = true;
+            try { if (chatAbort) chatAbort.abort('voice-start'); } catch (e) {}
+            return new Promise(function (resolve) { setTimeout(function () { resolve(true); }, 0); });
+        }
+
+        function prewarmAudioContext() {
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!voiceMicCtx) voiceMicCtx = new AC();
+                if (voiceMicCtx.state === 'suspended') voiceMicCtx.resume().catch(function () {});
+                if (loudnessCtx && loudnessCtx.state === 'suspended') loudnessCtx.resume().catch(function () {});
+            } catch (e) {}
+        }
+
+        function setVoiceLevel(rms) {
+            const el = document.getElementById('voice-level');
+            const v = Math.max(0.12, Math.min(1, rms * 6));
+            document.body.style.setProperty('--voice-level', v.toFixed(3));
+            if (el) el.style.setProperty('--voice-level', v.toFixed(3));
+        }
+
+        function stopVoiceLevelMeter() {
+            if (voiceLevelRaf) { cancelAnimationFrame(voiceLevelRaf); voiceLevelRaf = 0; }
+            setVoiceLevel(0.12);
+        }
+
+        function pumpVoiceLevel() {
+            if (!voiceMicAnalyser) return;
+            const data = new Uint8Array(voiceMicAnalyser.fftSize);
+            voiceMicAnalyser.getByteTimeDomainData(data);
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) {
+                const v = (data[i] - 128) / 128;
+                sum += v * v;
+            }
+            const rms = Math.sqrt(sum / data.length);
+            if (rms > voiceVadPeak) voiceVadPeak = rms;
+            window.__annaVadPeak = voiceVadPeak;
+            if (!prefersReducedMotion()) setVoiceLevel(rms);
+            voiceLevelRaf = requestAnimationFrame(pumpVoiceLevel);
+        }
+
+        function hookVoiceMicAnalyser(stream) {
+            if (!stream) return;
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!voiceMicCtx) voiceMicCtx = new AC();
+                if (voiceMicCtx.state === 'suspended') voiceMicCtx.resume().catch(function () {});
+                if (voiceMicSource) { try { voiceMicSource.disconnect(); } catch (e) {} voiceMicSource = null; }
+                if (voiceMicAnalyser) { try { voiceMicAnalyser.disconnect(); } catch (e) {} }
+                voiceMicAnalyser = voiceMicCtx.createAnalyser();
+                voiceMicAnalyser.fftSize = 512;
+                voiceMicAnalyser.smoothingTimeConstant = 0.7;
+                voiceMicSource = voiceMicCtx.createMediaStreamSource(stream);
+                voiceMicSource.connect(voiceMicAnalyser);
+                voiceVadPeak = 0;
+                if (voiceLevelRaf) cancelAnimationFrame(voiceLevelRaf);
+                if (!prefersReducedMotion()) pumpVoiceLevel();
+            } catch (e) {}
+        }
+
+        function releaseVoiceMic() {
+            stopVoiceLevelMeter();
+            if (voiceMicSource) { try { voiceMicSource.disconnect(); } catch (e) {} voiceMicSource = null; }
+            if (voiceMicAnalyser) { try { voiceMicAnalyser.disconnect(); } catch (e) {} voiceMicAnalyser = null; }
+            if (voiceMicStream) {
+                try { voiceMicStream.getTracks().forEach(function (tr) { tr.stop(); }); } catch (e) {}
+                voiceMicStream = null;
+            }
+        }
+
+        async function acquireVoiceMic() {
+            if (voiceMicStream && voiceMicStream.active) return voiceMicStream;
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('no-media');
+            }
+            const stream = await navigator.mediaDevices.getUserMedia(VOICE_MIC_CONSTRAINTS);
+            voiceMicStream = stream;
+            hookVoiceMicAnalyser(stream);
+            return stream;
+        }
+
+        function isJunkVoiceTranscript(text) {
+            const spoken = (text || '').replace(/\s+/g, ' ').trim();
+            if (!spoken) return true;
+            const alnum = spoken.replace(/[^A-Za-z0-9]+/g, '');
+            if (alnum.length < VOICE_MIN_ALNUM) return true;
+            const low = spoken.toLowerCase().replace(/[?!.,]+/g, ' ').replace(/\s+/g, ' ').trim();
+            if (/^(uh|um|ah|hmm|mm|mhm|huh)$/.test(low)) return true;
+            // Ignore likely noise if the mic never crossed the gate and the phrase is very short.
+            const peak = (typeof window.__annaVadPeak === 'number' ? window.__annaVadPeak : voiceVadPeak);
+            const vadOn = !window.__annaDisableVad && peak > 0 && peak < VOICE_VAD_THRESHOLD;
+            if (vadOn && spoken.split(/\s+/).filter(Boolean).length < 3 && alnum.length < 12) return true;
+            return false;
+        }
+
+        const ANNA_VISIT_KEY = 'annaVisitor';
+        function readAnnaVisitor() {
+            try {
+                const raw = localStorage.getItem(ANNA_VISIT_KEY);
+                if (!raw) return null;
+                const data = JSON.parse(raw);
+                if (!data || typeof data !== 'object') return null;
+                return {
+                    lastVisit: data.lastVisit || null,
+                    lastAgent: data.lastAgent || null,
+                    topic: typeof data.topic === 'string' ? data.topic.slice(0, 60) : null
+                };
+            } catch (e) { return null; }
+        }
+        function writeAnnaVisitor(patch) {
+            try {
+                const prev = readAnnaVisitor() || {};
+                const next = {
+                    lastVisit: patch.lastVisit != null ? patch.lastVisit : prev.lastVisit,
+                    lastAgent: patch.lastAgent != null ? patch.lastAgent : prev.lastAgent,
+                    topic: patch.topic != null ? String(patch.topic).replace(/\s+/g, ' ').trim().slice(0, 60) : prev.topic
+                };
+                localStorage.setItem(ANNA_VISIT_KEY, JSON.stringify(next));
+            } catch (e) {}
+        }
+        function forgetAnnaVisitor() {
+            try { localStorage.removeItem(ANNA_VISIT_KEY); } catch (e) {}
+            const meta = document.getElementById('anna-opening-meta');
+            const btn = document.getElementById('anna-forget-me');
+            if (btn) btn.textContent = 'Forgotten';
+            return true;
+        }
+        function rememberAnnaTurn(text) {
+            const topic = (text || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+            writeAnnaVisitor({
+                lastVisit: new Date().toISOString(),
+                lastAgent: (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01'),
+                topic: topic || null
+            });
+        }
+        function timeOfDayWord(hour) {
+            if (hour >= 5 && hour < 12) return 'Morning';
+            if (hour >= 12 && hour < 17) return 'Afternoon';
+            if (hour >= 17 && hour < 21) return 'Evening';
+            return 'Late night';
+        }
+        function tempWord(t) {
+            if (t <= 32) return 'freezing';
+            if (t < 50) return 'chilly';
+            if (t < 62) return 'cool';
+            if (t < 75) return 'mild';
+            if (t < 88) return 'warm';
+            return 'hot';
+        }
+        function composeAnnaOpening(opts) {
+            opts = opts || {};
+            const now = opts.now instanceof Date ? opts.now : (opts.now ? new Date(opts.now) : new Date());
+            const hour = (typeof opts.hour === 'number') ? opts.hour : now.getHours();
+            const tod = timeOfDayWord(hour);
+            const bits = [tod + ' -'];
+            const hasWeather = (opts.tempF != null && Number.isFinite(Number(opts.tempF)) && opts.city);
+            if (hasWeather) {
+                const when = (hour >= 17 || hour < 5) ? 'tonight' : 'today';
+                bits.push(tempWord(Number(opts.tempF)) + ' ' + Math.round(Number(opts.tempF)) + ' in ' + opts.city + ' ' + when + ', perfect hot sauce weather.');
+            } else {
+                bits.push("I'm Anna, your Cool Hot Sauce guide.");
+            }
+            if (opts.returning) {
+                bits.push('Back again?');
+                if (opts.topic) bits.push('Last time we talked ' + String(opts.topic).replace(/[.?!]+$/, '') + '.');
+            } else if (!hasWeather) {
+                bits.push('Ask me anything.');
+            }
+            let text = bits.join(' ').replace(/\s+/g, ' ').trim();
+            const words = text.split(/\s+/);
+            if (words.length > 35) text = words.slice(0, 35).join(' ');
+            return text;
+        }
+        window.composeAnnaOpening = composeAnnaOpening;
+        window.forgetAnnaVisitor = forgetAnnaVisitor;
+
+        async function fetchIpGuess(signal) {
+            const parseApi = function (d) {
+                return { city: d && d.city, lat: d && d.latitude, lon: d && d.longitude };
+            };
+            const parseGeo = function (d) {
+                return { city: d && d.city, lat: d ? parseFloat(d.latitude) : NaN, lon: d ? parseFloat(d.longitude) : NaN };
+            };
+            try {
+                const res = await fetch('https://ipapi.co/json/', { signal: signal });
+                if (res.ok) {
+                    const parsed = parseApi(await res.json());
+                    if (parsed.city || Number.isFinite(parsed.lat)) return parsed;
+                }
+            } catch (e) {}
+            const res2 = await fetch('https://get.geojs.io/v1/ip/geo.json', { signal: signal });
+            if (!res2.ok) throw new Error('ip');
+            return parseGeo(await res2.json());
+        }
+
+        async function maybeGrantedCoords(timeoutMs) {
+            try {
+                if (!navigator.geolocation) return null;
+                if (navigator.permissions && navigator.permissions.query) {
+                    const perm = await navigator.permissions.query({ name: 'geolocation' });
+                    if (!perm || perm.state !== 'granted') return null;
+                } else {
+                    return null;
+                }
+                const pos = await new Promise(function (resolve, reject) {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: timeoutMs || 2000, maximumAge: 600000, enableHighAccuracy: false });
+                });
+                if (!pos || !pos.coords) return null;
+                return { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            } catch (e) { return null; }
+        }
+
+        async function fetchOpeningContext(timeoutMs) {
+            const ms = timeoutMs == null ? 2500 : timeoutMs;
+            const ctrl = new AbortController();
+            const timer = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, ms);
+            try {
+                let city = null, lat = null, lon = null;
+                const granted = await maybeGrantedCoords(Math.min(2000, ms));
+                if (granted) { lat = granted.lat; lon = granted.lon; }
+                try {
+                    const ip = await fetchIpGuess(ctrl.signal);
+                    if (ip && ip.city) city = ip.city;
+                    if (lat == null && ip && Number.isFinite(ip.lat) && Number.isFinite(ip.lon)) {
+                        lat = ip.lat; lon = ip.lon;
+                    }
+                } catch (e) {}
+                let tempF = null;
+                if (lat != null && lon != null && Number.isFinite(lat) && Number.isFinite(lon)) {
+                    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon) + '&current=temperature_2m&temperature_unit=fahrenheit';
+                    const res = await fetch(url, { signal: ctrl.signal });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.current && data.current.temperature_2m != null) tempF = data.current.temperature_2m;
+                    }
+                }
+                return { city: city || null, tempF: (tempF == null ? null : Number(tempF)) };
+            } catch (e) {
+                return { city: null, tempF: null };
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function setAnnaOpeningText(text) {
+            const el = document.getElementById('anna-opening-line');
+            if (!el) return false;
+            el.textContent = text;
+            messagePayloadStore['msg_init'] = text;
+            window.__annaOpeningText = text;
+            return true;
+        }
+
+        function queueGreetingSpeech(text) {
+            pendingGreetingSpeech = text;
+            window.__annaPendingGreetingSpeech = text;
+        }
+
+        async function initAnnaOpeningLine() {
+            const forgetBtn = document.getElementById('anna-forget-me');
+            if (forgetBtn && !forgetBtn.__bound) {
+                forgetBtn.__bound = true;
+                forgetBtn.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    forgetAnnaVisitor();
+                });
+            }
+            const prior = readAnnaVisitor();
+            const returning = !!(prior && prior.lastVisit);
+            let ctx = { city: null, tempF: null };
+            try { ctx = await fetchOpeningContext(2500); } catch (e) { ctx = { city: null, tempF: null }; }
+            const now = (window.__annaNow ? new Date(window.__annaNow) : new Date());
+            const text = composeAnnaOpening({
+                now: now,
+                city: ctx.city,
+                tempF: ctx.tempF,
+                returning: returning,
+                topic: prior && prior.topic
+            });
+            if (document.getElementById('msg_init')) setAnnaOpeningText(text);
+            writeAnnaVisitor({ lastVisit: now.toISOString() });
+            window.__annaOpeningReady = true;
+            if (typeof isVoiceEnabled !== 'undefined' && isVoiceEnabled) queueGreetingSpeech(text);
+            return text;
+        }
+        window.initAnnaOpeningLine = initAnnaOpeningLine;
+
+
         function toggleVoiceMode() {
             if (voiceModeActive) { stopVoiceMode('Hung up.'); return; }
             startVoiceMode();
         }
 
-        function startVoiceMode() {
+        async function startVoiceMode() {
             if (!voiceModeSupported()) {
-                showNotice("Voice Mode needs Chrome or Edge (Safari on some iPhones will not run a live call). You can still use the 🎙️ MIC button to dictate a line, then press Send.");
-                appendMsg("Voice Mode is not supported in this browser. Try Chrome or Edge, or use the 🎙️ MIC button.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                showNotice("Voice Mode needs Chrome or Edge (Safari on some iPhones will not run a live call). You can still type a message, or try Chrome or Edge.");
+                appendMsg("Voice Mode is not supported in this browser. You can type instead, or try Chrome or Edge.", 'assistant', `${currentAgentId} [Voice Mode]`);
                 return;
+            }
+            prewarmAudioContext();
+            await cancelInflightTypedChat();
+            try {
+                await acquireVoiceMic();
+            } catch (e) {
+                const name = (e && (e.name || e.message)) || '';
+                if (/NotAllowed|NotAllowedError|Permission|denied/i.test(String(name))) {
+                    showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or type instead.");
+                    appendMsg("I could not reach the microphone. Allow mic access in your browser, or type a message instead.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                    return;
+                }
+                // No usable stream (headless, missing device): still run recognition if the browser offers it.
             }
             if (isListening && recognition) { try { recognition.stop(); } catch (e) {} }
             voiceModeActive = true;
+            voiceLocksTyping = true;
             voicePausedForSpeech = false;
             voiceSending = false;
             voiceBuffer = '';
+            voiceVadPeak = 0;
             isVoiceEnabled = true;
             const vbtn = document.getElementById('voice-btn');
             if (vbtn) vbtn.innerText = '🔊 ON';
             updateVoiceTalkButton();
             setVoiceCaption('', false);
             setVoicePill('listening');
+            syncComposerLock();
+            const greet = pendingGreetingSpeech;
+            pendingGreetingSpeech = null;
+            window.__annaPendingGreetingSpeech = null;
+            if (greet) {
+                speakText(greet);
+                return;
+            }
             startVoiceListen();
         }
 
         function stopVoiceMode(notice) {
             voiceModeActive = false;
+            voiceLocksTyping = false;
             voicePausedForSpeech = false;
             voiceSending = false;
             voiceBuffer = '';
@@ -1809,9 +2205,11 @@
             speakGen += 1;
             stopVoiceRec();
             stopCloudAudio();
+            releaseVoiceMic();
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
             updateVoiceTalkButton();
             setVoicePill('');
+            syncComposerLock();
             const cap = document.getElementById('voice-pill');
             if (cap) { document.getElementById('voice-pill').classList.remove('is-visible', 'is-listening', 'is-thinking', 'is-speaking'); }
             setVoiceCaption('', false);
@@ -1862,10 +2260,8 @@
                 if (finals) voiceBuffer = (voiceBuffer + ' ' + finals).replace(/\s+/g, ' ').trim();
                 const shown = (voiceBuffer + (interim ? (' ' + interim) : '')).replace(/\s+/g, ' ').trim();
                 setVoiceCaption(shown, !!interim);
-                const input = document.getElementById('user-input');
-                if (input) input.value = shown;
                 const combined = shown;
-                const silenceMs = window.VOICE_SILENCE_MS || 1200;
+                const silenceMs = window.VOICE_SILENCE_MS || 800;
                 const lastFinal = !!(finals && !interim);
                 if (lastFinal && (isStopListeningPhrase(combined) || parseRelayIntent(combined))) {
                     clearTimeout(voiceSilenceTimer);
@@ -1948,8 +2344,6 @@
             voiceSending = false;
             voiceBuffer = heard;
             setVoiceCaption(heard, !isFinal);
-            const input = document.getElementById('user-input');
-            if (input) input.value = heard;
             setMoodState('listening');
             setVoicePill('listening');
             if (isFinal && (isStopListeningPhrase(heard) || parseRelayIntent(heard))) {
@@ -1957,7 +2351,7 @@
                 return;
             }
             clearTimeout(voiceSilenceTimer);
-            voiceSilenceTimer = setTimeout(() => commitVoiceUtterance(voiceBuffer || heard), window.VOICE_SILENCE_MS || 1200);
+            voiceSilenceTimer = setTimeout(() => commitVoiceUtterance(voiceBuffer || heard), window.VOICE_SILENCE_MS || 800);
             // Keep the recognizer running for the rest of the sentence.
         }
 
@@ -2011,6 +2405,15 @@
             voiceBuffer = '';
             clearTimeout(voiceSilenceTimer);
             if (!spoken) return;
+            if (isJunkVoiceTranscript(spoken)) {
+                window.__annaIgnoredTranscript = spoken;
+                if (voiceModeActive) {
+                    setVoiceCaption('', false);
+                    setVoicePill('listening');
+                    setMoodState('listening');
+                }
+                return;
+            }
             setVoiceCaption(spoken, false);
             if (isStopListeningPhrase(spoken)) {
                 appendMsg(spoken, 'user', getTalkerLabel());
@@ -2275,10 +2678,13 @@
         }
         function setChatBusy(busy) {
             chatBusy = !!busy;
-            const btn = document.getElementById('send-btn');
-            if (btn) {
-                btn.disabled = chatBusy;
-                btn.setAttribute('aria-busy', chatBusy ? 'true' : 'false');
+            if (typeof syncComposerLock === 'function') syncComposerLock();
+            else {
+                const btn = document.getElementById('send-btn');
+                if (btn) {
+                    btn.disabled = chatBusy;
+                    btn.setAttribute('aria-busy', chatBusy ? 'true' : 'false');
+                }
             }
         }
         function isVoiceListeningNow() {
@@ -2405,12 +2811,14 @@
         }
 
         async function sendMessage(overrideText) {
+            const fromOverride = (typeof overrideText === 'string');
+            if (typeof voiceModeActive !== 'undefined' && voiceModeActive && !fromOverride) return;
             if (chatBusy) return;
             const input = document.getElementById('user-input');
-            const fromOverride = (typeof overrideText === 'string');
             const query = (fromOverride ? overrideText : (input ? input.value : '')).trim();
             const pasted = fromOverride ? null : lastPastedImageData;
             if (!query && !pasted) return;
+            if (typeof rememberAnnaTurn === 'function') rememberAnnaTurn(query);
 
             setChatBusy(true);
             chatPinnedToBottom = true;
@@ -2487,7 +2895,12 @@ ${annaRules}`,
                 refocusUserInput();
             } catch (e) {
                 hist.pop();
-                const timedOut = !!(chatAbort && chatAbort.signal && chatAbort.signal.aborted) || (e && (e.name === 'AbortError' || e === 'timeout'));
+                if (chatCancelForVoice) {
+                    chatCancelForVoice = false;
+                    removeThinkingIndicator();
+                    return;
+                }
+                const timedOut = !!(chatAbort && chatAbort.signal && chatAbort.signal.aborted) || (e && (e.name === 'AbortError' || e === 'timeout' || (chatAbort && chatAbort.signal && chatAbort.signal.reason === 'timeout')));
                 const msg = timedOut
                     ? 'That took too long. Try again in a moment.'
                     : ((e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.');
@@ -2874,6 +3287,7 @@ ${annaRules}`,
             if (e.key !== 'Enter') return;
             if (e.isComposing || e.keyCode === 229) return;
             if (e.shiftKey) return;
+            if (typeof voiceLocksTyping !== 'undefined' && voiceLocksTyping) { e.preventDefault(); return; }
             e.preventDefault();
             sendMessage();
         }
