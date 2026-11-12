@@ -1261,30 +1261,36 @@ MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
                 let voices = window.speechSynthesis.getVoices();
                 if (!voices || voices.length === 0) voices = cachedVoices;
 
-                const voice = voices.find(v => 
-                    v.name.includes("Google UK English Female") || 
-                    v.name.includes("Google US English Female") ||
-                    v.name.includes("Victoria") || 
-                    v.name.includes("Samantha") || 
-                    v.name.includes("Karen") || 
-                    v.name.includes("Moira") ||
-                    v.name.includes("Zira") ||
-                    v.name.includes("Hazel") ||
-                    v.name.includes("Susan") ||
-                    v.name.includes("Emma")
-                ) || voices.find(v => (v.lang && (v.lang.includes('en-GB') || v.lang.includes('en-US')) && v.name.toLowerCase().includes('female'))) || voices.find(v => v.lang && v.lang.includes('en')) || voices[0];
+                // Pick the most natural-sounding female voice the device offers (neural voices first).
+                const ranked = [
+                    /Ava.*(Online|Natural|Multilingual)/i, /Emma.*(Online|Natural|Multilingual)/i, /Jenny.*(Online|Natural)/i,
+                    /Aria.*(Online|Natural)/i, /Sonia.*(Online|Natural)/i, /Libby.*(Online|Natural)/i, /Natasha.*(Online|Natural)/i,
+                    /Michelle.*(Online|Natural)/i, /(Female|Woman).*(Online|Natural)/i,
+                    /Ava \((Premium|Enhanced)\)/i, /Samantha \((Premium|Enhanced)\)/i, /Zoe \((Premium|Enhanced)\)/i,
+                    /Google UK English Female/i, /Google US English(?! Male)/i,
+                    /^Ava\b/i, /^Samantha\b/i, /^Victoria\b/i, /^Karen\b/i, /^Moira\b/i, /Zira/i, /Hazel/i, /Susan/i, /Emma/i
+                ];
+                const en = voices.filter(v => v.lang && /^en/i.test(v.lang));
+                let voice = null;
+                for (const re of ranked) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
+                if (!voice) voice = en.find(v => /female/i.test(v.name)) || en[0] || voices[0];
+                const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced)/i.test(voice.name);
 
-                const utterance = new SpeechSynthesisUtterance(sanitized);
-                if (voice) utterance.voice = voice;
-                
-                utterance.pitch = 1.0;
-                utterance.rate = 0.96;
-                utterance.volume = 1.0;
-
-                utterance.onend = () => setMoodState('standby');
-                utterance.onerror = () => setMoodState('standby');
-
-                window.speechSynthesis.speak(utterance);
+                // Speak sentence by sentence so she breathes between thoughts instead of rushing.
+                const parts = (sanitized.match(/[^.!?]+[.!?]*/g) || [sanitized]).map(t => t.trim()).filter(Boolean);
+                parts.forEach((part, i) => {
+                    const utterance = new SpeechSynthesisUtterance(part);
+                    if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
+                    // Neural voices already sound human, so only a light touch; classic voices get a bit more warmth.
+                    utterance.pitch = isNeural ? 1.04 : 1.12;
+                    utterance.rate = isNeural ? 0.97 : 0.92;
+                    utterance.volume = 1.0;
+                    if (i === parts.length - 1) {
+                        utterance.onend = () => setMoodState('standby');
+                        utterance.onerror = () => setMoodState('standby');
+                    }
+                    window.speechSynthesis.speak(utterance);
+                });
             } catch (e) {
                 setMoodState('standby');
             }
