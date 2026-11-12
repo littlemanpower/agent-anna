@@ -742,9 +742,231 @@
             .voice-talk-btn, .voice-pill.is-listening, .voice-pill.is-speaking { box-shadow: none; }
         }
 
+
+        /* ---------- Presence states (SPEC-v1, Nov 12 2026) ----------
+           Standby: core #517A63 jungle green, halo #CFEEFD sky.
+           Thinking: core #9AB1BF mist blue, halo drifts #CFEEFD to #78856E.
+           Replying: core #D9452B chili red (pending user confirm), halo #F2A65A ember.
+           Two layered breathing glows (co-prime cycles), no spin/orbit.
+           600 ms color cross-fade. prefers-reduced-motion = still glow. */
+        @property --presence-core {
+            syntax: '<color>';
+            inherits: true;
+            initial-value: #517A63;
+        }
+        @property --presence-halo {
+            syntax: '<color>';
+            inherits: true;
+            initial-value: #CFEEFD;
+        }
+        @property --presence-opa-min {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0.45;
+        }
+        @property --presence-opa-max {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0.80;
+        }
+        @property --presence-scale-max {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 1.03;
+        }
+        @property --reply-loudness {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0.5;
+        }
+
+        body {
+            --presence-core: #517A63;
+            --presence-halo: #CFEEFD;
+            --presence-opa-min: 0.45;
+            --presence-opa-max: 0.80;
+            --presence-scale-max: 1.03;
+            --presence-dur-a: 6s;
+            --presence-dur-b: 8.3s;
+            --presence-ease: cubic-bezier(0.45, 0, 0.55, 1);
+        }
+        body[data-state="standby"] {
+            --state-color: #517A63;
+            --presence-core: #517A63;
+            --presence-halo: #CFEEFD;
+            --presence-opa-min: 0.45;
+            --presence-opa-max: 0.80;
+            --presence-scale-max: 1.03;
+            --presence-dur-a: 6s;
+            --presence-dur-b: 8.3s;
+        }
+        body[data-state="thinking"] {
+            --state-color: #9AB1BF;
+            --presence-core: #9AB1BF;
+            --presence-halo: #CFEEFD;
+            --presence-opa-min: 0.55;
+            --presence-opa-max: 0.95;
+            --presence-scale-max: 1.05;
+            --presence-dur-a: 2.6s;
+            --presence-dur-b: 3.7s;
+        }
+        body[data-state="replying"] {
+            --state-color: #D9452B;
+            --presence-core: #D9452B;
+            --presence-halo: #F2A65A;
+            --presence-opa-min: 0.60;
+            --presence-opa-max: 1.00;
+            --presence-scale-max: 1.06;
+            --presence-dur-a: 1.8s;
+            --presence-dur-b: 2.9s;
+        }
+
+        .presence-frame {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            padding: 22px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        .presence-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .presence-ring::before,
+        .presence-ring::after {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: opacity, transform;
+            transition: box-shadow 600ms var(--presence-ease);
+        }
+        /* Layer A: core glow */
+        .presence-ring::before {
+            box-shadow:
+                0 0 0 8px color-mix(in srgb, var(--presence-core) 92%, transparent),
+                0 0 28px 8px var(--presence-core),
+                0 0 64px 18px color-mix(in srgb, var(--presence-core) 70%, transparent);
+            animation: presenceBreathA var(--presence-dur-a) var(--presence-ease) infinite;
+        }
+        /* Layer B: halo glow */
+        .presence-ring::after {
+            box-shadow:
+                0 0 0 16px color-mix(in srgb, var(--presence-halo) 70%, transparent),
+                0 0 48px 16px var(--presence-halo),
+                0 0 90px 28px color-mix(in srgb, var(--presence-halo) 45%, transparent);
+            animation: presenceBreathB var(--presence-dur-b) var(--presence-ease) infinite;
+        }
+        @keyframes presenceBreathA {
+            0%, 100% { opacity: var(--presence-opa-min); transform: scale(1); }
+            50% { opacity: var(--presence-opa-max); transform: scale(var(--presence-scale-max)); }
+        }
+        @keyframes presenceBreathB {
+            0%, 100% { opacity: calc(var(--presence-opa-min) * 0.85); transform: scale(1.01); }
+            50% { opacity: var(--presence-opa-max); transform: scale(calc(var(--presence-scale-max) + 0.01)); }
+        }
+        body[data-state="thinking"] .presence-ring {
+            animation: thinkingHaloDrift 9s var(--presence-ease) infinite;
+        }
+        @keyframes thinkingHaloDrift {
+            0%, 100% { --presence-halo: #CFEEFD; }
+            50% { --presence-halo: #78856E; }
+        }
+
+        .presence-frame .viewport-screen {
+            margin-bottom: 0;
+            outline: none;
+            border-width: 7px;
+            border-style: solid;
+            border-color: var(--presence-core);
+            box-shadow:
+                0 0 0 5px color-mix(in srgb, var(--presence-halo) 80%, transparent),
+                0 0 24px 6px color-mix(in srgb, var(--presence-core) 75%, transparent);
+            transition: border-color 600ms var(--presence-ease), box-shadow 600ms var(--presence-ease);
+        }
+
+        .presence-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px auto 0;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-family: var(--font-brand);
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: var(--presence-core);
+            background: color-mix(in srgb, var(--presence-core) 16%, rgba(8, 4, 4, 0.85));
+            border: 2px solid var(--presence-core);
+            box-shadow: 0 0 16px color-mix(in srgb, var(--presence-core) 45%, transparent);
+            transition: color 600ms var(--presence-ease), background 600ms var(--presence-ease), border-color 600ms var(--presence-ease), box-shadow 600ms var(--presence-ease);
+        }
+        .presence-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--presence-core);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--presence-core) 40%, transparent), 0 0 14px var(--presence-core);
+            animation: presenceBreathA var(--presence-dur-a) var(--presence-ease) infinite;
+            flex-shrink: 0;
+        }
+        .status-bar-indicator {
+            color: var(--presence-core);
+            background: color-mix(in srgb, var(--presence-core) 12%, transparent);
+            border: 1px solid color-mix(in srgb, var(--presence-core) 50%, transparent);
+            transition: color 600ms var(--presence-ease), background 600ms var(--presence-ease), border-color 600ms var(--presence-ease);
+        }
+        .status-bar-indicator .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--presence-core);
+            box-shadow: 0 0 10px var(--presence-core);
+            animation: presenceBreathA var(--presence-dur-a) var(--presence-ease) infinite;
+        }
+
+        body[data-state="replying"].is-loudness .presence-ring::before,
+        body[data-state="replying"].is-loudness .presence-ring::after,
+        body[data-state="replying"].is-loudness .presence-dot,
+        body[data-state="replying"].is-loudness .status-dot {
+            animation: none;
+            opacity: calc(var(--presence-opa-min) + (var(--presence-opa-max) - var(--presence-opa-min)) * var(--reply-loudness, 0.5));
+            transform: scale(calc(1 + (var(--presence-scale-max) - 1) * var(--reply-loudness, 0.5)));
+        }
+
+        @media (max-width: 860px) {
+            .presence-frame { padding: 16px; }
+            .presence-status { font-size: 13px; padding: 5px 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .presence-ring,
+            .presence-ring::before,
+            .presence-ring::after,
+            .presence-dot,
+            .status-bar-indicator .status-dot {
+                animation: none !important;
+                transform: none !important;
+            }
+            .presence-ring::before,
+            .presence-ring::after,
+            .presence-dot,
+            .status-bar-indicator .status-dot {
+                opacity: var(--presence-opa-max);
+            }
+        }
+
     </style>
 </head>
-<body class="is-standby">
+<body class="is-standby" data-state="standby">
 
     <!-- LIVE COINGECKO & DOGGY MARKET TICKER BAR WITH LIVE LINKS -->
     <div class="financial-ticker-bar">
@@ -840,7 +1062,7 @@
             <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
             <div class="status-bar-indicator">
                 <div class="status-dot"></div>
-                <span id="state-text">STANDBY</span>
+                <span id="state-text">Standby</span>
             </div>
         </nav>
         <!-- AGENT CONSOLE (top right on desktop; first after header on mobile) -->
@@ -890,11 +1112,18 @@
 
             <div class="matrix-visual-container">
                 <canvas id="wav-canvas"></canvas>
-                <div class="viewport-screen" id="viewport-screen">
-                    <img id="active-portrait" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="Active Agent Portrait">
+                <div class="presence-frame" id="presence-frame">
+                    <div class="presence-ring" aria-hidden="true"></div>
+                    <div class="viewport-screen" id="viewport-screen">
+                        <img id="active-portrait" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="Active Agent Portrait">
+                    </div>
                 </div>
                 <div class="matrix-nameplate">
                     <h2 id="active-agent-title">AGENT ANNA 01 // MASTER CORE</h2>
+                    <div class="presence-status" aria-live="polite">
+                        <span class="presence-dot" aria-hidden="true"></span>
+                        <span id="presence-label-text">Standby</span>
+                    </div>
                     <p id="active-agent-desc">ONLINE GITHUB EMPIRE MATRIX // VIEWPORT ACTIVE</p>
                 </div>
             </div>
@@ -1161,10 +1390,101 @@
             try { cachedVoices = window.speechSynthesis.getVoices(); } catch (e) {}
         }
 
+        const PRESENCE_MAP = {
+            standby: 'standby', thinking: 'thinking', replying: 'replying',
+            responding: 'replying', speaking: 'replying', listening: 'standby'
+        };
+        const PRESENCE_LABELS = { standby: 'Standby', thinking: 'Thinking', replying: 'Replying' };
+        let presenceIdleTimer = null;
+        let presenceIdleGen = 0;
+
         function setMoodState(stateName) {
             document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening');
             document.body.classList.add(`is-${stateName}`);
-            document.getElementById('state-text').innerText = stateName.toUpperCase();
+            const presence = PRESENCE_MAP[stateName] || 'standby';
+            document.body.setAttribute('data-state', presence);
+            if (presence !== 'replying') stopReplyLoudness();
+            if (presence === 'thinking' || presence === 'replying') cancelPresenceIdle();
+            const label = PRESENCE_LABELS[presence] || 'Standby';
+            const stateText = document.getElementById('state-text');
+            if (stateText) stateText.textContent = label;
+            const presenceLabel = document.getElementById('presence-label-text');
+            if (presenceLabel) presenceLabel.textContent = label;
+        }
+
+        function cancelPresenceIdle() {
+            presenceIdleGen += 1;
+            if (presenceIdleTimer) { clearTimeout(presenceIdleTimer); presenceIdleTimer = null; }
+        }
+
+        function schedulePresenceIdle(ms) {
+            const gen = ++presenceIdleGen;
+            if (presenceIdleTimer) clearTimeout(presenceIdleTimer);
+            presenceIdleTimer = setTimeout(() => {
+                if (gen !== presenceIdleGen) return;
+                if (voiceModeActive) return;
+                if (document.body.classList.contains('is-thinking')) return;
+                setMoodState('standby');
+            }, ms || 1800);
+        }
+
+        let loudnessCtx = null;
+        let loudnessSource = null;
+        let loudnessAnalyser = null;
+        let loudnessRaf = 0;
+        let loudnessEl = null;
+
+        function stopReplyLoudness() {
+            if (loudnessRaf) { cancelAnimationFrame(loudnessRaf); loudnessRaf = 0; }
+            document.body.classList.remove('is-loudness');
+            document.body.style.removeProperty('--reply-loudness');
+            if (loudnessSource) { try { loudnessSource.disconnect(); } catch (e) {} loudnessSource = null; }
+            if (loudnessAnalyser) { try { loudnessAnalyser.disconnect(); } catch (e) {} loudnessAnalyser = null; }
+            loudnessEl = null;
+        }
+
+        function hookReplyLoudness(audioEl) {
+            if (!audioEl || prefersReducedMotion()) return;
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            try {
+                if (!loudnessCtx) loudnessCtx = new AC();
+                if (loudnessCtx.state === 'suspended') loudnessCtx.resume().catch(function () {});
+                if (loudnessEl === audioEl && loudnessAnalyser) {
+                    document.body.classList.add('is-loudness');
+                    pumpReplyLoudness();
+                    return;
+                }
+                if (loudnessRaf) { cancelAnimationFrame(loudnessRaf); loudnessRaf = 0; }
+                if (loudnessSource) { try { loudnessSource.disconnect(); } catch (e) {} loudnessSource = null; }
+                if (loudnessAnalyser) { try { loudnessAnalyser.disconnect(); } catch (e) {} loudnessAnalyser = null; }
+                loudnessEl = audioEl;
+                loudnessSource = loudnessCtx.createMediaElementSource(audioEl);
+                loudnessAnalyser = loudnessCtx.createAnalyser();
+                loudnessAnalyser.fftSize = 256;
+                loudnessAnalyser.smoothingTimeConstant = 0.7;
+                loudnessSource.connect(loudnessAnalyser);
+                loudnessAnalyser.connect(loudnessCtx.destination);
+                document.body.classList.add('is-loudness');
+                pumpReplyLoudness();
+            } catch (e) {
+                stopReplyLoudness();
+            }
+        }
+
+        function pumpReplyLoudness() {
+            if (!loudnessAnalyser) return;
+            const data = new Uint8Array(loudnessAnalyser.fftSize);
+            loudnessAnalyser.getByteTimeDomainData(data);
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) {
+                const v = (data[i] - 128) / 128;
+                sum += v * v;
+            }
+            const rms = Math.sqrt(sum / data.length);
+            const level = Math.max(0, Math.min(1, rms * 4));
+            document.body.style.setProperty('--reply-loudness', String(level));
+            loudnessRaf = requestAnimationFrame(pumpReplyLoudness);
         }
 
         function initSpeechRecognition() {
@@ -1837,6 +2157,7 @@ ${annaRules}`,
             if (cloudAudio) { try { cloudAudio.onended = null; cloudAudio.onerror = null; cloudAudio.pause(); } catch (e) {} cloudAudio = null; }
             cloudAudioUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} });
             cloudAudioUrls = [];
+            stopReplyLoudness();
         }
 
         function cleanForSpeech(text) {
@@ -1909,6 +2230,7 @@ ${annaRules}`,
                     if (next) next.catch(() => {});
                     const a = new Audio(url);
                     cloudAudio = a;
+                    hookReplyLoudness(a);
                     a.onended = () => { if (gen !== speakGen) return; if (next) playFrom(i + 1, next); else finish(); };
                     a.onerror = fallback;
                     a.play().then(() => { started = true; window.__annaTtsPath = 'clone'; }).catch(fallback);
@@ -1922,7 +2244,7 @@ ${annaRules}`,
                 if (voiceModeActive) onAgentSpeechEnded();
                 else setMoodState('standby');
             };
-            if (!isVoiceEnabled && !voiceModeActive) return;
+            if (!isVoiceEnabled && !voiceModeActive) { schedulePresenceIdle(1800); return; }
             if (!('speechSynthesis' in window)) { finishSpeak(); return; }
             try {
                 const gen = ++speakGen;
