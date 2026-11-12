@@ -1863,7 +1863,10 @@ ${annaRules}`,
                 const en = voices.filter(v => v.lang && /^en/i.test(v.lang));
                 let voice = null;
                 if (currentAgentId === 'AA03' && !window.__preachVoice) { for (const re of maleRanked) { const pv = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (pv) { window.__preachVoice = pv.name; break; } } }
-                const pool = (currentAgentId === 'AA03') ? [...ranked.slice(1), ranked[0]] : ranked;
+                // Martin Strayd is Australian: prefer an Australian male voice (Edge William first), then the usual male list.
+                const auRanked = [/William.*(Online|Natural)/i, /Darren.*(Online|Natural)/i, /Duncan.*(Online|Natural)/i, /Ken.*(Online|Natural)/i,
+                    /Lee \((Premium|Enhanced)\)/i, /Gordon \((Premium|Enhanced)\)/i, /^Lee\b/i, /^Gordon\b/i, /en-au-x-(aud|auc|aub)-network/i, /en-au-x-(aud|auc|aub)/i];
+                const pool = (currentAgentId === 'AA03') ? [...auRanked, ...ranked.slice(1), ranked[0]] : ranked;
                 for (const re of pool) { voice = en.find(v => re.test(v.name)) || voices.find(v => re.test(v.name)); if (voice) break; }
                 if (!voice) voice = en.find(v => (maleAgent ? /\bmale\b/i : /female/i).test(v.name)) || en[0] || voices[0];
                 const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced|network|^Google )/i.test(voice.name);
