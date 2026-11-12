@@ -37,12 +37,12 @@ The AA01 prompt lists the same three names in a different order (Red Thai Chili,
 **Still not published (do not invent):**
 
 - Heat levels, Scoville numbers, or which flavour is milder or hotter
-- A full allergen or nutrition panel beyond the short ingredient line on the premium sheet
+- A full allergen or nutrition panel beyond the CLASSIC back-label percentages and the short ingredient line on the premium sheet. Do not assume the same percentages apply to the other flavours.
 - Official food pairings or recipes
 - Postage amounts, shipping times, shipping regions, or stock status
-- A fourth flavour, a gift set, a baht price for the 48-piece box, or a white-label product
+- A fourth flavour, a gift set, a baht price for the 48-piece box, or any private-label product beyond the KUNDA Cafe CLASSIC bottle shown in the Nov 12 2026 videos
 
-Retail and wholesale baht prices, a short ingredient line, and a second set of flavour names now come from the Nov 12 2026 premium sheet below. coolhotsauce.com's visible homepage still does not name the three flavours or list prices or ingredients. **UNVERIFIED:** any recipe, pepper, or heat detail beyond what that sheet and the Agent Anna page actually name.
+Retail and wholesale baht prices, a short ingredient line, and a second set of flavour names come from the Nov 12 2026 premium sheet below. CLASSIC back-label ingredient percentages, producer and distributor names, the Thai FDA number, and the KUNDA private-label bottle come from the Nov 12 2026 WhatsApp videos below. coolhotsauce.com's visible homepage still does not name the three flavours or list prices or ingredients. **UNVERIFIED:** any recipe, pepper, or heat detail beyond what those sources and the Agent Anna page actually name.
 
 ## Where to buy
 
@@ -139,16 +139,39 @@ Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026 (
 - No added color. The sheet also says "pure sunshine and seeds."
 - Farm to table. Made in Thailand.
 
-If asked for a price, quote the RRP and wholesale figures as printed on this Nov 12 2026 sheet, say postage is not included, and note that live shop prices may differ. If asked for a heat level or a full allergen or nutrition list, say those are not on the sheet.
+If asked for a price, quote the RRP and wholesale figures as printed on this Nov 12 2026 sheet, say postage is not included, and note that live shop prices may differ. If asked for CLASSIC ingredients, use the back-label percentages from the Nov 12 2026 videos below. If asked for a heat level or a full allergen or nutrition list, say those are not on the sheet or the videos.
+
+## WhatsApp bottle videos (watched Nov 12 2026)
+
+Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-12 at 6.30.21 AM (1).mp4, watched Nov 12 2026. Phone numbers are omitted. These facts are what was visible on the bottles and on-screen text, not a lab test or an FDA-database check.
+
+### Video 1 (~10 seconds, no speech, restaurant ambient sound)
+
+- A 100 ml clear glass bottle with a red cap, labeled CLASSIC flavor.
+- Back label ingredients: chillis 40%, salt 4%, vinegar 56%. Do not assume the other flavours use the same percentages.
+- Back label wording: "CLASSIC: Siam chili peppers, grown and harvested with good intention. No sugar. No artificial ingredients. 100% all-natural plant based. Add a few drops to your everyday." "Shake well before use."
+- Produced in Thailand by Thai Pepper Product Co., Ltd (Chiang Rai). Distributed by KUNDA Co., Ltd. (Chiang Rai). WWW.COOLHOTSAUCE.COM.
+- Thai FDA mark with registration number 57-2-05560-6-0018, as shown on this CLASSIC bottle. The number was not independently checked in this pass.
+- Three small certification seals, too small to read in the video. They are likely HACCP, GMP and GAP, but that was not readable, so do not claim the seal names from the video.
+- Front label: white oval with a map of Thailand in Thai flag stripes; "THAILAND"; "100ML"; "HOT HOT SAUCE MADE IN THAILAND"; "WARNING: HOT HOT HOT CHILI...".
+- Shown at a cafe table with a caddy of green, dark and red bottles (the three flavors). The CLASSIC bottle shown has a red cap. Do not assume from the video alone that CLASSIC equals a specific Agent Anna page or premium-sheet flavour name.
+- Ends on "Made in Thailand."
+
+### Video 2 (~13 seconds, KUNDA Cafe social story, stock-style jazzy music)
+
+- A KUNDA-branded 100 ml CLASSIC bottle, labeled "KUNDA" and "100% PLANT BASED," with the same ingredients and coolhotsauce.com on the back.
+- Then a vegan burger.
+- On-screen overlays: "ALL TIME FAVORITE ^^"; "// BEST VEGAN IN CHIANGRAI"; "@KUNDACAFE_OFFICIAL". "BEST VEGAN IN CHIANGRAI" is video wording, not an independently checked ranking.
+- This shows the sauce is also sold under a KUNDA private label at KUNDA Cafe.
 
 ## Gaps and uncertainties
 
 - **Homepage fetch:** [https://coolhotsauce.com](https://coolhotsauce.com) was fetched successfully on Nov 12 2026 (HTTP 200, HTML homepage, about 7.9 KB). A first WebFetch pass returned only a shortened extract; the full homepage was then read directly. `last-modified` on the response was Jul 9, 2026, 3:32 AM UTC (Jul 8, 2026, 11:32 PM ET).
 - **No product or about subpages:** `/shop`, `/shop/`, `/products`, `/about`, `/sauces`, `/buy`, `/sitemap.xml`, and `/robots.txt` all returned 404. There was no obvious product or about subpage to use beyond the homepage and its outbound links.
-- Heat levels, stock, and postage amounts are still unpublished. Retail/wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet, not on coolhotsauce.com or the Agent Anna page.
+- Heat levels, stock, and postage amounts are still unpublished. Retail/wholesale baht prices are on the Nov 12 2026 premium sheet. CLASSIC ingredient percentages, producer, distributor, FDA number, and the KUNDA private label are on the Nov 12 2026 WhatsApp videos. Do not copy those CLASSIC percentages onto the other flavours.
 - Award, ranking, #1, HACCP/GMP/GAP, "69 countries," "national brand," "vegan," and "world's 1st crypto-liquidity-utility" claims are site wording only (**UNVERIFIED**), with a #1 tagline that conflicts with "ranked among" in the body.
 - Flavour names appear on the Agent Anna page, not on the coolhotsauce.com homepage text reviewed.
-- Founder vs. "Established 2021 by KUNDA Co Ltd." vs. "Exclusively Licenced Distribution by KUNDA Co. Ltd." is not fully explained. **UNVERIFIED.**
+- Founder vs. "Established 2021 by KUNDA Co Ltd." vs. "Exclusively Licenced Distribution by KUNDA Co. Ltd." is not fully explained. The CLASSIC back label in the Nov 12 2026 videos names Thai Pepper Product Co., Ltd (Chiang Rai) as producer and KUNDA Co., Ltd. (Chiang Rai) as distributor. **UNVERIFIED** beyond that label.
 - iTunes / Spotify listings for the three promotional songs were not checked.
 - Lazada shop contents, live prices, and stock were not fetched for this file (the task limited sauce facts to `index.html` and coolhotsauce.com). The URL itself is sourced from `index.html`.
 - Do not invent a merch catalog, factory tour, tasting notes, or personal biography for Agent Anna.
@@ -162,3 +185,4 @@ If asked for a price, quote the RRP and wholesale figures as printed on this Nov
 - Owner-stated public-fit brand facts from the Nov 12 2026 call (see `agents/COOL-HOT-SAUCE-REFERENCE.md`); internal valuation, outreach, and named-company comparison lines were not copied here
 - KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
 - One-page PREMIUM HOT SAUCE CoolHotSauce.com sheet, received Nov 12 2026 (`/workspace/uploads/chs-1112/premium-hot-sauce.pdf`; personal name, phone, and the business email on the sheet omitted from this public file)
+- WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-12 at 6.30.21 AM (1).mp4, watched Nov 12 2026 (phone numbers omitted)

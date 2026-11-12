@@ -77,6 +77,19 @@ Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026. 
 - Three flavors, quoted from the sheet: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa (usual romanization prik / phrik chi fa). These appear to match the Agent Anna page names (Smoked Black, Green Jalapeño, Red Thai Chili) with different wording. Do not invent a fourth flavour.
 - No sugar added (sweetness from chili). Chili, salt, vinegar, no artificial preservatives. No added color. Farm to table. Made in Thailand.
 
+
+## WhatsApp bottle videos (watched Nov 12 2026)
+
+Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-12 at 6.30.21 AM (1).mp4, watched Nov 12 2026. Phone numbers omitted. These are label and on-screen facts from the videos, not a lab or FDA-database check.
+
+- Video 1 (~10 seconds, no speech, restaurant ambient sound): a 100 ml clear glass bottle, red cap, labeled CLASSIC. Back label ingredients: chillis 40%, salt 4%, vinegar 56%. Do not assume the other flavours use the same percentages.
+- Back label wording: "CLASSIC: Siam chili peppers, grown and harvested with good intention. No sugar. No artificial ingredients. 100% all-natural plant based. Add a few drops to your everyday." "Shake well before use."
+- Produced in Thailand by Thai Pepper Product Co., Ltd (Chiang Rai). Distributed by KUNDA Co., Ltd. (Chiang Rai). WWW.COOLHOTSAUCE.COM.
+- Thai FDA mark with registration number 57-2-05560-6-0018, as shown on this CLASSIC bottle (not independently checked in this pass).
+- Three small certification seals, too small to read in the video. They are likely HACCP, GMP and GAP, but that was not readable, so do not claim the seal names from the video.
+- Front label: white oval with a map of Thailand in Thai flag stripes; "THAILAND"; "100ML"; "HOT HOT SAUCE MADE IN THAILAND"; "WARNING: HOT HOT HOT CHILI...". Shown at a cafe table with a caddy of green, dark and red bottles (the three flavors). Do not assume from the video alone that CLASSIC equals a specific Agent Anna page or premium-sheet flavour name. Ends on "Made in Thailand."
+- Video 2 (~13 seconds, KUNDA Cafe social story, stock-style jazzy music): a KUNDA-branded 100 ml CLASSIC bottle ("KUNDA", "100% PLANT BASED"), with the same ingredients and coolhotsauce.com on the back, then a vegan burger. Overlays: "ALL TIME FAVORITE ^^"; "// BEST VEGAN IN CHIANGRAI"; "@KUNDACAFE_OFFICIAL". "BEST VEGAN IN CHIANGRAI" is video wording, not a checked ranking. This shows the sauce is also sold under a KUNDA private label at KUNDA Cafe.
+
 ## Sources
 
 - [https://coolhotsauce.com](https://coolhotsauce.com) (homepage read Nov 12 2026)
@@ -85,3 +98,4 @@ Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026. 
 - KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
 - Anna's full knowledge file: `anna-AA01/knowledge/knowledge.md`
 - One-page PREMIUM HOT SAUCE CoolHotSauce.com sheet, received Nov 12 2026 (personal name, phone, and business email omitted)
+- WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-12 at 6.30.21 AM (1).mp4, watched Nov 12 2026 (phone numbers omitted)
