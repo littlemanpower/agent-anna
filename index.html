@@ -954,10 +954,10 @@
 
             <div class="input-control-bar">
                 <div class="multimedia-toolbar">
-                    <span class="media-tag">HUD VIEWPORT:</span>
+                    <span class="media-tag" id="local-time-tag">LOCAL TIME</span>
                     <button class="ctrl-btn military-btn" onclick="setViewportMode('portrait')">👤 AGENT</button>
-                    <button class="ctrl-btn" onclick="setViewportMode('video')">🎥 LOAD VIDEO</button>
-                    <button class="ctrl-btn" onclick="setViewportMode('audio')">🎵 LOAD AUDIO</button>
+                    <button class="ctrl-btn" onclick="setViewportMode('video')">🎥 VIDEO</button>
+                    <button class="ctrl-btn" onclick="setViewportMode('audio')">🎵 AUDIO</button>
                 </div>
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
@@ -1141,6 +1141,8 @@
             setInterval(pollTeamInbox, 60000);
             initVoiceTalker();
             messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
+            updateLocalTime();
+            setInterval(updateLocalTime, 1000);
             initCanvas();
             triggerCryptoMarket(false);
             setInterval(() => triggerCryptoMarket(false), 60000);
@@ -1556,8 +1558,24 @@
             setTimeout(() => { if (banner) banner.remove(); }, 5000);
         }
 
+        function dismissAnnaIntro() {
+            const intro = document.getElementById('msg_init');
+            if (intro) intro.remove();
+            if (messagePayloadStore) delete messagePayloadStore['msg_init'];
+        }
+
+        function updateLocalTime() {
+            const el = document.getElementById('local-time-tag');
+            if (!el) return;
+            const time = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date());
+            el.textContent = 'LOCAL TIME ' + time;
+        }
+
         function switchAgent(id) {
             if (!AGENTS[id]) return;
+            // Anna's first-landing intro stays only while she is still the initial agent.
+            // Any switch to Mr. Preach X or Martin Strayd clears it immediately and it does not return.
+            if (id !== 'AA01') dismissAnnaIntro();
             currentAgentId = id;
             const data = AGENTS[id];
 
