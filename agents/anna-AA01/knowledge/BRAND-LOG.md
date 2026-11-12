@@ -19,6 +19,13 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 - Flavors: Smoked Black, Green Jalapeño, Red Thai Chili.
 - Website: https://coolhotsauce.com
 
+## Public contacts and channels (owner-approved for public use, Nov 12 2026)
+- Agent Anna help line / public email: agent.anna.aa01@gmail.com
+- Agent Anna on X: https://x.com/agentannashow
+- Agent Anna on YouTube: https://www.youtube.com/@agentannashow
+- Martin Strayd on YouTube: https://www.youtube.com/@martinstrayd
+- Cool Hot Sauce backup contact: [PENDING - info coming from Martin]
+
 ## Placeholders (filled from the Nov 13 README)
 - Founder story: [PENDING]
 - Cafe location and hours: [PENDING]
@@ -31,3 +38,4 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 
 ## Log
 - 2026-11-12: Log created. Brand facts above stated by Preach on the call; full details due Nov 13.
+- 2026-11-12: Added public contacts and channels from Martin's Note of Today (Anna email, X, YouTube; Martin's YouTube). Cool Hot Sauce backup contact still pending.
