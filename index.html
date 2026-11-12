@@ -675,6 +675,70 @@
             .page-stage .matrix-visual-container { min-height: 280px; }
         }
 
+
+        /* ---------- Hands-free Voice Mode (live call) ---------- */
+        .voice-call-bar {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+            padding: 10px 14px; background: var(--bg-surface);
+            border-bottom: 1px solid var(--line); z-index: 2; flex-shrink: 0;
+        }
+        .voice-talk-btn {
+            background: linear-gradient(135deg, var(--flame), var(--chili));
+            border: 1px solid transparent; color: #fff;
+            padding: 9px 14px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.4px;
+            border-radius: 10px; cursor: pointer; font-family: var(--font-brand);
+            box-shadow: 0 0 18px rgba(255, 45, 26, 0.28);
+            transition: box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .voice-talk-btn:hover { filter: brightness(1.08); }
+        .voice-talk-btn.is-on {
+            background: color-mix(in srgb, var(--gold) 16%, var(--bg-raised));
+            color: var(--gold); border-color: var(--gold);
+            box-shadow: 0 0 0 1px var(--gold), 0 0 16px color-mix(in srgb, var(--gold) 35%, transparent);
+        }
+        .voice-pill {
+            display: none; font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; padding: 5px 10px; border-radius: 999px;
+            border: 1px solid var(--line); color: var(--text-muted); font-family: var(--font-mono);
+        }
+        .voice-pill.is-visible { display: inline-flex; align-items: center; gap: 6px; }
+        .voice-pill.is-listening {
+            color: var(--gold); border-color: color-mix(in srgb, var(--gold) 70%, var(--line));
+            box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 32%, transparent);
+        }
+        .voice-pill.is-thinking {
+            color: var(--habanero); border-color: color-mix(in srgb, var(--habanero) 70%, var(--line));
+        }
+        .voice-pill.is-speaking {
+            color: var(--flame); border-color: color-mix(in srgb, var(--flame) 70%, var(--line));
+            box-shadow: 0 0 12px color-mix(in srgb, var(--flame) 38%, transparent);
+        }
+        .voice-talker {
+            margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+            font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.4px; font-weight: 600;
+        }
+        .voice-talker select {
+            background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light);
+            padding: 6px 8px; font-size: 11px; border-radius: 8px; cursor: pointer; outline: none;
+            font-family: var(--font-ui);
+        }
+        .voice-talker select:hover, .voice-talker select:focus { border-color: var(--gold); }
+        .voice-caption {
+            display: none; flex-basis: 100%; min-height: 1.25em;
+            font-size: 12px; line-height: 1.4; color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+        .voice-caption.is-visible { display: block; }
+        .voice-caption.has-text { color: var(--text-light); }
+        .voice-caption.is-interim { color: var(--text-muted); font-style: italic; }
+        @media (max-width: 860px) {
+            .voice-talker { margin-left: 0; width: 100%; }
+            .voice-talk-btn { width: 100%; justify-content: center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .voice-talk-btn, .voice-pill.is-listening, .voice-pill.is-speaking { box-shadow: none; }
+        }
+
     </style>
 </head>
 <body class="is-standby">
@@ -853,6 +917,19 @@
                 </div>
             </div>
 
+            <div class="voice-call-bar" id="voice-call-bar">
+                <button type="button" class="voice-talk-btn" id="voice-talk-btn" onclick="toggleVoiceMode()" aria-pressed="false">🎙 TALK TO ANNA</button>
+                <span class="voice-pill" id="voice-pill" aria-live="polite">Idle</span>
+                <label class="voice-talker" for="voice-talker">Who's talking?
+                    <select id="voice-talker" onchange="setVoiceTalker(this.value)">
+                        <option value="preach">Mr. Preach X</option>
+                        <option value="martin">Martin Strayd</option>
+                        <option value="guest" selected>Guest</option>
+                    </select>
+                </label>
+                <div class="voice-caption" id="voice-caption" aria-live="polite"></div>
+            </div>
+
             <div class="quick-launch-bar">
                 <button class="ctrl-btn" onclick="triggerCryptoMarket(true)">📊 RATES</button>
                 <button class="ctrl-btn military-btn btn-warm" onclick="runSystemReport()">🔍 REPO REPORT</button>
@@ -992,6 +1069,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             try { localStorage.removeItem('bridge_url'); } catch (e) {}
+            initVoiceTalker();
             messagePayloadStore['msg_init'] = "Sawasdee ka! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
             initCanvas();
             triggerCryptoMarket(false);
@@ -1045,6 +1123,10 @@
         }
 
         function toggleMicrophone() {
+            if (voiceModeActive) {
+                showNotice("Voice Mode is already listening. Tap TALK TO ANNA to hang up.");
+                return;
+            }
             if (!recognition) {
                 showNotice("Speech Recognition not supported in this browser.");
                 return;
@@ -1058,9 +1140,330 @@
 
         function stopMicrophone() {
             isListening = false;
-            setMoodState('standby');
+            if (!voiceModeActive) setMoodState('standby');
             const btn = document.getElementById('mic-btn');
             if (btn) btn.classList.remove('listening');
+        }
+
+        // ---------- Hands-free Voice Mode ----------
+        let voiceModeActive = false;
+        let voiceRec = null;
+        let voicePausedForSpeech = false;
+        let voiceSending = false;
+        let voiceBuffer = '';
+        let voiceSilenceTimer = null;
+        let voiceBargeTimer = null;
+        let speakGen = 0;
+        const TALKER_LABELS = { preach: 'Mr. Preach X', martin: 'Martin Strayd', guest: 'Guest' };
+        const RELAY_NAMES = { anna: 'Anna', preach: 'Mr. Preach X', martin: 'Martin' };
+        window.VOICE_SILENCE_MS = window.VOICE_SILENCE_MS || 1200;
+
+        function getTalkerId() {
+            const sel = document.getElementById('voice-talker');
+            const id = (sel && sel.value) || (localStorage.getItem('voiceTalker') || 'guest');
+            return TALKER_LABELS[id] ? id : 'guest';
+        }
+        function getTalkerLabel() { return TALKER_LABELS[getTalkerId()] || 'Guest'; }
+        function initVoiceTalker() {
+            const sel = document.getElementById('voice-talker');
+            if (!sel) return;
+            const saved = localStorage.getItem('voiceTalker');
+            if (saved && TALKER_LABELS[saved]) sel.value = saved;
+        }
+        function setVoiceTalker(id) {
+            const key = TALKER_LABELS[id] ? id : 'guest';
+            try { localStorage.setItem('voiceTalker', key); } catch (e) {}
+            const sel = document.getElementById('voice-talker');
+            if (sel) sel.value = key;
+        }
+
+        function setVoicePill(state) {
+            const pill = document.getElementById('voice-pill');
+            if (!pill) return;
+            pill.className = 'voice-pill' + (voiceModeActive || state ? ' is-visible' : '') + (state ? ' is-' + state : '');
+            const labels = { listening: 'Listening', thinking: 'Thinking', speaking: 'Speaking' };
+            pill.textContent = labels[state] || (voiceModeActive ? 'Listening' : 'Idle');
+        }
+        function setVoiceCaption(text, interim) {
+            const cap = document.getElementById('voice-caption');
+            if (!cap) return;
+            const show = voiceModeActive || !!(text && text.trim());
+            cap.className = 'voice-caption' + (show ? ' is-visible' : '') + (text && text.trim() ? ' has-text' : '') + (interim ? ' is-interim' : '');
+            cap.textContent = text || (voiceModeActive ? 'Listening…' : '');
+        }
+        function updateVoiceTalkButton() {
+            const btn = document.getElementById('voice-talk-btn');
+            if (!btn) return;
+            btn.classList.toggle('is-on', voiceModeActive);
+            btn.setAttribute('aria-pressed', voiceModeActive ? 'true' : 'false');
+            btn.textContent = voiceModeActive ? '🎙 ON THE CALL — TAP TO HANG UP' : '🎙 TALK TO ANNA';
+        }
+
+        function voiceModeSupported() {
+            return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+        }
+
+        function toggleVoiceMode() {
+            if (voiceModeActive) { stopVoiceMode('Hung up.'); return; }
+            startVoiceMode();
+        }
+
+        function startVoiceMode() {
+            if (!voiceModeSupported()) {
+                showNotice("Voice Mode needs Chrome or Edge (Safari on some iPhones will not run a live call). You can still use the 🎙️ MIC button to dictate a line, then press Send.");
+                appendMsg("Voice Mode is not supported in this browser. Try Chrome or Edge, or use the 🎙️ MIC button.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                return;
+            }
+            if (isListening && recognition) { try { recognition.stop(); } catch (e) {} }
+            voiceModeActive = true;
+            voicePausedForSpeech = false;
+            voiceSending = false;
+            voiceBuffer = '';
+            isVoiceEnabled = true;
+            const vbtn = document.getElementById('voice-btn');
+            if (vbtn) vbtn.innerText = '🔊 ON';
+            updateVoiceTalkButton();
+            setVoiceCaption('', false);
+            setVoicePill('listening');
+            startVoiceListen();
+        }
+
+        function stopVoiceMode(notice) {
+            voiceModeActive = false;
+            voicePausedForSpeech = false;
+            voiceSending = false;
+            voiceBuffer = '';
+            clearTimeout(voiceSilenceTimer);
+            clearTimeout(voiceBargeTimer);
+            speakGen += 1;
+            stopVoiceRec();
+            if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+            updateVoiceTalkButton();
+            setVoicePill('');
+            const cap = document.getElementById('voice-pill');
+            if (cap) { document.getElementById('voice-pill').classList.remove('is-visible', 'is-listening', 'is-thinking', 'is-speaking'); }
+            setVoiceCaption('', false);
+            const caption = document.getElementById('voice-caption');
+            if (caption) caption.classList.remove('is-visible', 'has-text', 'is-interim');
+            setMoodState('standby');
+            if (notice) showNotice(notice);
+        }
+
+        function ensureVoiceRec() {
+            if (voiceRec) return voiceRec;
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) return null;
+            const rec = new SpeechRec();
+            rec.continuous = true;
+            rec.interimResults = true;
+            rec.lang = 'en-US';
+            rec.onstart = () => {
+                if (!voiceModeActive) return;
+                if (!voicePausedForSpeech && !voiceSending) {
+                    setMoodState('listening');
+                    setVoicePill('listening');
+                }
+            };
+            rec.onresult = (event) => {
+                if (!voiceModeActive) return;
+                // Barge-in: user started talking while the agent is speaking.
+                if (voicePausedForSpeech) {
+                    let heard = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        heard += event.results[i][0].transcript;
+                    }
+                    heard = (heard || '').trim();
+                    const isFinal = event.results[event.results.length - 1] && event.results[event.results.length - 1].isFinal;
+                    if (heard && (isFinal || heard.length >= 8 || heard.split(/\s+/).length >= 2)) {
+                        handleVoiceBargeIn(heard, isFinal);
+                    }
+                    return;
+                }
+                if (voiceSending) return;
+                let interim = '';
+                let finals = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const piece = event.results[i][0].transcript || '';
+                    if (event.results[i].isFinal) finals += piece;
+                    else interim += piece;
+                }
+                if (finals) voiceBuffer = (voiceBuffer + ' ' + finals).replace(/\s+/g, ' ').trim();
+                const shown = (voiceBuffer + (interim ? (' ' + interim) : '')).replace(/\s+/g, ' ').trim();
+                setVoiceCaption(shown, !!interim);
+                const input = document.getElementById('user-input');
+                if (input) input.value = shown;
+                const combined = shown;
+                const silenceMs = window.VOICE_SILENCE_MS || 1200;
+                const lastFinal = !!(finals && !interim);
+                if (lastFinal && (isStopListeningPhrase(combined) || parseRelayIntent(combined))) {
+                    clearTimeout(voiceSilenceTimer);
+                    commitVoiceUtterance(combined);
+                    return;
+                }
+                clearTimeout(voiceSilenceTimer);
+                voiceSilenceTimer = setTimeout(() => commitVoiceUtterance(voiceBuffer || shown), silenceMs);
+            };
+            rec.onerror = (event) => {
+                const err = (event && event.error) || '';
+                if (err === 'no-speech' || err === 'aborted') return;
+                if (err === 'not-allowed' || err === 'service-not-allowed') {
+                    stopVoiceMode();
+                    showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or use the 🎙️ MIC button after granting access.");
+                    appendMsg("I could not reach the microphone. Allow mic access in Chrome or Edge, or use the 🎙️ MIC button.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                    return;
+                }
+                if (err === 'audio-capture') {
+                    showNotice("No microphone was found. Plug one in, or use the text box.");
+                }
+            };
+            rec.onend = () => {
+                if (!voiceModeActive) return;
+                if (voiceSending) return;
+                // Chrome often ends a session; keep listening (or keep the barge-in ear open).
+                setTimeout(() => {
+                    if (!voiceModeActive || voiceSending) return;
+                    try { ensureVoiceRec().start(); } catch (e) {}
+                }, 80);
+            };
+            voiceRec = rec;
+            return rec;
+        }
+
+        function startVoiceListen() {
+            if (!voiceModeActive) return;
+            voicePausedForSpeech = false;
+            const rec = ensureVoiceRec();
+            if (!rec) return;
+            try { rec.start(); } catch (e) { /* already started */ }
+            setMoodState('listening');
+            setVoicePill('listening');
+            if (!voiceBuffer) setVoiceCaption('', false);
+        }
+
+        function stopVoiceRec() {
+            clearTimeout(voiceBargeTimer);
+            if (!voiceRec) return;
+            try { voiceRec.stop(); } catch (e) {}
+            try { voiceRec.abort(); } catch (e) {}
+        }
+
+        function onAgentSpeechStarted() {
+            if (!voiceModeActive) return;
+            voicePausedForSpeech = true;
+            clearTimeout(voiceSilenceTimer);
+            clearTimeout(voiceBargeTimer);
+            stopVoiceRec();
+            setVoicePill('speaking');
+            // After a short beat (so we do not hear the agent's own voice), listen for barge-in.
+            voiceBargeTimer = setTimeout(() => {
+                if (!voiceModeActive || !voicePausedForSpeech) return;
+                try { ensureVoiceRec().start(); } catch (e) {}
+            }, 350);
+        }
+
+        function onAgentSpeechEnded() {
+            if (!voiceModeActive) { setMoodState('standby'); return; }
+            if (voiceSending) return;
+            voicePausedForSpeech = false;
+            startVoiceListen();
+        }
+
+        function handleVoiceBargeIn(heard, isFinal) {
+            speakGen += 1;
+            if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+            voicePausedForSpeech = false;
+            voiceSending = false;
+            voiceBuffer = heard;
+            setVoiceCaption(heard, !isFinal);
+            const input = document.getElementById('user-input');
+            if (input) input.value = heard;
+            setMoodState('listening');
+            setVoicePill('listening');
+            if (isFinal && (isStopListeningPhrase(heard) || parseRelayIntent(heard))) {
+                commitVoiceUtterance(heard);
+                return;
+            }
+            clearTimeout(voiceSilenceTimer);
+            voiceSilenceTimer = setTimeout(() => commitVoiceUtterance(voiceBuffer || heard), window.VOICE_SILENCE_MS || 1200);
+            // Keep the recognizer running for the rest of the sentence.
+        }
+
+        function isStopListeningPhrase(text) {
+            const t = (text || '').toLowerCase().replace(/[?!.,]+/g, ' ').replace(/\s+/g, ' ').trim();
+            return /^(stop listening|goodbye anna|good bye anna|goodbye|hang up)( please)?$/.test(t);
+        }
+
+        function parseRelayIntent(text) {
+            const raw = (text || '').trim();
+            const m = raw.match(/^tell\s+(?<who>anna|martin|preach|mr\.?\s*preach(?:\s*x)?)\s+(?<msg>.+)$/i);
+            if (!m) return null;
+            const whoRaw = m.groups.who.toLowerCase().replace(/\s+/g, ' ').replace(/\./g, '');
+            let to = 'Anna';
+            if (whoRaw.indexOf('martin') !== -1) to = 'Martin';
+            else if (whoRaw.indexOf('preach') !== -1) to = 'Mr. Preach X';
+            const msg = m.groups.msg.trim().replace(/^(to\s+|that\s+)/i, '').trim();
+            if (!msg) return null;
+            return { to, text: msg };
+        }
+
+        // TODO: another worker will add the Supabase team-inbox backend later.
+        // This only stores the note locally for now. Do not claim cross-device delivery.
+        function relayMessage(to, from, text) {
+            let pendingRelay = [];
+            try { pendingRelay = JSON.parse(localStorage.getItem('pendingRelay') || '[]'); } catch (e) { pendingRelay = []; }
+            if (!Array.isArray(pendingRelay)) pendingRelay = [];
+            pendingRelay.push({ to, from, text, at: new Date().toISOString() });
+            try { localStorage.setItem('pendingRelay', JSON.stringify(pendingRelay)); } catch (e) {}
+            return pendingRelay;
+        }
+
+        function handleRelayUtterance(intent) {
+            const from = getTalkerLabel();
+            relayMessage(intent.to, from, intent.text);
+            const first = (intent.to === 'Mr. Preach X') ? 'Preach' : intent.to;
+            const reply = `Got it, I'll pass that to ${first}. Saved, delivers once team inbox is on.`;
+            appendMsg(intent.text, 'user', from);
+            appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
+            speakText(reply);
+        }
+
+        function commitVoiceUtterance(text) {
+            const spoken = (text || '').replace(/\s+/g, ' ').trim();
+            voiceBuffer = '';
+            clearTimeout(voiceSilenceTimer);
+            if (!spoken) return;
+            setVoiceCaption(spoken, false);
+            if (isStopListeningPhrase(spoken)) {
+                appendMsg(spoken, 'user', getTalkerLabel());
+                appendMsg("Okay, I'll stop listening.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                if ('speechSynthesis' in window && isVoiceEnabled) {
+                    try {
+                        const u = new SpeechSynthesisUtterance("Okay, I'll stop listening.");
+                        window.speechSynthesis.speak(u);
+                    } catch (e) {}
+                }
+                stopVoiceMode("Voice Mode ended.");
+                return;
+            }
+            const intent = parseRelayIntent(spoken);
+            if (intent) {
+                voiceSending = true;
+                stopVoiceRec();
+                setVoicePill('thinking');
+                setMoodState('thinking');
+                handleRelayUtterance(intent);
+                const input = document.getElementById('user-input');
+                if (input) input.value = '';
+                voiceSending = false;
+                // speakText will resume listening when the confirmation finishes.
+                return;
+            }
+            const input = document.getElementById('user-input');
+            if (input) input.value = spoken;
+            voiceSending = true;
+            stopVoiceRec();
+            setVoicePill('thinking');
+            Promise.resolve(sendMessage()).catch(() => {}).finally(() => { voiceSending = false; });
         }
 
         function triggerFadeBanner(text) {
@@ -1257,7 +1660,7 @@
                 displayHtml += `<br><img src="${lastPastedImageData}" class="pasted-img-preview" alt="Pasted Image">`;
             }
 
-            appendMsg(displayHtml, 'user', 'Commander');
+            appendMsg(displayHtml, 'user', getTalkerLabel());
             input.value = '';
             lastPastedImageData = null;
 
@@ -1265,9 +1668,10 @@
 
             const apiKey = localStorage.getItem('dahl_key') || document.getElementById('api-key').value;
             if (!apiKey) {
-                setMoodState('standby');
                 showNotice("NO DAHL API KEY: open KEYS and paste your key.");
                 appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
+                if (voiceModeActive) speakText('Chat is offline. Open Keys and add your Dahl key.');
+                else setMoodState('standby');
                 return;
             }
 
@@ -1305,7 +1709,7 @@ ${annaRules}`,
                     headers: { "Authorization": `Bearer ${apiKey.trim()}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "MiniMaxAI/MiniMax-M2.7",
-                        messages: [{ role: "system", content: personas[currentAgentId] || personas.AA01 }, ...hist],
+                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (voiceModeActive ? "\n\nYou are on a live voice call. Keep this reply short, spoken, and conversational - one or two sentences." : "") }, ...hist],
                         temperature: 0.2, max_tokens: 700
                     })
                 });
@@ -1324,16 +1728,23 @@ ${annaRules}`,
                 speakText(reply);
             } catch (e) {
                 hist.pop();
-                setMoodState('standby');
                 const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.';
                 showNotice(msg);
                 appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`);
+                if (voiceModeActive) speakText(msg);
+                else setMoodState('standby');
             }
         }
 
         function speakText(text) {
-            if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
+            const finishSpeak = () => {
+                if (voiceModeActive) onAgentSpeechEnded();
+                else setMoodState('standby');
+            };
+            if (!isVoiceEnabled && !voiceModeActive) return;
+            if (!('speechSynthesis' in window)) { finishSpeak(); return; }
             try {
+                const gen = ++speakGen;
                 window.speechSynthesis.cancel();
                 
                 let sanitized = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ' ')
@@ -1341,9 +1752,10 @@ ${annaRules}`,
                                     .replace(/\s+/g, ' ')
                                     .trim();
                                     
-                if (!sanitized) return;
+                if (!sanitized) { finishSpeak(); return; }
 
                 setMoodState('speaking');
+                if (voiceModeActive) onAgentSpeechStarted();
 
                 let voices = window.speechSynthesis.getVoices();
                 if (!voices || voices.length === 0) voices = cachedVoices;
@@ -1394,13 +1806,13 @@ ${annaRules}`,
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
                     if (i === parts.length - 1) {
-                        utterance.onend = () => setMoodState('standby');
-                        utterance.onerror = () => setMoodState('standby');
+                        utterance.onend = () => { if (gen !== speakGen) return; finishSpeak(); };
+                        utterance.onerror = () => { if (gen !== speakGen) return; finishSpeak(); };
                     }
                     window.speechSynthesis.speak(utterance);
                 });
             } catch (e) {
-                setMoodState('standby');
+                finishSpeak();
             }
         }
 
@@ -1460,10 +1872,12 @@ ${annaRules}`,
         }
 
         function executeStfuProtocol() {
+            speakGen += 1;
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             if (isListening && recognition) recognition.stop();
-            setMoodState('standby');
             showNotice("STFU COMMAND EXECUTED.");
+            if (voiceModeActive) { voiceSending = false; onAgentSpeechEnded(); }
+            else setMoodState('standby');
         }
 
         function deleteMessage(messageId) {
