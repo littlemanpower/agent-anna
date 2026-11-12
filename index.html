@@ -349,6 +349,8 @@
                 <input type="password" id="api-key" placeholder="Paste Dahl API Key...">
                 <div class="settings-title">GITHUB PAT TOKEN</div>
                 <input type="password" id="gh-token" placeholder="Paste GitHub PAT Token...">
+                <div class="settings-title">SERVER UPLINK URL (HTTPS)</div>
+                <input type="url" id="bridge-url" placeholder="https://your-bridge.example.com">
                 <button class="ctrl-btn military-btn" onclick="saveCredentials()" style="width:100%;">SECURE CREDENTIALS</button>
             </div>
 
@@ -386,7 +388,13 @@
     </div>
 
     <script>
-        const BRIDGE_BASE = "http://localhost:8000";
+        // Server Uplink address: set it in KEYS (saved in this browser only). Must be https when the page is served over https.
+        let BRIDGE_BASE = (localStorage.getItem('bridge_url') || '').trim().replace(/\/+$/, '');
+        function bridgeReady() {
+            if (!BRIDGE_BASE) { showNotice("UPLINK NOT CONFIGURED: add an https bridge URL in KEYS."); return false; }
+            if (location.protocol === 'https:' && !BRIDGE_BASE.startsWith('https://')) { showNotice("UPLINK BLOCKED: bridge URL must start with https:// on this page."); return false; }
+            return true;
+        }
         let currentAgentId = "AA01";
         const AGENTS = {
             "AA01": { title: "AGENT ANNA 01 // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
@@ -410,6 +418,7 @@
         let isListening = false;
 
         window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('bridge-url').value = BRIDGE_BASE;
             messagePayloadStore['msg_init'] = "Commander. Sovereign matrix initialized. Direct chat channel active.";
             initCanvas();
             triggerCryptoMarket(false);
@@ -566,29 +575,31 @@
         }
 
         async function launchServerAction() {
+            if (!bridgeReady()) { appendMsg('[SERVER UPLINK]: No reachable bridge configured. Open KEYS and enter an https:// bridge URL.', 'assistant', `${currentAgentId} [Uplink]`); return; }
             setMoodState('thinking');
-            showNotice("PINGING LOCAL BRIDGE.PS1 ON PORT 8000...");
+            showNotice(`PINGING BRIDGE AT ${BRIDGE_BASE}...`);
 
             try {
                 const res = await fetch(`${BRIDGE_BASE}/`);
                 if (res.ok) {
                     const data = await res.json();
                     setMoodState('responding');
-                    showNotice("BRIDGE.PS1 ON PORT 8000 ONLINE.");
-                    appendMsg(`[SERVER UPLINK SUCCESS] - Local bridge.ps1 active on http://localhost:8000.\nTelemetry: ${JSON.stringify(data, null, 2)}`, 'assistant', `${currentAgentId} [Server Uplink]`);
-                    speakText("Server uplink handshake confirmed on port 8000.");
+                    showNotice("BRIDGE ONLINE.");
+                    appendMsg(`[SERVER UPLINK SUCCESS] - Bridge active at ${BRIDGE_BASE}.\nTelemetry: ${JSON.stringify(data, null, 2)}`, 'assistant', `${currentAgentId} [Server Uplink]`);
+                    speakText("Server uplink handshake confirmed.");
                     return;
                 }
                 throw new Error();
             } catch (e) {
                 setMoodState('standby');
-                showNotice("UPLINK ERROR: bridge.ps1 not detected on localhost:8000!");
-                appendMsg(`[SERVER UPLINK ERROR]: Unable to reach http://localhost:8000. Ensure bridge.ps1 is running in your terminal.`, 'assistant', `${currentAgentId} [Uplink Error]`);
-                speakText("Server uplink error on port 8000.");
+                showNotice("UPLINK ERROR: bridge not reachable.");
+                appendMsg(`[SERVER UPLINK ERROR]: Unable to reach ${BRIDGE_BASE}. Check the bridge is running, served over https, and allows CORS from this page.`, 'assistant', `${currentAgentId} [Uplink Error]`);
+                speakText("Server uplink error.");
             }
         }
 
         async function scrapeWebPage() {
+            if (!bridgeReady()) return;
             setMoodState('scraping');
             showNotice("AA05 EXECUTING GOOGLE INTEL EXTRACTION...");
             
@@ -639,12 +650,12 @@
                 let systemReportText = `═══════════════════════════════════════════════════════════\n` +
                     `REAL REPOSITORY & MASTER SWARM DIAGNOSTIC REPORT\n` +
                     `═══════════════════════════════════════════════════════════\n` +
-                    `1. Bridge Endpoint: ` + BRIDGE_BASE + ` (Port 8000 Verified)\n` +
+                    `1. Bridge Endpoint: ` + BRIDGE_BASE + (BRIDGE_BASE ? ' (configured, not verified)' : ' (not configured)') + `\n` +
                     `2. Repository Hub: agent-anna/master-matrix (GitHub Pages Deployment)\n` +
                     `3. Swarm Nodes: AA01 through AA08 (100% Active Matrix)\n` +
                     `4. Financial Core: 4-Person Streamlined Treasury Team\n` +
                     `5. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
-                    `[DIAGNOSTIC STATUS]: All subsystem nodes nominal. Bridge listener verified on port 8000.`;
+                    `[DIAGNOSTIC STATUS]: All subsystem nodes nominal. Report is static; use SERVER UPLINK to actually test the bridge.`;
 
                 appendMsg(systemReportText, 'assistant', `${currentAgentId} [System Repo Report]`);
                 speakText("System diagnostic report generated successfully.");
@@ -702,12 +713,9 @@
 
             const apiKey = localStorage.getItem('dahl_key') || document.getElementById('api-key').value;
             if (!apiKey) {
-                setTimeout(() => {
-                    setMoodState('responding');
-                    let reply = `[${currentAgentId} TELEMETRY]: Message received and acknowledged across sovereign swarm nodes.`;
-                    appendMsg(reply, 'assistant', `${currentAgentId} [Response]`);
-                    speakText(reply);
-                }, 600);
+                setMoodState('standby');
+                showNotice("NO DAHL API KEY: open KEYS and paste your key.");
+                appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
                 return;
             }
 
@@ -745,20 +753,9 @@
             const apiKey = localStorage.getItem('dahl_key') || document.getElementById('api-key').value;
 
             if (!apiKey) {
-                setTimeout(() => {
-                    setMoodState('responding');
-                    let fallbackBrief = `═══════════════════════════════════════════════════════════════════\n` +
-                        `EXECUTIVE PRESS RELEASE DISPATCH (LOCAL SYNTHESIS)\n` +
-                        `═══════════════════════════════════════════════════════════════════\n\n` +
-                        `FOR IMMEDIATE RELEASE — SOVEREIGN INTELLIGENCE NETWORK DISPATCH\n\n` +
-                        `The autonomous agent matrix has successfully synthesized primary target intelligence into an uncompromised strategic brief without speculation or geographic hallucination.\n\n` +
-                        `DISPATCH 1/4: Core Subject Analysis: Sovereign intelligence payload successfully parsed for primary entities and structural metadata. #Research #Intel\n\n` +
-                        `DISPATCH 2/4: Strategic Market Alignment: Cross-referenced against global asset networks and independent frameworks to ensure absolute clarity. #Strategy\n\n` +
-                        `DISPATCH 3/4: Autonomous Verification: Swarm nodes AA01 through AA08 confirm pristine signal processing and zero navigational debris. #Matrix\n\n` +
-                        `DISPATCH 4/4: COMMANDER AUDIT: Agent Anna 01 submits this executive brief — Was this AI press release dispatch within your expectations, Commander? #Audit #LFG`;
-                    appendMsg(fallbackBrief, 'assistant', `${currentAgentId} [Press Release Dispatch]`);
-                    speakText("Executive press release dispatch generated.");
-                }, 600);
+                setMoodState('standby');
+                showNotice("NO DAHL API KEY: open KEYS and paste your key.");
+                appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`);
                 return;
             }
 
@@ -950,7 +947,7 @@
         function clearLogs() { document.getElementById('chat-container').innerHTML = ''; messagePayloadStore = {}; }
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-        function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); toggleSettings(); showNotice("Credentials Secured."); }
+        function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); BRIDGE_BASE = document.getElementById('bridge-url').value.trim().replace(/\/+$/, ''); localStorage.setItem('bridge_url', BRIDGE_BASE); toggleSettings(); showNotice("Credentials Secured."); }
         function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
 </body>
