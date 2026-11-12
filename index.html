@@ -932,9 +932,7 @@
                 <div class="settings-title">DAHL API KEY</div>
                 <input type="password" id="api-key" placeholder="Paste Dahl API Key once..." autocomplete="off">
                 <div id="dahl-key-status" class="settings-hint">Checking key status...</div>
-                <div class="settings-title">GITHUB PAT TOKEN</div>
-                <input type="password" id="gh-token" placeholder="Paste GitHub PAT Token...">
-                <div class="settings-hint">The Dahl key is saved once on the server, not in this browser. The GitHub token stays in this browser only. Nothing secret is stored in the site code.</div>
+                <div class="settings-hint">The Dahl key is saved once on the server, not in this browser. Nothing secret is stored in the site code.</div>
                 <button class="ctrl-btn btn-hot" onclick="saveCredentials()" style="width:100%;">SAVE KEYS</button>
             </div>
 
@@ -1136,7 +1134,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            try { localStorage.removeItem('bridge_url'); } catch (e) {}
+            try { localStorage.removeItem('bridge_url'); localStorage.removeItem('gh_pat_token'); } catch (e) {}
             migrateAndClearLocalKey();
             pollTeamInbox();
             setInterval(pollTeamInbox, 60000);
@@ -1308,6 +1306,7 @@
             clearTimeout(voiceBargeTimer);
             speakGen += 1;
             stopVoiceRec();
+            stopCloudAudio();
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
             updateVoiceTalkButton();
             setVoicePill('');
@@ -1441,6 +1440,7 @@
 
         function handleVoiceBargeIn(heard, isFinal) {
             speakGen += 1;
+            stopCloudAudio();
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
             voicePausedForSpeech = false;
             voiceSending = false;
@@ -1550,7 +1550,7 @@
             const banner = document.createElement('div');
             banner.id = 'telecom-fade-banner';
             banner.className = 'telecom-fade-banner';
-            banner.innerHTML = text;
+            banner.textContent = text;
             container.appendChild(banner);
             setTimeout(() => { if (banner) banner.remove(); }, 5000);
         }
@@ -1732,12 +1732,7 @@
             const query = input ? input.value.trim() : "";
             if (!query && !lastPastedImageData) return;
 
-            let displayHtml = query;
-            if (lastPastedImageData) {
-                displayHtml += `<br><img src="${lastPastedImageData}" class="pasted-img-preview" alt="Pasted Image">`;
-            }
-
-            appendMsg(displayHtml, 'user', getTalkerLabel());
+            appendMsg(query, 'user', getTalkerLabel(), { image: lastPastedImageData });
             input.value = '';
             lastPastedImageData = null;
 
@@ -1811,7 +1806,99 @@ ${annaRules}`,
             }
         }
 
+        // Cloned voices (Fish Audio via the anna-tts edge function) for Mr. Preach X (AA02) and Martin Strayd (AA03).
+        // The API key and voice ids live server-side only. Anna (AA01) keeps her browser voice.
+        const ANNA_TTS_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-tts';
+        const CLONE_AGENTS = ['AA02', 'AA03'];
+        const TTS_CHUNK = 580;
+        let cloudAudio = null;
+        let cloudAudioUrls = [];
+
+        function stopCloudAudio() {
+            if (cloudAudio) { try { cloudAudio.onended = null; cloudAudio.onerror = null; cloudAudio.pause(); } catch (e) {} cloudAudio = null; }
+            cloudAudioUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} });
+            cloudAudioUrls = [];
+        }
+
+        function cleanForSpeech(text) {
+            return String(text || '').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ' ')
+                .replace(/[*_#`~=\-\/\\\[\]]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function chunkForSpeech(text) {
+            const parts = (text.match(/[^.!?]+[.!?]*/g) || [text]).map(t => t.trim()).filter(Boolean);
+            const out = [];
+            let cur = '';
+            for (const p of parts) {
+                const piece = p.length > TTS_CHUNK ? p.slice(0, TTS_CHUNK) : p;
+                if ((cur + ' ' + piece).trim().length > TTS_CHUNK) { if (cur) out.push(cur); cur = piece; }
+                else cur = (cur + ' ' + piece).trim();
+            }
+            if (cur) out.push(cur);
+            return out;
+        }
+
+        async function fetchClonedAudio(agentId, text) {
+            const res = await fetch(ANNA_TTS_FN, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': ANNA_ANON, 'Authorization': 'Bearer ' + ANNA_ANON },
+                body: JSON.stringify({ agentId: agentId, text: text })
+            });
+            const type = res.headers.get('Content-Type') || '';
+            if (!res.ok || type.indexOf('audio/') !== 0) throw new Error('tts_unavailable');
+            const blob = await res.blob();
+            if (!blob.size) throw new Error('tts_empty');
+            const url = URL.createObjectURL(blob);
+            cloudAudioUrls.push(url);
+            return url;
+        }
+
         function speakText(text) {
+            const agentId = currentAgentId;
+            if (CLONE_AGENTS.indexOf(agentId) === -1 || (!isVoiceEnabled && !voiceModeActive) || !window.fetch || typeof Audio === 'undefined') {
+                return speakTextBrowser(text);
+            }
+            const clean = cleanForSpeech(text);
+            if (!clean) return speakTextBrowser(text);
+            const gen = ++speakGen;
+            stopCloudAudio();
+            if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+            setMoodState('speaking');
+            if (voiceModeActive) onAgentSpeechStarted();
+            window.__annaTtsPath = 'clone-pending';
+            const chunks = chunkForSpeech(clean);
+            let started = false;
+            const finish = () => {
+                if (gen !== speakGen) return;
+                stopCloudAudio();
+                if (voiceModeActive) onAgentSpeechEnded();
+                else setMoodState('standby');
+            };
+            const fallback = () => {
+                if (gen !== speakGen) return;
+                stopCloudAudio();
+                if (started) { finish(); return; }
+                window.__annaTtsPath = 'browser';
+                speakTextBrowser(text);
+            };
+            const playFrom = (i, urlPromise) => {
+                urlPromise.then(url => {
+                    if (gen !== speakGen) return;
+                    const next = (i + 1 < chunks.length) ? fetchClonedAudio(agentId, chunks[i + 1]) : null;
+                    if (next) next.catch(() => {});
+                    const a = new Audio(url);
+                    cloudAudio = a;
+                    a.onended = () => { if (gen !== speakGen) return; if (next) playFrom(i + 1, next); else finish(); };
+                    a.onerror = fallback;
+                    a.play().then(() => { started = true; window.__annaTtsPath = 'clone'; }).catch(fallback);
+                }).catch(fallback);
+            };
+            playFrom(0, fetchClonedAudio(agentId, chunks[0]));
+        }
+
+        function speakTextBrowser(text) {
             const finishSpeak = () => {
                 if (voiceModeActive) onAgentSpeechEnded();
                 else setMoodState('standby');
@@ -1951,6 +2038,7 @@ ${annaRules}`,
 
         function executeStfuProtocol() {
             speakGen += 1;
+            stopCloudAudio();
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             if (isListening && recognition) recognition.stop();
             showNotice("STFU COMMAND EXECUTED.");
@@ -1978,25 +2066,43 @@ ${annaRules}`,
         function showNotice(msg) {
             const b = document.createElement('div');
             b.style.cssText = `position:fixed;top:44px;right:16px;left:auto;max-width:min(360px,calc(100vw - 32px));z-index:999999;padding:12px 16px;background:#140808;border:1px solid var(--state-color);border-left:4px solid var(--state-color);color:var(--text-light);font-family:var(--font-ui);font-size:12px;line-height:1.5;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.55);`;
-            b.innerHTML = `<strong style="color:var(--state-color)">🪷 ANNA</strong><br>${msg}`;
+            b.innerHTML = `<strong style="color:var(--state-color)">🪷 ANNA</strong><br>${escapeHtml(msg)}`;
             document.body.appendChild(b);
             setTimeout(() => b.remove(), 3500);
         }
 
-        function appendMsg(htmlContent, sender, label) {
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // All chat text (user input, AI replies, team relay, voice) is escaped, so it can never run as HTML.
+        function appendMsg(text, sender, label, opts) {
             const container = document.getElementById('chat-container');
             const id = 'msg_' + Math.random().toString(36).substring(2, 9);
-            messagePayloadStore[id] = htmlContent;
+            const plain = String(text == null ? '' : text);
+            messagePayloadStore[id] = plain;
             const div = document.createElement('div');
-            div.className = `message ${sender}`;
+            div.className = `message ${sender === 'user' ? 'user' : 'assistant'}`;
             div.id = id;
-            div.innerHTML = `<div class="msg-header">${label}</div><div>${htmlContent}</div>
+            div.innerHTML = `<div class="msg-header">${escapeHtml(label)}</div><div class="msg-body">${escapeHtml(plain).replace(/\r?\n/g, '<br>')}</div>
             <div class="action-row">
                 <button class="action-chip" onclick="speakStoredMessage('${id}')">SPEECH READOUT</button>
                 <button class="action-chip" onclick="copyToClipboard('${id}', this)">COPY</button>
                 <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
                 <button class="action-chip del-btn" onclick="deleteMessage('${id}')">🗑️ DEL</button>
             </div>`;
+            const image = opts && opts.image;
+            if (typeof image === 'string' && /^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+\/=]+$/.test(image)) {
+                const body = div.querySelector('.msg-body');
+                const img = document.createElement('img');
+                img.className = 'pasted-img-preview';
+                img.alt = 'Pasted Image';
+                img.src = image;
+                if (plain) body.appendChild(document.createElement('br'));
+                body.appendChild(img);
+            }
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
@@ -2007,13 +2113,10 @@ ${annaRules}`,
         function saveCredentials() {
             const input = document.getElementById('api-key');
             const key = (input && input.value || '').trim();
-            const ghInput = document.getElementById('gh-token');
-            const gh = ghInput ? ghInput.value : '';
-            if (gh) localStorage.setItem('gh_pat_token', gh);
             try { localStorage.removeItem('bridge_url'); } catch (e) {}
             if (!key) {
                 toggleSettings();
-                showNotice(gh ? 'GitHub token saved in this browser.' : 'Paste a Dahl API key to save it on the server.');
+                showNotice('Paste a Dahl API key to save it on the server.');
                 return;
             }
             (async function () {
