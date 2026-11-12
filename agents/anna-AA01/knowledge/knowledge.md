@@ -93,6 +93,35 @@ coolhotsauce.com links:
 
 Those pages were noted because they are linked from the official sauce homepage. Sauce flavour names, sizes, and the Lazada buy link still come from `index.html`. No street address or phone number from secondary pages is included here.
 
+## Owner-stated brand facts (public-fit, Nov 12 2026 call)
+
+These lines were stated by the owners on the Nov 12 2026 call and are recorded as owner statements. They are not independently verified. Internal valuation figures, personal outreach lines, and named-company comparisons from that call are not included here. Keep "World Famous" and "Thailand National Hot Sauce Brand" as stated, without softening. Full shared summary: `agents/COOL-HOT-SAUCE-REFERENCE.md`.
+
+- Five farms. Bottling and manufacturing all under one roof. (owner statement)
+- The brand has Michelin representation. (owner statement)
+- It appears in guidebooks in five different languages for a country. (owner statement; the owners did not name the five languages or the country in this pass)
+- It is a food brand. It supplies hospitals and other places with frozen goods. (owner statement)
+- HACCP, GMP and GAP certified, as also stated on coolhotsauce.com. Certificates were not shown in this pass. Record as site wording plus owner statement. **UNVERIFIED** as independently checked certificates.
+- Seen in over 69 countries, as also stated on coolhotsauce.com. No country list was given. Record as site wording plus owner statement. **UNVERIFIED.**
+- Exclusively distributed under licence by KUNDA Co. Ltd., as also stated on coolhotsauce.com.
+- Theme songs, as stated on coolhotsauce.com and by the owners: Vegan Millionaire Tuk Tuk, Cool Hot Hot Shots, and Tuk Tuk Secret Spice (Muay Thailand), by Martin Strayd.
+
+## KUNDA Classic Vegan Patty (KUNDA July 2026 newsletter)
+
+These are KUNDA food-product facts from the KUNDA Co. Ltd. July 2026 newsletter, not Cool Hot Sauce bottle facts. Do not present the patty as a Cool Hot Sauce flavour, and do not invent a link between the two beyond KUNDA being the licensed distributor named on coolhotsauce.com. Staff name and phone numbers from the newsletter are omitted.
+
+- KUNDA Co. Ltd., "The Deliciously Different Fresh Food Company."
+- Newsletter heading: "Thailand's #1 Award Winning Vegan Steak." This is newsletter wording. **UNVERIFIED** as an independently checked ranking or award.
+- KUNDA Classic Vegan Patty launched in 2018 from the Chiang Rai flagship KUNDA CAFE, in collaboration with partners.
+- 250,000+ units sold in store and at leading restaurants in Thailand (newsletter figure, not independently checked).
+- 169g high-protein meal. No processed soy, palm oil, sugar, chemicals, beans, nuts, or garlic. Contains mushroom, onion, and approx. 2% gluten.
+- Made with 100% Thai fruit and vegetables. MSG free.
+- Made to order; about 6 business days; express frozen delivery; vacuum sealed; deep frozen -15 C.
+- Ships weekly nationwide, 48 times a year.
+- Almond milk buns available on request, minimum 8 pieces.
+
+If asked about this product, say it is a KUNDA product described in their 2026 newsletter, and point people to [kundacafe.com](https://kundacafe.com) for current details. Do not invent prices or a sauce-and-patty bundle.
+
 ## Gaps and uncertainties
 
 - **Homepage fetch:** [https://coolhotsauce.com](https://coolhotsauce.com) was fetched successfully on Nov 12 2026 (HTTP 200, HTML homepage, about 7.9 KB). A first WebFetch pass returned only a shortened extract; the full homepage was then read directly. `last-modified` on the response was Jul 9, 2026, 3:32 AM UTC (Jul 8, 2026, 11:32 PM ET).
@@ -111,3 +140,5 @@ Those pages were noted because they are linked from the official sauce homepage.
 - `/workspace/agent-anna-repo/agents/anna-AA01/character/README.md`
 - [https://coolhotsauce.com](https://coolhotsauce.com) and [https://coolhotsauce.com/index.html](https://coolhotsauce.com/index.html) (same homepage)
 - Outbound links noted from that homepage: [https://kundacafe.com](https://kundacafe.com), the TripAdvisor "Test Taste" link for Kunda Vegetarian Cafe, and the three YouTube song links listed above
+- Owner-stated public-fit brand facts from the Nov 12 2026 call (see `agents/COOL-HOT-SAUCE-REFERENCE.md`); internal valuation, outreach, and named-company comparison lines were not copied here
+- KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
