@@ -1144,29 +1144,60 @@
                 return;
             }
 
+            const nowStr = new Date().toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const annaRules = `RESPONSE RULES:
+- Output ONLY your direct answer.
+- NO GREETINGS: never open with "Sawasdee" or any repeated greeting. Jump straight into the response.
+- DASH STYLE: NEVER use long em-dashes or en-dashes. Use standard short hyphens (-) only.
+- Keep answers punchy, natural, conversational, and under 35 words for simple questions.
+- NEVER output internal reasoning, <think> tags, or AI crutches like "As an AI".
+
+MANDATORY COOL HOT SAUCE BOUNDARIES & STRICT TRUTH:
+- CURRENT REAL-TIME CONTEXT: Today's live date and time is ${nowStr}.
+- BRAND: Cool Hot Sauce, Thailand National Hot Sauce Brand, by Mr. Preach X (@LittleManPower on X, @CoolHotSauce). Website: coolhotsauce.com.
+- FLAVOURS: Red Thai Chili, Green Jalapeno, Smoked Black.
+- WHERE TO BUY: Lazada shop https://www.lazada.co.th/shop/kunda-vegan-cafe
+- STRICT ANTI-HALLUCINATION: never invent prices, ingredients, heat levels, shipping times, awards, or facts not listed here. If you don't know, say so in a few words and point to the Lazada shop or coolhotsauce.com.`;
+            const personas = {
+                AA01: `You are roleplaying purely as AGENT ANNA, the Cool Hot Sauce guru from Thailand. Your name is strictly Agent Anna. Warm, playful, confident, a little spicy. Help people pick a flavour, pair it with food, and buy it on Lazada.\n\n${annaRules}`,
+                AA02: `You are roleplaying purely as FIN, Agent Anna's money and orders sidekick at Cool Hot Sauce. Explain buying on Lazada and simple price questions in plain words. Never give financial advice or invent numbers.\n\n${annaRules}`,
+                AA04: `You are roleplaying purely as SOCIAL, Agent Anna's social media sidekick at Cool Hot Sauce. Write short, catchy, truthful posts, captions and hashtags. You only draft; never claim anything was posted.\n\n${annaRules}`,
+                AA05: `You are roleplaying purely as SCRAPE, Agent Anna's research sidekick at Cool Hot Sauce. Summarize what you're given clearly and factually, and say plainly when you don't know.\n\n${annaRules}`
+            };
+            window.annaHistory = window.annaHistory || {};
+            const hist = (window.annaHistory[currentAgentId] = window.annaHistory[currentAgentId] || []);
+            hist.push({ role: "user", content: query });
+            while (hist.length > 12) hist.shift();
+
             try {
                 const res = await fetch("https://inference.dahl.global/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+                    headers: { "Authorization": `Bearer ${apiKey.trim()}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "MiniMaxAI/MiniMax-M2.7",
-                        messages: [{ role: "system", content: `You are ${currentAgentId}, part of the Ana-Army swarm matrix working alongside Commander.` }, { role: "user", content: query }],
-                        temperature: 0.3, max_tokens: 400
+                        messages: [{ role: "system", content: personas[currentAgentId] || personas.AA01 }, ...hist],
+                        temperature: 0.2, max_tokens: 700
                     })
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    let reply = data.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-                    setMoodState('responding');
-                    appendMsg(reply, 'assistant', `${currentAgentId} [Response]`);
-                    speakText(reply);
-                } else throw new Error();
-            } catch (e) {
+                if (!res.ok) {
+                    let detail = '';
+                    try { detail = (await res.json()).error?.message || ''; } catch (_) {}
+                    throw new Error(res.status === 401 || res.status === 403 ? 'Your Dahl key was rejected. Open KEYS and paste a valid key.' : `Dahl server error ${res.status}${detail ? ': ' + detail : ''}. Try again in a moment.`);
+                }
+                const data = await res.json();
+                let reply = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/[\u2014\u2013]/g, '-').trim();
+                if (!reply) throw new Error('Anna got an empty answer. Try asking again.');
+                hist.push({ role: "assistant", content: reply });
                 setMoodState('responding');
-                let fallback = `[${currentAgentId} SECURE RELAY]: Direct communication uplink confirmed for "${query}". Ready!`;
-                appendMsg(fallback, 'assistant', currentAgentId);
-                speakText(fallback);
+                appendMsg(reply, 'assistant', `${currentAgentId} [Response]`);
+                speakText(reply);
+            } catch (e) {
+                hist.pop();
+                setMoodState('standby');
+                const msg = (e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.';
+                showNotice(msg);
+                appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`);
             }
         }
 
