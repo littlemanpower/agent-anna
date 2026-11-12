@@ -1635,7 +1635,6 @@
 
         function setMoodState(stateName) {
             const presence = PRESENCE_MAP[stateName] || 'standby';
-            if (typeof chatBusy !== 'undefined' && chatBusy && presence !== 'thinking' && presence !== 'replying') return;
             document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening');
             document.body.classList.add(`is-${stateName}`);
             document.body.setAttribute('data-state', presence);
@@ -3058,7 +3057,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 ttsPrefetch = {};
                 stopCloudAudio();
                 if (voiceModeActive) onAgentSpeechEnded();
-                else setMoodState('standby');
+                else if (!(typeof chatBusy !== 'undefined' && chatBusy)) setMoodState('standby');
             };
             const fallback = function (remain) {
                 if (gen !== speakGen) return;
@@ -3109,7 +3108,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             const finishSpeak = () => {
                 ttsPlaying = false;
                 if (voiceModeActive) onAgentSpeechEnded();
-                else setMoodState('standby');
+                else if (!(typeof chatBusy !== 'undefined' && chatBusy)) setMoodState('standby');
             };
             if (!isVoiceEnabled && !voiceModeActive) { schedulePresenceIdle(1800); return; }
             if (!('speechSynthesis' in window)) { finishSpeak(); return; }
