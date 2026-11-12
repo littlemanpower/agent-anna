@@ -85,6 +85,13 @@
 
         button, input, select { font-family: var(--font-ui); }
         :focus-visible { outline: 2px solid var(--state-color); outline-offset: 2px; }
+        .skip-link {
+            position: absolute; left: 12px; top: -56px; z-index: 10000;
+            padding: 8px 14px; background: var(--bg-raised); color: #fff;
+            border: 1px solid var(--gold); border-radius: 8px; text-decoration: none;
+            font-family: var(--font-brand); font-weight: 700; font-size: 13px;
+        }
+        .skip-link:focus, .skip-link:focus-visible { top: 12px; }
 
         /* ---------- Ticker ---------- */
         .financial-ticker-bar {
@@ -195,8 +202,8 @@
         }
         .agent-hud-card img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--line); object-fit: cover; margin-bottom: 6px; }
         .agent-hud-card.active-node img { border-color: var(--state-color); }
-        .agent-hud-card h5 { font-size: 10px; color: var(--text-light); letter-spacing: 1px; font-weight: 700; }
-        .agent-hud-card.active-node h5 { color: var(--state-color); }
+        .agent-hud-card h3, .agent-hud-card h5 { font-size: 10px; color: var(--text-light); letter-spacing: 1px; font-weight: 700; margin: 0; }
+        .agent-hud-card.active-node h3, .agent-hud-card.active-node h5 { color: var(--state-color); }
         .agent-hud-card p { font-size: 9px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
 
         .matrix-visual-container {
@@ -363,7 +370,7 @@
             .agents-matrix-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .agent-hud-card { padding: 8px 4px; }
             .agent-hud-card img { width: 34px; height: 34px; }
-            .agent-hud-card h5 { font-size: 9px; }
+            .agent-hud-card h3, .agent-hud-card h5 { font-size: 9px; }
             .matrix-visual-container { min-height: 280px; flex: none; }
             .viewport-screen { width: 190px; height: 190px; }
             .phonebook-bar { padding: 8px 10px; }
@@ -747,6 +754,7 @@
             background: #000; border: 1px solid color-mix(in srgb, var(--gold) 40%, #333);
         }
         .share-x-btn:hover { border-color: var(--gold); color: var(--gold); }
+        button.share-x-btn { font-family: inherit; cursor: pointer; }
         .anna-msg-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
         .anna-msg-form label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.4px; }
         .anna-msg-form input, .anna-msg-form textarea {
@@ -896,11 +904,20 @@
             display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center;
         }
         .anna-forget-link {
-            background: none; border: 0; padding: 0; color: var(--gold);
-            cursor: pointer; font-size: 11px; text-decoration: underline;
-            font-family: inherit;
+            background: none; border: 0; padding: 8px 2px; color: var(--gold);
+            cursor: pointer; font-size: 12px; text-decoration: underline;
+            font-family: inherit; min-height: 36px;
         }
         .anna-privacy-line { font-size: 11px; color: var(--text-muted); }
+        .chat-privacy-row {
+            display: flex; align-items: center; gap: 10px 14px;
+            flex-wrap: wrap; padding: 0 2px; min-height: 36px;
+        }
+        #chat-retry-status {
+            font-size: 12px; color: var(--gold); font-weight: 600;
+            line-height: 1.4;
+        }
+        #chat-retry-status[hidden], #chat-retry-status:empty { display: none; }
         @media (prefers-reduced-motion: reduce) {
             .voice-talk-btn, .voice-pill.is-listening, .voice-pill.is-speaking { box-shadow: none; }
             .voice-level { display: none !important; }
@@ -1180,6 +1197,7 @@
     </style>
 </head>
 <body class="is-standby" data-state="standby">
+    <a class="skip-link" href="#chat">Skip to chat</a>
 
     <!-- LIVE COINGECKO & DOGGY MARKET TICKER BAR WITH LIVE LINKS -->
     <div class="financial-ticker-bar">
@@ -1211,6 +1229,7 @@
         <a class="nav-ext hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
     </nav>
 
+    <main id="main">
     <!-- PORTAL HERO -->
     <header class="portal-hero" id="top">
         <svg class="wat-art" viewBox="0 0 420 190" aria-hidden="true">
@@ -1257,7 +1276,7 @@
         <div class="page-stage">
         <div class="hero-top">
             <div class="brand-lockup">
-                <a class="brand-logo-link" href="https://coolhotsauce.com" target="_blank" rel="noopener" title="CoolHotSauce.com"><img class="brand-logo" src="assets/coolhotsauce-logo.png" width="96" height="96" alt="Cool Hot Sauce logo"></a>
+                <a class="brand-logo-link" href="https://coolhotsauce.com" target="_blank" rel="noopener" title="CoolHotSauce.com"><img class="brand-logo" src="assets/coolhotsauce-logo.png" width="96" height="96" alt="Cool Hot Sauce logo" fetchpriority="high" decoding="async"></a>
                 <div class="brand-text">
                     <h1>AGENT ANNA <span class="h1-sep">//</span> <span class="h1-hot">COOL HOT SAUCE</span></h1>
                     <div class="thai-sub">สวัสดีค่ะ &nbsp;·&nbsp; Welcome to the Land of Smiles 🪷</div>
@@ -1306,6 +1325,7 @@
                     </div>
                     <div class="wwd-actions">
                         <a class="share-x-btn" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20Built%20by%20%40LittleManPower.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
+                        <button type="button" class="share-x-btn" id="copy-site-link-btn">Copy link</button>
                     </div>
                 </div>
                 <div class="wwd-card" id="leave-message">
@@ -1339,7 +1359,7 @@
                 <div class="phonebook-title">🪷 ANNA&#39;S CREW // 3 AGENTS</div>
                 <div class="phonebook-controls">
                     <button class="ctrl-btn military-btn" onclick="prevAgent()">◀ PREV</button>
-                    <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
+                    <select class="phonebook-select" id="agent-phonebook-select" aria-label="Choose an agent" onchange="switchAgent(this.value)">
                         <option value="AA01">Agent Anna</option>
                         <option value="AA02">Mr. Preach X</option>
                         <option value="AA03">Martin Strayd</option>
@@ -1350,13 +1370,13 @@
 
             <div class="agents-matrix-grid">
                 <div class="agent-hud-card active-node" id="card-AA01" role="button" tabindex="0" onclick="selectAgentAndChat('AA01')">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="AA01">
-                    <h5>AGENT ANNA</h5>
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="Agent Anna">
+                    <h3>AGENT ANNA</h3>
                     <p>Core & Telemetry</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
-                    <img src="assets/preach.jpg" alt="AA02">
-                    <h5>MR. PREACH X</h5>
+                    <img src="assets/preach.jpg" alt="Mr. Preach X">
+                    <h3>MR. PREACH X</h3>
                     <p>Founder & Gamer</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/LittleManPower" target="_blank" rel="noopener" title="Mr. Preach X on X" aria-label="Mr. Preach X on X">𝕏</a>
@@ -1365,8 +1385,8 @@
                     </div>
                 </div>
                 <div class="agent-hud-card" id="card-AA03" role="button" tabindex="0" onclick="selectAgentAndChat('AA03')">
-                    <img src="assets/martin.jpg" alt="AA03">
-                    <h5>MARTIN STRAYD</h5>
+                    <img src="assets/martin.jpg" alt="Martin Strayd">
+                    <h3>MARTIN STRAYD</h3>
                     <p>Music & Strayd</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/iamMartinStrayd" target="_blank" rel="noopener" title="Martin Strayd on X" aria-label="Martin Strayd on X">𝕏</a>
@@ -1425,7 +1445,7 @@
 
             <div id="settings-panel">
                 <div class="settings-title">DAHL API KEY</div>
-                <input type="password" id="api-key" placeholder="Paste Dahl API Key once..." autocomplete="off">
+                <input type="password" id="api-key" placeholder="Paste Dahl API Key once..." autocomplete="off" aria-label="Dahl API key">
                 <div id="dahl-key-status" class="settings-hint">Checking key status...</div>
                 <div class="settings-hint">The Dahl key is saved once on the server, not in this browser. Nothing secret is stored in the site code.</div>
                 <button class="ctrl-btn btn-hot" onclick="saveCredentials()" style="width:100%;">SAVE KEYS</button>
@@ -1438,14 +1458,13 @@
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
                     <div class="msg-body" id="anna-opening-line">I&#39;m Anna, your Cool Hot Sauce guide. Ask me anything.</div>
                     <div class="anna-opening-meta" id="anna-opening-meta">
-                        <button type="button" class="anna-forget-link" id="anna-forget-me">Forget me</button>
                         <span class="anna-privacy-line">Location is approximate, from IP, used only to show the weather, and not stored.</span>
                     </div>
                     <div class="action-row">
-                        <button class="action-chip icon-chip" onclick="speakStoredMessage('msg_init')" aria-label="Speech" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
-                        <button class="action-chip" onclick="copyToClipboard('msg_init', this)">COPY</button>
-                        <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
-                        <button class="action-chip del-btn" onclick="deleteMessage('msg_init')">🗑️ DEL</button>
+                        <button type="button" class="action-chip icon-chip" onclick="speakStoredMessage('msg_init')" aria-label="Speak this message" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+                        <button type="button" class="action-chip" onclick="copyToClipboard('msg_init', this)" aria-label="Copy this message">COPY</button>
+                        <button type="button" class="action-chip del-btn" onclick="executeStfuProtocol()" aria-label="Stop speech">🛑 STFU</button>
+                        <button type="button" class="action-chip del-btn" onclick="deleteMessage('msg_init')" aria-label="Delete this message">🗑️ DEL</button>
                     </div>
                 </div>
             </div>
@@ -1460,9 +1479,13 @@
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
                     <textarea id="user-input" rows="1" placeholder="Message Anna... (Enter to send, Shift+Enter for a new line)" onkeydown="handleKey(event)" oninput="autosizeUserInput()" onpaste="handleClipboardPaste(event)" aria-label="Message Anna"></textarea>
-                    <button type="button" class="ctrl-btn btn-hot" id="send-btn" onclick="sendMessage()">SEND 🌶️</button>
+                    <button type="button" class="ctrl-btn btn-hot" id="send-btn" onclick="sendMessage()" aria-label="Send message">SEND 🌶️</button>
                 </div>
                 <div class="voice-type-note" id="voice-type-note" hidden>Voice chat on - end voice to type</div>
+                <div class="chat-privacy-row">
+                    <button type="button" class="anna-forget-link" id="anna-forget-me" aria-label="Forget me and clear this visit on this device">Forget me</button>
+                    <div id="chat-retry-status" role="status" aria-live="polite" hidden></div>
+                </div>
             </div>
         </div>
     </div>
@@ -1595,7 +1618,7 @@
             <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a>
             <a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a>
             <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a>
-            <a href="https://x.com/suzukistrayd" target="_blank" rel="noopener">Martin on X</a>
+            <a href="https://x.com/iamMartinStrayd" target="_blank" rel="noopener">Martin on X</a>
             <a href="https://github.com/suzukistrayd" target="_blank" rel="noopener">Martin on GitHub</a>
         </div><details class="photo-credits"><summary>Photo credits</summary>
         White Temple, Wat Rong Khun: <a href="https://commons.wikimedia.org/wiki/File:Chiang_Rai_-_Wat_Rong_Khun_%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%B8%E0%B9%88%E0%B8%99_(2026)_-_img_11.jpg" target="_blank" rel="noopener">Chainwit.</a>, <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener">CC BY 4.0</a> &bull;
@@ -1603,6 +1626,7 @@
         Wat Rong Khun golden building: <a href="https://commons.wikimedia.org/wiki/File:Wat_Rong_Khun_golden_toilet_building.JPG" target="_blank" rel="noopener">BrokenSphere</a>, <a href="https://creativecommons.org/licenses/by/3.0" target="_blank" rel="noopener">CC BY 3.0</a> &bull;
         Night market lanterns: <a href="https://commons.wikimedia.org/wiki/File:DZ6_1772_Twilight_market_bustle_lanterns_glow_above_a_lively_street_filled_with_food_stalls_shoppers_and_evening_chatter.jpg" target="_blank" rel="noopener">PattayaPatrol</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
         All via Wikimedia Commons, resized/compressed for web.</details></footer>
+    </main>
 
     <script>
         let currentAgentId = "AA01";
@@ -1653,7 +1677,7 @@
             } catch (e) {}
         }
         if (!window.__annaWarmTimer) {
-            window.__annaWarmTimer = setInterval(warmAnnaFunctions, 180000);
+            window.__annaWarmTimer = setInterval(warmAnnaFunctions, 60000);
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'visible') warmAnnaFunctions();
             });
@@ -1718,6 +1742,7 @@
         window.addEventListener('pointerdown', function annaPrewarmOnce() {
             window.removeEventListener('pointerdown', annaPrewarmOnce);
             if (typeof prewarmAudioContext === 'function') prewarmAudioContext();
+            if (typeof warmAnnaFunctions === 'function') warmAnnaFunctions();
         }, { once: true, passive: true });
         window.addEventListener('DOMContentLoaded', () => {
             try { localStorage.removeItem('bridge_url'); localStorage.removeItem('gh_pat_token'); } catch (e) {}
@@ -1732,7 +1757,7 @@
             initCanvas();
             triggerCryptoMarket(false);
             setInterval(() => triggerCryptoMarket(false), 60000);
-            switchAgent('AA01');
+            switchAgent('AA01', { quiet: true });
             initSpeechRecognition();
 
             if ('speechSynthesis' in window) {
@@ -1743,7 +1768,10 @@
             initChatComposer();
             initAnnaMessageForm();
             initAnnaSubscribeForm();
+            initShareAndCopy();
             warmAnnaFunctions();
+            var userIn = document.getElementById('user-input');
+            if (userIn) userIn.addEventListener('focus', function () { warmAnnaFunctions(); }, { once: true, passive: true });
         });
 
         function loadVoices() {
@@ -1993,9 +2021,15 @@
                 btn.setAttribute('aria-busy', chatBusy ? 'true' : 'false');
             }
             if (note) {
-                note.hidden = !locked;
-                note.classList.toggle('is-on', locked);
-                note.textContent = locked ? 'Voice chat on - end voice to type' : '';
+                if (voiceModeActive && !locked) {
+                    note.hidden = false;
+                    note.classList.toggle('is-on', true);
+                    note.textContent = 'Voice is on - you can type a follow-up or just talk';
+                } else {
+                    note.hidden = !locked;
+                    note.classList.toggle('is-on', locked);
+                    note.textContent = locked ? 'Voice chat on - end voice to type' : '';
+                }
             }
         }
 
@@ -2588,6 +2622,10 @@
             voiceSending = true;
             stopVoiceRec();
             setVoicePill('thinking');
+            if (voiceModeActive) {
+                voiceLocksTyping = true;
+                syncComposerLock();
+            }
             Promise.resolve(sendMessage(spoken)).catch(() => {}).finally(() => { voiceSending = false; });
         }
 
@@ -2617,7 +2655,7 @@
             el.textContent = 'LOCAL TIME ' + time;
         }
 
-        function switchAgent(id) {
+        function switchAgent(id, opts) {
             if (!AGENTS[id]) return;
             // Anna's first-landing intro stays only while she is still the initial agent.
             // Any switch to Mr. Preach X or Martin Strayd clears it immediately and it does not return.
@@ -2643,8 +2681,11 @@
             const card = document.getElementById(`card-${id}`);
             if (card) card.classList.add('active-node');
 
-            triggerFadeBanner(`Connected to Telecommunication Line: ${data.title}`);
-            speakText(`Connected to ${data.title}, Commander.`);
+            const quiet = !!(opts && opts.quiet);
+            if (!quiet) {
+                triggerFadeBanner(`Connected to Telecommunication Line: ${data.title}`);
+                speakText(`Connected to ${data.title}, Commander.`);
+            }
         }
 
         function prevAgent() {
@@ -2766,7 +2807,7 @@
             const data = AGENTS[currentAgentId];
 
             if (mode === 'portrait') {
-                screen.innerHTML = `<img id="active-portrait" src="${data.img}" alt="Agent">`;
+                screen.innerHTML = `<img id="active-portrait" src="${data.img}" alt="${(data.talk || 'Agent').replace(/"/g, '')}">`;
                 showNotice("HUD Viewport: Agent Portrait Active.");
             } else if (mode === 'video') {
                 screen.innerHTML = `<video controls autoplay loop muted><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>`;
@@ -3036,7 +3077,7 @@
 
         async function sendMessage(overrideText) {
             const fromOverride = (typeof overrideText === 'string');
-            if (typeof voiceModeActive !== 'undefined' && voiceModeActive && !fromOverride) return;
+            if (typeof voiceLocksTyping !== 'undefined' && voiceLocksTyping && !fromOverride) return;
             if (chatBusy) return;
             const input = document.getElementById('user-input');
             const query = (fromOverride ? overrideText : (input ? input.value : '')).trim();
@@ -3126,13 +3167,17 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         }
                     }
                 };
+                const isBusy = function (status, msg) {
+                    return status === 429 || /Dahl server error 429|chat is busy/i.test(msg || '');
+                };
                 const isTransient = function (status, msg) {
-                    if (status === 429 || status === 502 || status === 503 || status === 504) return true;
-                    return /Dahl server error (429|502|503|504)|empty answer|Could not reach|chat is busy/i.test(msg || '');
+                    if (status === 502 || status === 503 || status === 504) return true;
+                    return /Dahl server error (502|503|504)|empty answer|Could not reach/i.test(msg || '');
                 };
                 const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
                 let reply = '';
                 let lastErr = '';
+                let busyRetried = false;
                 const maxAttempts = 3;
                 for (let attempt = 1; attempt <= maxAttempts; attempt++) {
                     if (chatAbort && chatAbort.signal && chatAbort.signal.aborted) break;
@@ -3160,8 +3205,18 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                             : (res.status === 429
                                 ? 'The chat is busy right now. Try again in a moment.'
                                 : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.')));
+                        if (isBusy(res.status, lastErr)) {
+                            if (!busyRetried) {
+                                busyRetried = true;
+                                setMoodState('thinking');
+                                await waitWithCountdown(3000, 'The chat is busy. Trying again in ');
+                                continue;
+                            }
+                            setChatRetryStatus('');
+                            throw new Error(lastErr);
+                        }
                         if (isTransient(res.status, lastErr) && attempt < maxAttempts) {
-                            await sleep(res.status === 429 ? 2500 * attempt : 400 * attempt);
+                            await sleep(400 * attempt);
                             continue;
                         }
                         throw new Error(lastErr);
@@ -3219,7 +3274,12 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 clearTimeout(timeoutId);
                 bumpChatWatchdog = function () {};
                 chatAbort = null;
+                setChatRetryStatus('');
                 setChatBusy(false);
+                if (typeof voiceModeActive !== 'undefined' && voiceModeActive) {
+                    voiceLocksTyping = false;
+                    syncComposerLock();
+                }
                 refocusUserInput();
             }
         }
@@ -3528,11 +3588,86 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             if (el) { delete messagePayloadStore[messageId]; el.remove(); showNotice("Message purged."); }
         }
 
+        function setChatRetryStatus(text) {
+            const el = document.getElementById('chat-retry-status');
+            if (!el) return;
+            if (text) { el.hidden = false; el.textContent = text; }
+            else { el.textContent = ''; el.hidden = true; }
+        }
+        function waitWithCountdown(ms, lead) {
+            const start = Date.now();
+            return new Promise(function (resolve) {
+                function tick() {
+                    const left = Math.ceil((start + ms - Date.now()) / 1000);
+                    if (left <= 0) { setChatRetryStatus(''); resolve(); return; }
+                    setChatRetryStatus((lead || 'Trying again in ') + left + '\u2026');
+                    setTimeout(tick, 250);
+                }
+                tick();
+            });
+        }
+        function fallbackCopyText(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+            ta.remove();
+            return ok;
+        }
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text).catch(function () {
+                    if (fallbackCopyText(text)) return;
+                    throw new Error('copy_failed');
+                });
+            }
+            return fallbackCopyText(text) ? Promise.resolve() : Promise.reject(new Error('copy_failed'));
+        }
         function copyToClipboard(messageId, btn) {
             const text = messagePayloadStore[messageId] || "";
-            navigator.clipboard.writeText(text);
-            btn.innerText = "COPIED!";
-            setTimeout(() => btn.innerText = "COPY", 2000);
+            const label = (btn && (btn.getAttribute('data-copy-label') || btn.innerText)) || 'COPY';
+            if (btn) btn.setAttribute('data-copy-label', label);
+            copyTextToClipboard(text).then(function () {
+                if (btn) {
+                    btn.innerText = 'COPIED!';
+                    setTimeout(function () { btn.innerText = label; }, 2000);
+                } else {
+                    showNotice('Copied.');
+                }
+            }).catch(function () {
+                showNotice('Could not copy. Select the text and copy it yourself.');
+            });
+        }
+        const ANNA_SITE_URL = 'https://littlemanpower.github.io/agent-anna/';
+        const ANNA_SHARE_TEXT = 'Just chatted with Agent Anna about Cool Hot Sauce. World Famous. Thailand National Hot Sauce Brand. Built by @LittleManPower. \uD83C\uDF36\uFE0F';
+        function initShareAndCopy() {
+            const share = document.getElementById('share-x-btn');
+            if (share && !share.__bound) {
+                share.__bound = true;
+                share.addEventListener('click', function (ev) {
+                    if (!navigator.share) return;
+                    ev.preventDefault();
+                    navigator.share({ title: 'AGENT ANNA // COOL HOT SAUCE', text: ANNA_SHARE_TEXT, url: ANNA_SITE_URL }).catch(function () {});
+                });
+            }
+            const copyLink = document.getElementById('copy-site-link-btn');
+            if (copyLink && !copyLink.__bound) {
+                copyLink.__bound = true;
+                copyLink.addEventListener('click', function () {
+                    const prev = copyLink.innerText;
+                    copyTextToClipboard(ANNA_SITE_URL).then(function () {
+                        copyLink.innerText = 'Copied!';
+                        setTimeout(function () { copyLink.innerText = prev; }, 2000);
+                    }).catch(function () {
+                        showNotice('Could not copy the link.');
+                    });
+                });
+            }
         }
 
         function speakStoredMessage(messageId) {
@@ -3565,10 +3700,10 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             div.id = id;
             div.innerHTML = `<div class="msg-header">${escapeHtml(label)}</div><div class="msg-body">${escapeHtml(plain).replace(/\r?\n/g, '<br>')}</div>
             <div class="action-row">
-                <button class="action-chip icon-chip" onclick="speakStoredMessage('${id}')" aria-label="Speech" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
-                <button class="action-chip" onclick="copyToClipboard('${id}', this)">COPY</button>
-                <button class="action-chip del-btn" onclick="executeStfuProtocol()">🛑 STFU</button>
-                <button class="action-chip del-btn" onclick="deleteMessage('${id}')">🗑️ DEL</button>
+                <button type="button" class="action-chip icon-chip" onclick="speakStoredMessage('${id}')" aria-label="Speak this message" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+                <button type="button" class="action-chip" onclick="copyToClipboard('${id}', this)" aria-label="Copy this message">COPY</button>
+                <button type="button" class="action-chip del-btn" onclick="executeStfuProtocol()" aria-label="Stop speech">🛑 STFU</button>
+                <button type="button" class="action-chip del-btn" onclick="deleteMessage('${id}')" aria-label="Delete this message">🗑️ DEL</button>
             </div>`;
             const image = opts && opts.image;
             if (typeof image === 'string' && /^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+\/=]+$/.test(image)) {
