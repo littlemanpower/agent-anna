@@ -1586,7 +1586,7 @@
     </section>
 
     <div class="kanok-strip"></div>
-    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; paste your Dahl key once in KEYS
+    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a>
         <div class="foot-links">
             <a href="#faq">FAQ</a>
             <a href="#updates">Email updates</a>
@@ -1651,6 +1651,12 @@
                     fetch(ANNA_TTS_FN, { method: 'OPTIONS', headers: { 'Origin': location.origin } }).catch(function () {});
                 }
             } catch (e) {}
+        }
+        if (!window.__annaWarmTimer) {
+            window.__annaWarmTimer = setInterval(warmAnnaFunctions, 180000);
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') warmAnnaFunctions();
+            });
         }
 
         async function refreshKeyStatus() {
@@ -2664,6 +2670,7 @@
         }
         function selectAgentAndChat(id) {
             switchAgent(id);
+            if (typeof warmAnnaFunctions === 'function') warmAnnaFunctions();
             scrollToChatAndFocus();
         }
         function initPageMotion() {
@@ -2786,7 +2793,9 @@
         }
 
         /* STANDARD CHAT SEND FUNCTION */
-        let CHAT_TIMEOUT_MS = 25000;
+        let CHAT_TIMEOUT_MS = 45000;
+        let bumpChatWatchdog = function () {};
+
         let chatBusy = false;
         let chatPinnedToBottom = true;
         let chatAbort = null;
@@ -3061,38 +3070,35 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             while (hist.length > histLimit) hist.shift();
 
             chatAbort = new AbortController();
-            const timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
+            let timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
+            bumpChatWatchdog = function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
+            };
             try {
                 const onVoice = (typeof voiceModeActive !== 'undefined' && voiceModeActive);
-                const res = await annaApi('chat', {
-                    method: 'POST',
-                    signal: chatAbort.signal,
-                    accept: 'text/event-stream, application/json',
-                    body: {
-                        messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (onVoice ? "\nYou are on a live voice call. Keep this reply to one or two short spoken sentences." : "") }, ...hist],
-                        temperature: 0.2,
-                        max_tokens: onVoice ? 80 : 160,
-                        stream: true
-                    }
-                });
-
-                if (!res.ok) {
-                    let data = {};
-                    try { data = await res.json(); } catch (_) {}
-                    if (data.error === 'no_key') {
-                        showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
-                        appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
-                        if (onVoice) speakText('Chat is offline. Open Keys and add your Dahl key.');
-                        else setMoodState('standby');
-                        hist.pop();
-                        return;
-                    }
-                    const detail = data.message || '';
-                    throw new Error(res.status === 401 || res.status === 403 ? (detail || 'Your Dahl key was rejected. Open KEYS and paste a valid key.') : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.')));
-                }
+                const chatBody = {
+                    messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (onVoice ? "\nYou are on a live voice call. Keep this reply to one or two short spoken sentences." : "") }, ...hist],
+                    temperature: 0.2,
+                    max_tokens: onVoice ? 280 : 400,
+                    stream: true
+                };
                 let streamId = null;
                 let spokenCount = 0;
                 let startedSpeech = false;
+                let spokenLead = '';
+                const resetStreamUi = function () {
+                    if (streamId) {
+                        const el = document.getElementById(streamId);
+                        if (el && el.parentNode) el.parentNode.removeChild(el);
+                        try { delete messagePayloadStore[streamId]; } catch (e) {}
+                    }
+                    streamId = null;
+                    spokenCount = 0;
+                    startedSpeech = false;
+                    spokenLead = '';
+                    try { if (typeof executeStfuProtocol === 'function') executeStfuProtocol(); } catch (e) {}
+                };
                 const onPartial = function (cleaned, streaming) {
                     if (!cleaned) return;
                     if (!streamId) {
@@ -3105,13 +3111,78 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                     const done = completedSentences(cleaned);
                     if (done.length > spokenCount) {
                         const neu = done.slice(spokenCount).join(' ');
-                        speakText(neu, { append: startedSpeech });
+                        let toSpeak = neu;
+                        if (spokenLead && neu.indexOf(spokenLead) === 0) toSpeak = neu.slice(spokenLead.length).trim();
+                        if (toSpeak) speakText(toSpeak, { append: startedSpeech });
                         startedSpeech = true;
                         spokenCount = done.length;
+                        spokenLead = '';
+                    } else if (!startedSpeech) {
+                        const lead = leadingClause(cleaned);
+                        if (lead) {
+                            speakText(lead);
+                            startedSpeech = true;
+                            spokenLead = lead;
+                        }
                     }
                 };
-                const reply = await readAnnaChat(res, onPartial);
-                if (!reply) throw new Error('Anna got an empty answer. Try asking again.');
+                const isTransient = function (status, msg) {
+                    if (status === 429 || status === 502 || status === 503 || status === 504) return true;
+                    return /Dahl server error (429|502|503|504)|empty answer|Could not reach/i.test(msg || '');
+                };
+                const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+                let reply = '';
+                let lastErr = '';
+                const maxAttempts = 3;
+                for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                    if (chatAbort && chatAbort.signal && chatAbort.signal.aborted) break;
+                    const res = await annaApi('chat', {
+                        method: 'POST',
+                        signal: chatAbort.signal,
+                        accept: 'text/event-stream, application/json',
+                        body: chatBody
+                    });
+                    bumpChatWatchdog();
+                    if (!res.ok) {
+                        let data = {};
+                        try { data = await res.json(); } catch (_) {}
+                        if (data.error === 'no_key') {
+                            showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
+                            appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
+                            if (onVoice) speakText('Chat is offline. Open Keys and add your Dahl key.');
+                            else setMoodState('standby');
+                            hist.pop();
+                            return;
+                        }
+                        const detail = data.message || '';
+                        lastErr = res.status === 401 || res.status === 403
+                            ? (detail || 'Your Dahl key was rejected. Open KEYS and paste a valid key.')
+                            : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.'));
+                        if (isTransient(res.status, lastErr) && attempt < maxAttempts) {
+                            await sleep(400 * attempt);
+                            continue;
+                        }
+                        throw new Error(lastErr);
+                    }
+                    reply = await readAnnaChat(res, onPartial);
+                    if (reply) break;
+                    lastErr = 'Anna got an empty answer. Try asking again.';
+                    if (attempt < maxAttempts) {
+                        resetStreamUi();
+                        setMoodState('thinking');
+                        await sleep(400 * attempt);
+                        continue;
+                    }
+                    const fallback = 'Say that again? I did not catch a reply.';
+                    hist.pop();
+                    if (streamId) updateMsgBody(streamId, fallback, false);
+                    else appendMsg(fallback, 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
+                    showNotice(fallback);
+                    if (onVoice) speakText(fallback);
+                    else setMoodState('standby');
+                    return;
+                }
+                if (!reply) throw new Error(lastErr || 'Anna got an empty answer. Try asking again.');
                 hist.push({ role: "assistant", content: reply });
                 if (streamId) updateMsgBody(streamId, reply, false);
                 else {
@@ -3144,6 +3215,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 else setMoodState('standby');
             } finally {
                 clearTimeout(timeoutId);
+                bumpChatWatchdog = function () {};
                 chatAbort = null;
                 setChatBusy(false);
                 refocusUserInput();
@@ -3534,6 +3606,22 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             const parts = String(text || '').match(/[^.!?]+[.!?]+(?:['")\]]+)?/g) || [];
             return parts.map(function (s) { return s.trim(); }).filter(Boolean);
         }
+        function leadingClause(text) {
+            const s = String(text || '').replace(/\s+/g, ' ').trim();
+            if (s.length < 42) return '';
+            const after = s.slice(28);
+            const br = after.search(/[,;:](\s|$)/);
+            if (br >= 0) {
+                const idx = 28 + br + 1;
+                if (idx >= 36) return s.slice(0, idx).trim();
+            }
+            if (s.length >= 56) {
+                const slice = s.slice(0, 72);
+                const sp = slice.lastIndexOf(' ');
+                return (sp > 36 ? slice.slice(0, sp) : slice).trim();
+            }
+            return '';
+        }
 
         function updateMsgBody(id, text, streaming) {
             const div = document.getElementById(id);
@@ -3563,6 +3651,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 while (true) {
                     const step = await reader.read();
                     if (step.done) break;
+                    if (typeof bumpChatWatchdog === 'function') bumpChatWatchdog();
                     buf += dec.decode(step.value, { stream: true });
                     const lines = buf.split('\n');
                     buf = lines.pop() || '';
@@ -3574,7 +3663,9 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         try {
                             const j = JSON.parse(payload);
                             const ch = (j.choices && j.choices[0]) || {};
-                            const piece = (ch.delta && ch.delta.content) || (ch.message && ch.message.content) || ch.text || '';
+                            const piece = (ch.delta && typeof ch.delta.content === 'string' ? ch.delta.content : '')
+                                || (ch.message && typeof ch.message.content === 'string' ? ch.message.content : '')
+                                || (typeof ch.text === 'string' ? ch.text : '');
                             if (piece) {
                                 full += piece;
                                 if (typeof onPartial === 'function') onPartial(cleanReplyText(full), true);
