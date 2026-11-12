@@ -3128,7 +3128,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 };
                 const isTransient = function (status, msg) {
                     if (status === 429 || status === 502 || status === 503 || status === 504) return true;
-                    return /Dahl server error (429|502|503|504)|empty answer|Could not reach/i.test(msg || '');
+                    return /Dahl server error (429|502|503|504)|empty answer|Could not reach|chat is busy/i.test(msg || '');
                 };
                 const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
                 let reply = '';
@@ -3157,9 +3157,11 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         const detail = data.message || '';
                         lastErr = res.status === 401 || res.status === 403
                             ? (detail || 'Your Dahl key was rejected. Open KEYS and paste a valid key.')
-                            : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.'));
+                            : (res.status === 429
+                                ? 'The chat is busy right now. Try again in a moment.'
+                                : (detail || ('Dahl server error ' + res.status + '. Try again in a moment.')));
                         if (isTransient(res.status, lastErr) && attempt < maxAttempts) {
-                            await sleep(400 * attempt);
+                            await sleep(res.status === 429 ? 2500 * attempt : 400 * attempt);
                             continue;
                         }
                         throw new Error(lastErr);
