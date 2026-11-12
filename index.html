@@ -1822,8 +1822,10 @@
         let loudnessCtx = null;
         let loudnessSource = null;
         let loudnessAnalyser = null;
+        let loudnessGain = null;
         let loudnessRaf = 0;
         let loudnessEl = null;
+        const TTS_FADE_SEC = 0.03;
 
         function stopReplyLoudness() {
             if (loudnessRaf) { cancelAnimationFrame(loudnessRaf); loudnessRaf = 0; }
@@ -1831,33 +1833,58 @@
             document.body.style.removeProperty('--reply-loudness');
             if (loudnessSource) { try { loudnessSource.disconnect(); } catch (e) {} loudnessSource = null; }
             if (loudnessAnalyser) { try { loudnessAnalyser.disconnect(); } catch (e) {} loudnessAnalyser = null; }
+            if (loudnessGain) { try { loudnessGain.disconnect(); } catch (e) {} loudnessGain = null; }
             loudnessEl = null;
         }
 
         function hookReplyLoudness(audioEl) {
-            if (!audioEl || prefersReducedMotion()) return;
+            if (!audioEl) return;
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC) return;
             try {
                 if (!loudnessCtx) loudnessCtx = new AC();
                 if (loudnessCtx.state === 'suspended') loudnessCtx.resume().catch(function () {});
-                if (loudnessEl === audioEl && loudnessAnalyser) {
-                    document.body.classList.add('is-loudness');
-                    pumpReplyLoudness();
+                if (loudnessEl === audioEl && loudnessGain) {
+                    if (!prefersReducedMotion()) {
+                        document.body.classList.add('is-loudness');
+                        pumpReplyLoudness();
+                    }
                     return;
                 }
                 if (loudnessRaf) { cancelAnimationFrame(loudnessRaf); loudnessRaf = 0; }
                 if (loudnessSource) { try { loudnessSource.disconnect(); } catch (e) {} loudnessSource = null; }
                 if (loudnessAnalyser) { try { loudnessAnalyser.disconnect(); } catch (e) {} loudnessAnalyser = null; }
+                if (loudnessGain) { try { loudnessGain.disconnect(); } catch (e) {} loudnessGain = null; }
                 loudnessEl = audioEl;
                 loudnessSource = loudnessCtx.createMediaElementSource(audioEl);
                 loudnessAnalyser = loudnessCtx.createAnalyser();
                 loudnessAnalyser.fftSize = 256;
                 loudnessAnalyser.smoothingTimeConstant = 0.7;
+                loudnessGain = loudnessCtx.createGain();
                 loudnessSource.connect(loudnessAnalyser);
-                loudnessAnalyser.connect(loudnessCtx.destination);
-                document.body.classList.add('is-loudness');
-                pumpReplyLoudness();
+                loudnessAnalyser.connect(loudnessGain);
+                loudnessGain.connect(loudnessCtx.destination);
+                const now = loudnessCtx.currentTime;
+                loudnessGain.gain.cancelScheduledValues(now);
+                loudnessGain.gain.setValueAtTime(0.0001, now);
+                loudnessGain.gain.linearRampToValueAtTime(1, now + TTS_FADE_SEC);
+                if (!audioEl.__fadeBound) {
+                    audioEl.__fadeBound = true;
+                    audioEl.addEventListener('timeupdate', function () {
+                        if (!loudnessGain || !loudnessCtx || audioEl.__fadingOut) return;
+                        if (audioEl.duration && isFinite(audioEl.duration) && audioEl.currentTime >= Math.max(0, audioEl.duration - TTS_FADE_SEC - 0.02)) {
+                            audioEl.__fadingOut = true;
+                            const t = loudnessCtx.currentTime;
+                            loudnessGain.gain.cancelScheduledValues(t);
+                            loudnessGain.gain.setValueAtTime(loudnessGain.gain.value, t);
+                            loudnessGain.gain.linearRampToValueAtTime(0.0001, t + TTS_FADE_SEC);
+                        }
+                    });
+                }
+                if (!prefersReducedMotion()) {
+                    document.body.classList.add('is-loudness');
+                    pumpReplyLoudness();
+                }
             } catch (e) {
                 stopReplyLoudness();
             }
@@ -3087,6 +3114,7 @@
 
             setChatBusy(true);
             chatPinnedToBottom = true;
+            spokenReplyClean = '';
             setMoodState('thinking');
             appendMsg(query, 'user', getTalkerLabel(), { image: pasted, forceScroll: true });
             if (!fromOverride && input) {
@@ -3151,17 +3179,20 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                     }
                     const done = completedSentences(cleaned);
                     if (done.length > spokenCount) {
-                        const neu = done.slice(spokenCount).join(' ');
-                        let toSpeak = neu;
-                        if (spokenLead && neu.indexOf(spokenLead) === 0) toSpeak = neu.slice(spokenLead.length).trim();
-                        if (toSpeak) speakText(toSpeak, { append: startedSpeech });
+                        const soFar = done.join(' ');
+                        const toSpeak = unspokenFrom(soFar);
+                        if (toSpeak) {
+                            speakText(toSpeak, { append: startedSpeech });
+                            noteSpoken(toSpeak);
+                        }
                         startedSpeech = true;
                         spokenCount = done.length;
                         spokenLead = '';
                     } else if (!startedSpeech) {
                         const lead = leadingClause(cleaned);
-                        if (lead) {
+                        if (lead && /[,;:]$/.test(lead) && lead.length >= 36) {
                             speakText(lead);
+                            noteSpoken(lead);
                             startedSpeech = true;
                             spokenLead = lead;
                         }
@@ -3246,13 +3277,14 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                     setMoodState('responding');
                     streamId = appendMsg(reply, 'assistant', `${currentAgentId} [Response]`, { forceScroll: true });
                 }
-                const done = completedSentences(reply);
-                const joined = done.join(' ');
-                let leftover = '';
-                if (!done.length) leftover = startedSpeech ? '' : reply;
-                else if (joined.length < reply.trim().length) leftover = reply.trim().slice(joined.length).trim();
-                if (!startedSpeech) speakText(reply);
-                else if (leftover) speakText(leftover, { append: true });
+                const leftover = unspokenFrom(reply);
+                if (leftover) {
+                    speakText(leftover, { append: startedSpeech });
+                    noteSpoken(leftover);
+                } else if (!startedSpeech) {
+                    speakText(reply);
+                    noteSpoken(reply);
+                }
 
                 refocusUserInput();
             } catch (e) {
@@ -3299,31 +3331,91 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             stopReplyLoudness();
         }
 
-        function cleanForSpeech(text) {
-            return String(text || '').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ' ')
-                .replace(/[*_#`~=\-\/\\\[\]]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
 
-        function chunkForSpeech(text) {
-            const parts = (text.match(/[^.!?]+[.!?]*/g) || [text]).map(t => t.trim()).filter(Boolean);
+        function stripThinkAndMarkdown(text) {
+            let s = String(text || '');
+            s = s.replace(/<think>[\s\S]*?<\/think>/gi, ' ');
+            s = s.replace(/<\/?think>/gi, ' ');
+            s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '$1 ($2)');
+            s = s.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+            s = s.replace(/[*_`#]+/g, ' ');
+            return s;
+        }
+        function stripEmoji(text) {
+            return String(text || '')
+                .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, ' ')
+                .replace(/\uFE0F/g, ' ');
+        }
+        function speakUrl(url) {
+            let u = String(url || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+            u = u.replace(/[?#].*$/, '').replace(/\/$/, '');
+            const parts = u.split('/').filter(Boolean);
+            if (!parts.length) return '';
+            const host = parts[0].replace(/\./g, ' dot ');
+            const path = parts.slice(1).map(function (p) { return decodeURIComponent(p).replace(/[-_]+/g, ' '); }).join(', ');
+            return path ? (host + ', ' + path) : host;
+        }
+        function speakableText(text) {
+            let s = stripThinkAndMarkdown(text);
+            s = s.replace(/\b24\/7\b/g, '24 7');
+            s = s.replace(/(\d+)\s*ml\b/gi, '$1 milliliters');
+            s = s.replace(/https?:\/\/[^\s<>)"']+/gi, function (m) { return speakUrl(m); });
+            s = s.replace(/\bwww\.[^\s<>)"']+/gi, function (m) { return speakUrl(m); });
+            s = stripEmoji(s);
+            s = s.replace(/[|\\<>{}[\]~^=]+/g, ' ');
+            s = s.replace(/[\u2014\u2013]/g, ', ');
+            s = s.replace(/\s+/g, ' ').trim();
+            return s;
+        }
+        function cleanForSpeech(text) { return speakableText(text); }
+
+        function splitSpokenSentences(text) {
+            let s = speakableText(text);
+            if (!s) return [];
+            s = s.replace(/\b(Mr|Mrs|Ms|Miss|Dr|Prof|Sr|Jr|vs|etc|No)\./g, '$1\u2044');
+            s = s.replace(/(^|[.\s])(\d+)\.(?=\s+\S)/g, '$1$2\u2044');
+            const parts = (s.match(/[^.!?]+[.!?]+(?:['")\]]+)?|[^.!?]+$/g) || [s]).map(function (part) {
+                return part.replace(/\u2044/g, '.').replace(/\s+/g, ' ').trim();
+            }).filter(Boolean);
+            return parts;
+        }
+        function packSpokenSentences(parts, limit) {
+            const cap = limit || 320;
             const out = [];
             let cur = '';
-            for (const p of parts) {
-                const piece = p.length > TTS_CHUNK ? p.slice(0, TTS_CHUNK) : p;
-                if ((cur + ' ' + piece).trim().length > TTS_CHUNK) { if (cur) out.push(cur); cur = piece; }
-                else cur = (cur + ' ' + piece).trim();
+            for (let i = 0; i < parts.length; i++) {
+                const p = parts[i];
+                if (!p) continue;
+                if (p.length > cap) {
+                    if (cur) { out.push(cur); cur = ''; }
+                    out.push(p);
+                    continue;
+                }
+                if (cur && (cur + ' ' + p).length > cap) { out.push(cur); cur = p; }
+                else cur = cur ? (cur + ' ' + p) : p;
             }
             if (cur) out.push(cur);
             return out;
         }
+        function sentencesForSpeech(text) {
+            return splitSpokenSentences(text);
+        }
+        function chunkForSpeech(text, opts) {
+            const parts = splitSpokenSentences(text);
+            if (!parts.length) return [];
+            const firstSeparate = !(opts && opts.firstSeparate === false);
+            if (firstSeparate && parts.length > 1) {
+                return [parts[0]].concat(packSpokenSentences(parts.slice(1), 320));
+            }
+            return packSpokenSentences(parts, 320);
+        }
 
-        async function fetchClonedAudio(agentId, text) {
+        async function fetchClonedAudio(agentId, text, opts) {
+            const latency = (opts && opts.latency === 'low') ? 'low' : 'balanced';
             const res = await fetch(ANNA_TTS_FN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'apikey': ANNA_ANON, 'Authorization': 'Bearer ' + ANNA_ANON },
-                body: JSON.stringify({ agentId: agentId, text: text })
+                body: JSON.stringify({ agentId: agentId, text: text, latency: latency })
             });
             const type = res.headers.get('Content-Type') || '';
             if (!res.ok || type.indexOf('audio/') !== 0) throw new Error('tts_unavailable');
@@ -3334,21 +3426,41 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             return url;
         }
 
-        function sentencesForSpeech(text) {
-            const clean = cleanForSpeech(text);
-            if (!clean) return [];
-            return (clean.match(/[^.!?]+[.!?]*/g) || [clean]).map(function (s) { return s.trim(); }).filter(Boolean);
-        }
-
         let ttsQueue = [];
         let ttsPrefetch = {};
         let ttsPlaying = false;
         let ttsStarted = false;
         let ttsAgentId = '';
+        let spokenReplyClean = '';
+
+        function noteSpoken(text) {
+            const c = speakableText(text);
+            if (!c) return;
+            spokenReplyClean = (spokenReplyClean + ' ' + c).replace(/\s+/g, ' ').trim();
+        }
+        function unspokenFrom(full) {
+            const c = speakableText(full).replace(/\s+/g, ' ').trim();
+            const s = (spokenReplyClean || '').replace(/\s+/g, ' ').trim();
+            if (!c) return '';
+            if (!s) return c;
+            if (c.indexOf(s) === 0) return c.slice(s.length).trim();
+            const sw = s.split(' ');
+            const cw = c.split(' ');
+            let i = 0, j = 0;
+            while (i < sw.length && j < cw.length) {
+                if (sw[i] === cw[j]) { i += 1; j += 1; }
+                else {
+                    const later = cw.indexOf(sw[i], j);
+                    if (later >= j) { j = later + 1; i += 1; }
+                    else i += 1;
+                }
+            }
+            return cw.slice(j).join(' ').trim();
+        }
 
         function speakText(text, opts) {
             opts = opts || {};
-            const parts = sentencesForSpeech(text);
+            const parts = chunkForSpeech(text, { firstSeparate: !opts.append });
             if (!parts.length) return;
             const agentId = currentAgentId;
             const canClone = CLONE_AGENTS.indexOf(agentId) !== -1 && (isVoiceEnabled || voiceModeActive) && window.fetch && typeof Audio !== 'undefined';
@@ -3356,9 +3468,10 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 ttsQueue.push.apply(ttsQueue, parts);
                 if (canClone && ttsQueue.length) {
                     const upcoming = ttsQueue[0];
-                    if (upcoming && !ttsPrefetch[upcoming]) {
-                        ttsPrefetch[upcoming] = fetchClonedAudio(agentId, upcoming);
-                        ttsPrefetch[upcoming].catch(function () {});
+                    const prefKey = upcoming + '::balanced';
+                    if (upcoming && !ttsPrefetch[prefKey] && !ttsPrefetch[upcoming]) {
+                        ttsPrefetch[prefKey] = fetchClonedAudio(agentId, upcoming, { latency: 'balanced' });
+                        ttsPrefetch[prefKey].catch(function () {});
                     }
                 }
                 return;
@@ -3375,7 +3488,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             if (voiceModeActive) onAgentSpeechStarted();
             if (!canClone) {
                 window.__annaTtsPath = 'browser';
-                speakTextBrowser(parts.join(' '), { gen: gen, append: false });
+                speakTextBrowser(parts.join(' '), { gen: gen, append: false, parts: parts });
                 return;
             }
             window.__annaTtsPath = 'clone-pending';
@@ -3393,17 +3506,24 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 stopCloudAudio();
                 if (ttsStarted) { playNext(); return; }
                 window.__annaTtsPath = 'browser';
-                speakTextBrowser((remain || []).join(' '), { gen: gen, append: false });
+                speakTextBrowser((remain || []).join(' '), { gen: gen, append: false, parts: remain || [] });
             };
             const playNext = function () {
                 if (gen !== speakGen) return;
                 const chunk = ttsQueue.shift();
                 if (!chunk) { finish(); return; }
-                if (ttsQueue[0] && !ttsPrefetch[ttsQueue[0]]) {
-                    ttsPrefetch[ttsQueue[0]] = fetchClonedAudio(agentId, ttsQueue[0]);
-                    ttsPrefetch[ttsQueue[0]].catch(function () {});
+                const nextLatency = 'balanced';
+                if (ttsQueue[0]) {
+                    const pk = ttsQueue[0] + '::' + nextLatency;
+                    if (!ttsPrefetch[pk] && !ttsPrefetch[ttsQueue[0]]) {
+                        ttsPrefetch[pk] = fetchClonedAudio(agentId, ttsQueue[0], { latency: nextLatency });
+                        ttsPrefetch[pk].catch(function () {});
+                    }
                 }
-                const urlPromise = ttsPrefetch[chunk] || fetchClonedAudio(agentId, chunk);
+                const thisLatency = ttsStarted ? 'balanced' : 'low';
+                const prefKey = chunk + '::' + thisLatency;
+                const urlPromise = ttsPrefetch[prefKey] || ttsPrefetch[chunk] || fetchClonedAudio(agentId, chunk, { latency: thisLatency });
+                delete ttsPrefetch[prefKey];
                 delete ttsPrefetch[chunk];
                 urlPromise.then(function (url) {
                     if (gen !== speakGen) return;
@@ -3415,14 +3535,14 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                     const armWatch = function () {
                         if (gen !== speakGen || a.__watchArmed) return;
                         a.__watchArmed = true;
-                        const dur = (isFinite(a.duration) && a.duration > 0) ? (a.duration * 1000 + 1200) : 20000;
+                        const dur = (isFinite(a.duration) && a.duration > 0) ? (a.duration * 1000 + 1800) : 25000;
                         setTimeout(function () {
                             if (gen !== speakGen) return;
                             if (cloudAudio === a && !a.ended) {
                                 try { a.onended = null; a.pause(); } catch (e) {}
                                 playNext();
                             }
-                        }, Math.min(Math.max(dur, 2000), 30000));
+                        }, Math.min(Math.max(dur, 2500), 45000));
                     };
                     a.addEventListener('loadedmetadata', armWatch, { once: true });
                     if (a.readyState >= 1) armWatch();
@@ -3434,7 +3554,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
 
         function speakTextBrowser(text, opts) {
             opts = opts || {};
-            const finishSpeak = () => {
+            const finishSpeak = function () {
                 ttsPlaying = false;
                 if (voiceModeActive) onAgentSpeechEnded();
                 else if (!(typeof chatBusy !== 'undefined' && chatBusy)) setMoodState('standby');
@@ -3444,13 +3564,13 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             try {
                 const gen = (opts && typeof opts.gen === 'number') ? opts.gen : ++speakGen;
                 if (!opts.append) window.speechSynthesis.cancel();
-                
-                let sanitized = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ' ')
-                                    .replace(/[*_#`~=\-\/\\\[\]]/g, ' ')
-                                    .replace(/\s+/g, ' ')
-                                    .trim();
-                                    
-                if (!sanitized) { finishSpeak(); return; }
+
+                let parts = (opts && opts.parts && opts.parts.length) ? opts.parts.slice() : chunkForSpeech(text, { firstSeparate: false });
+                if (!parts.length) {
+                    const sanitized = speakableText(text);
+                    if (sanitized) parts = [sanitized];
+                }
+                if (!parts.length) { finishSpeak(); return; }
 
                 setMoodState('speaking');
                 if (voiceModeActive) onAgentSpeechStarted();
@@ -3494,25 +3614,25 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 if (!voice) voice = en.find(v => (maleAgent ? /\bmale\b/i : /female/i).test(v.name)) || en[0] || voices[0];
                 const isNeural = voice && /(Online|Natural|Multilingual|Premium|Enhanced|network|^Google )/i.test(voice.name);
 
-                // Speak sentence by sentence so she breathes between thoughts instead of rushing.
-                const parts = (sanitized.match(/[^.!?]+[.!?]*/g) || [sanitized]).map(t => t.trim()).filter(Boolean);
-                const safety = setTimeout(function () { if (gen !== speakGen) return; finishSpeak(); }, Math.min(30000, Math.max(4000, sanitized.length * 80)));
-                parts.forEach((part, i) => {
+                // Speak one utterance at a time so Chrome does not drop later sentences from a batch queue.
+                let idx = 0;
+                const speakNext = function () {
+                    if (gen !== speakGen) return;
+                    if (idx >= parts.length) { finishSpeak(); return; }
+                    const part = parts[idx++];
                     const utterance = new SpeechSynthesisUtterance(part);
                     if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
-                    // Neural voices already sound human, so only a light touch; classic voices get a bit more warmth.
                     utterance.pitch = maleAgent ? (isNeural ? 0.98 : 0.92) : (isNeural ? 1.04 : 1.12);
-                    // If Martin ends up on the same voice as Mr. Preach (few voices on the device), shift him so they still sound different.
                     if (currentAgentId === 'AA03') { const pv = (window.__preachVoice || ''); if (voice && voice.name === pv) utterance.pitch = Math.max(0.7, utterance.pitch - 0.14); }
                     if (currentAgentId === 'AA02' && voice) window.__preachVoice = voice.name;
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
-                    if (i === parts.length - 1) {
-                        utterance.onend = () => { if (gen !== speakGen) return; clearTimeout(safety); finishSpeak(); };
-                        utterance.onerror = () => { if (gen !== speakGen) return; clearTimeout(safety); finishSpeak(); };
-                    }
+                    const safety = setTimeout(function () { if (gen !== speakGen) return; speakNext(); }, Math.min(20000, Math.max(4000, part.length * 90)));
+                    utterance.onend = function () { if (gen !== speakGen) return; clearTimeout(safety); speakNext(); };
+                    utterance.onerror = function () { if (gen !== speakGen) return; clearTimeout(safety); speakNext(); };
                     window.speechSynthesis.speak(utterance);
-                });
+                };
+                speakNext();
             } catch (e) {
                 finishSpeak();
             }
