@@ -3,199 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGENT ANNA // MILITARY-GRADE SOVEREIGN COMMAND MATRIX</title>
+    <title>AGENT ANNA // COOL HOT SAUCE</title>
+    <meta name="description" content="Agent Anna, your Cool Hot Sauce guide. Chat with Anna, by Mr. Preach X.">
+    <meta name="theme-color" content="#0a0b0a">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M40 10c-2 4-6 6-6 6' stroke='%233ddc5a' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M34 18c10 0 18 8 14 20-4 12-20 20-36 18 14-6 18-14 16-24-1-8 0-14 6-14z' fill='%23ff2d1a'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* ===== AGENT ANNA // COOL HOT SAUCE EDITION =====
+           Palette from @CoolHotSauce brand: chili red, jalapeño green, black. */
         :root {
-            --bg-dark: #05070c;
-            --bg-surface: #0b0f19;
-            --border-cyan: #00ffcc;
-            --border-blue: #00b3ff;
-            --border-pink: #ff007f;
-            --border-magenta: #ff00ff;
-            --border-gold: #ffaa00;
-            --border-red: #ff0055;
-            --text-light: #e2e8f0;
-            --text-muted: #64748b;
-            --pane-bg: rgba(11, 15, 25, 0.98);
-            --state-color: var(--border-cyan);
+            --bg-dark: #0a0b0a;
+            --bg-surface: #121412;
+            --bg-raised: #191c19;
+            --line: #262b26;
+            --chili: #ff2d1a;          /* hot */
+            --flame: #ff7a1a;          /* hotter */
+            --habanero: #ffb020;       /* scraping */
+            --jalapeno: #3ddc5a;       /* cool */
+            --ice: #8ef0d4;            /* coolest */
+            /* legacy names kept so nothing else breaks */
+            --border-cyan: var(--jalapeno);
+            --border-blue: var(--ice);
+            --border-pink: var(--chili);
+            --border-magenta: var(--flame);
+            --border-gold: var(--habanero);
+            --border-red: #ff3b3b;
+            --text-light: #f1efe9;
+            --text-muted: #8a918a;
+            --pane-bg: #0e100e;
+            --state-color: var(--jalapeno);
+            --heat-gradient: linear-gradient(90deg, var(--jalapeno) 0%, var(--habanero) 50%, var(--chili) 100%);
+            --font-ui: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --font-brand: "Bungee", "Impact", "Arial Black", sans-serif;
+            --radius: 10px;
+            --glow: 0 0 0 1px color-mix(in srgb, var(--state-color) 55%, transparent), 0 0 18px color-mix(in srgb, var(--state-color) 28%, transparent);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             margin: 0 !important;
             padding: 0 !important;
             overflow: hidden;
             background-color: var(--bg-dark);
             color: var(--text-light);
-            font-family: monospace;
+            font-family: var(--font-ui);
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
             display: flex;
             flex-direction: column;
-            padding-top: 30px !important;
+            padding-top: 32px !important;
+            background:
+                radial-gradient(1200px 500px at 0% 0%, rgba(61, 220, 90, 0.07), transparent 60%),
+                radial-gradient(1000px 500px at 100% 100%, rgba(255, 45, 26, 0.08), transparent 60%),
+                var(--bg-dark);
         }
 
-        body.is-standby { --state-color: var(--border-cyan); }
-        body.is-thinking { --state-color: var(--border-blue); }
-        body.is-scraping { --state-color: var(--border-gold); }
-        body.is-responding { --state-color: var(--border-pink); }
-        body.is-speaking, body.is-listening { --state-color: var(--border-magenta); }
+        body.is-standby { --state-color: var(--jalapeno); }
+        body.is-thinking { --state-color: var(--ice); }
+        body.is-scraping { --state-color: var(--habanero); }
+        body.is-responding { --state-color: var(--chili); }
+        body.is-speaking, body.is-listening { --state-color: var(--flame); }
 
-        *::-webkit-scrollbar { width: 6px; height: 6px; }
-        *::-webkit-scrollbar-track { background: var(--bg-dark); border-left: 1px solid rgba(0, 255, 204, 0.1); }
-        *::-webkit-scrollbar-thumb { background: var(--state-color); border-radius: 3px; box-shadow: 0 0 10px var(--state-color); }
+        *::-webkit-scrollbar { width: 8px; height: 8px; }
+        *::-webkit-scrollbar-track { background: transparent; }
+        *::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--state-color) 60%, #222); border-radius: 8px; }
 
+        button, input, select { font-family: var(--font-ui); }
+        :focus-visible { outline: 2px solid var(--state-color); outline-offset: 2px; }
+
+        /* ---------- Ticker ---------- */
         .financial-ticker-bar {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 30px !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #05070c !important;
-            border-bottom: 1px solid var(--state-color) !important;
+            top: 0 !important; left: 0 !important; right: 0 !important;
+            width: 100% !important;
+            height: 32px !important;
+            margin: 0 !important; padding: 0 !important;
+            background: #070807 !important;
+            border-bottom: 1px solid var(--line) !important;
             font-size: 11px !important;
             overflow: hidden !important;
             white-space: nowrap !important;
             z-index: 999999 !important;
             display: flex !important;
             align-items: center !important;
-            box-shadow: 0 0 15px var(--state-color) !important;
-            transition: border-color 0.4s ease, box-shadow 0.4s ease;
         }
-        .ticker-track { display: inline-block; white-space: nowrap; animation: tickerScroll 35s linear infinite; }
+        .financial-ticker-bar::after {
+            content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+            background: var(--heat-gradient); opacity: 0.9;
+        }
+        .ticker-track { display: inline-block; white-space: nowrap; animation: tickerScroll 40s linear infinite; }
         .financial-ticker-bar:hover .ticker-track { animation-play-state: paused; }
         @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .ticker-item { display: inline-flex; gap: 6px; align-items: center; margin-right: 35px; cursor: pointer; text-decoration: none; }
+        .ticker-item { display: inline-flex; gap: 6px; align-items: center; margin-right: 36px; cursor: pointer; text-decoration: none; }
+        .ticker-item::before { content: "🌶"; font-size: 10px; opacity: 0.7; }
         .ticker-label { color: var(--text-muted); }
-        .ticker-val { color: var(--state-color); font-weight: bold; }
-        .ticker-item:hover .ticker-val { text-decoration: underline; color: var(--border-magenta); }
+        .ticker-val { color: var(--jalapeno); font-weight: 700; }
+        .ticker-item:hover .ticker-val { text-decoration: underline; color: var(--flame); }
 
+        /* ---------- Layout ---------- */
         .main-workspace {
-            display: flex; flex: 1; height: calc(100vh - 30px); width: 100vw; overflow: hidden; margin: 0; padding: 0;
+            display: flex; flex: 1; height: calc(100% - 0px); width: 100%; overflow: hidden; margin: 0; padding: 0; min-height: 0;
         }
 
         .matrix-command-pane {
-            width: 60%; height: 100%; background: var(--pane-bg);
-            border-right: 3px solid var(--state-color); display: flex;
-            flex-direction: column; padding: 15px;
-            box-shadow: inset 0 0 45px rgba(0, 255, 204, 0.15), 5px 0 35px var(--state-color);
-            position: relative; z-index: 2; overflow-y: auto; transition: border-color 0.4s ease;
+            width: 60%; height: 100%; background: transparent;
+            border-right: 1px solid var(--line); display: flex;
+            flex-direction: column; padding: 18px 20px; gap: 14px;
+            position: relative; z-index: 2; overflow-y: auto;
         }
 
-        .matrix-header-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
-        .matrix-id-badge {
-            font-size: 10px; color: var(--state-color); letter-spacing: 2px; font-weight: bold; padding: 5px 10px;
-            border: 1px solid var(--state-color); border-radius: 4px; background: rgba(0, 255, 204, 0.05);
-            transition: all 0.4s ease;
+        /* Brand header */
+        .brand-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+        .brand-lockup { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .brand-logo { width: 44px; height: 44px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255, 45, 26, 0.35)); }
+        .brand-text h1 {
+            font-family: var(--font-brand); font-weight: 400; font-size: 26px; line-height: 1; letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--text-light) 0%, var(--text-light) 55%, var(--flame) 80%, var(--chili) 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
         }
-        .status-bar-indicator { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--state-color); font-weight: bold; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--state-color); box-shadow: 0 0 10px var(--state-color); transition: all 0.4s ease; }
+        .brand-text .brand-sub {
+            display: flex; align-items: center; gap: 8px; margin-top: 5px;
+            font-size: 10px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase;
+        }
+        .brand-flag { display: inline-flex; gap: 3px; }
+        .brand-flag i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+        .brand-flag i:nth-child(1) { background: var(--chili); }
+        .brand-flag i:nth-child(2) { background: var(--jalapeno); }
+        .brand-flag i:nth-child(3) { background: #000; border: 1px solid #444; }
+        .brand-handle { color: var(--flame); text-decoration: none; font-weight: 700; }
+        .brand-handle:hover { text-decoration: underline; }
+
+        .matrix-header-meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0; }
+        .matrix-id-badge {
+            font-size: 10px; color: var(--text-muted); letter-spacing: 2px; font-weight: 700; padding: 6px 10px;
+            border: 1px solid var(--line); border-radius: 999px; background: var(--bg-surface);
+        }
+        .status-bar-indicator {
+            display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--state-color); font-weight: 700; letter-spacing: 1.5px;
+            padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--state-color) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--state-color) 40%, transparent); transition: all 0.4s ease; white-space: nowrap;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--state-color); box-shadow: 0 0 10px var(--state-color); transition: all 0.4s ease; animation: dotPulse 1.8s ease-in-out infinite; }
+        @keyframes dotPulse { 50% { opacity: 0.45; } }
 
         .phonebook-bar {
-            background: rgba(11, 15, 25, 0.95); border: 1.5px solid var(--state-color);
-            border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; display: flex;
+            background: var(--bg-surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 10px 12px; display: flex; flex-wrap: wrap;
             justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0;
-            box-shadow: 0 0 15px var(--state-color); transition: border-color 0.4s ease;
         }
-        .phonebook-title { font-size: 11px; color: var(--state-color); font-weight: bold; letter-spacing: 1px; }
-        .phonebook-controls { display: flex; gap: 6px; align-items: center; }
+        .phonebook-title { font-size: 11px; color: var(--text-light); font-weight: 700; letter-spacing: 1.5px; }
+        .phonebook-controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
         .phonebook-select {
-            background: var(--bg-dark); border: 1px solid var(--state-color); color: var(--state-color);
-            padding: 4px 8px; font-family: monospace; font-size: 10px; border-radius: 4px; outline: none; cursor: pointer;
+            background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light);
+            padding: 7px 10px; font-size: 11px; border-radius: 8px; outline: none; cursor: pointer; max-width: 100%;
         }
+        .phonebook-select:hover { border-color: var(--state-color); }
 
         .agents-matrix-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; flex-shrink: 0;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-shrink: 0;
         }
         .agent-hud-card {
-            background: rgba(5, 7, 12, 0.9); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 6px;
-            padding: 8px; text-align: center; color: var(--text-light);
-            transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            background: var(--bg-surface); border: 1px solid var(--line); border-radius: var(--radius);
+            padding: 10px 8px; text-align: center; color: var(--text-light);
+            transition: transform 0.2s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; cursor: pointer;
         }
+        .agent-hud-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--state-color) 50%, var(--line)); }
         .agent-hud-card.active-node {
-            border-color: var(--state-color); box-shadow: 0 0 20px var(--state-color); background: rgba(0, 255, 204, 0.12);
+            border-color: var(--state-color); box-shadow: var(--glow);
+            background: linear-gradient(180deg, color-mix(in srgb, var(--state-color) 14%, var(--bg-surface)), var(--bg-surface));
         }
-        .agent-hud-card img { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--state-color); object-fit: cover; margin-bottom: 4px; }
-        .agent-hud-card h5 { font-size: 9px; color: var(--state-color); letter-spacing: 1px; }
-        .agent-hud-card p { font-size: 7px; color: var(--text-muted); margin-top: 2px; }
+        .agent-hud-card.active-node::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--heat-gradient);
+        }
+        .agent-hud-card img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--line); object-fit: cover; margin-bottom: 6px; }
+        .agent-hud-card.active-node img { border-color: var(--state-color); }
+        .agent-hud-card h5 { font-size: 10px; color: var(--text-light); letter-spacing: 1px; font-weight: 700; }
+        .agent-hud-card.active-node h5 { color: var(--state-color); }
+        .agent-hud-card p { font-size: 9px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
 
         .matrix-visual-container {
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; min-height: 320px; border: 1px solid var(--state-color); border-radius: 6px;
-            padding: 15px; background: rgba(5, 7, 12, 0.6); box-shadow: inset 0 0 35px var(--state-color);
-            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative; min-height: 340px; border: 1px solid var(--line); border-radius: 14px;
+            padding: 18px; overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--state-color) 12%, transparent), transparent 60%),
+                var(--bg-surface);
+            transition: background 0.4s ease;
         }
-        #wav-canvas { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 1; }
+        #wav-canvas { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 1; opacity: 0.85; }
 
         .viewport-screen {
-            width: 280px; height: 280px; border-radius: 8px; border: 3px solid var(--state-color);
-            overflow: hidden; box-shadow: 0 0 45px var(--state-color); z-index: 2; margin-bottom: 10px;
+            width: 260px; height: 260px; border-radius: 50%; border: 3px solid var(--state-color);
+            overflow: hidden; box-shadow: 0 0 0 8px color-mix(in srgb, var(--state-color) 12%, transparent), 0 0 50px color-mix(in srgb, var(--state-color) 45%, transparent);
+            z-index: 2; margin-bottom: 14px;
             position: relative; background: #000; display: flex; align-items: center; justify-content: center;
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
         }
         .viewport-screen img, .viewport-screen video { width: 100%; height: 100%; object-fit: cover; }
         .viewport-audio-placeholder { font-size: 11px; color: var(--state-color); text-align: center; padding: 20px; }
 
-        .matrix-nameplate { text-align: center; z-index: 2; }
-        .matrix-nameplate h2 { font-size: 13px; color: var(--state-color); letter-spacing: 2px; transition: color 0.4s ease; }
-        .matrix-nameplate p { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; margin-top: 2px; }
+        .matrix-nameplate { text-align: center; z-index: 2; background: rgba(10, 11, 10, 0.7); padding: 8px 14px; border-radius: 10px; backdrop-filter: blur(4px); }
+        .matrix-nameplate h2 { font-family: var(--font-brand); font-weight: 400; font-size: 15px; color: var(--text-light); letter-spacing: 1px; }
+        .matrix-nameplate p { font-size: 10px; color: var(--state-color); letter-spacing: 1.5px; margin-top: 4px; transition: color 0.4s ease; }
 
+        /* ---------- Chat pane ---------- */
         .chat-console-pane {
-            width: 40%; height: 100%; display: flex; flex-direction: column;
-            background: var(--bg-dark); border-left: 2px solid var(--state-color);
-            position: relative; transition: border-color 0.4s ease;
+            width: 40%; height: 100%; display: flex; flex-direction: column; min-height: 0;
+            background: var(--pane-bg); position: relative;
         }
 
         .chat-header {
-            padding: 12px 18px; background: var(--bg-surface); border-bottom: 1px solid #1e293b;
-            display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--state-color);
+            padding: 12px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--line);
+            display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+            font-size: 11px; color: var(--state-color); font-weight: 700; letter-spacing: 1px;
             z-index: 2; flex-shrink: 0; transition: color 0.4s ease;
         }
+        .chat-header > div { display: flex; gap: 6px; }
 
         .quick-launch-bar {
-            padding: 8px 12px; background: rgba(15, 23, 42, 0.85); border-bottom: 1px solid #1e293b;
-            display: flex; gap: 5px; align-items: center; flex-wrap: wrap; z-index: 2; flex-shrink: 0;
+            padding: 10px 14px; background: var(--bg-dark); border-bottom: 1px solid var(--line);
+            display: flex; gap: 8px; align-items: center; flex-wrap: wrap; z-index: 2; flex-shrink: 0;
         }
 
         .ctrl-btn {
-            background: var(--bg-surface); border: 1px solid #1e293b; color: var(--text-light);
-            padding: 5px 8px; font-family: monospace; font-size: 10px; cursor: pointer; border-radius: 4px; transition: all 0.2s ease;
+            background: var(--bg-raised); border: 1px solid var(--line); color: var(--text-light);
+            padding: 7px 11px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 8px;
+            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+            white-space: nowrap;
         }
-        .ctrl-btn:hover { border-color: var(--state-color); color: var(--state-color); box-shadow: 0 0 10px var(--state-color); }
-        .military-btn { border-color: var(--state-color); color: var(--state-color); }
-        .mic-btn.listening { background: var(--border-magenta) !important; color: #000 !important; box-shadow: 0 0 15px var(--border-magenta); animation: pulseMic 1s infinite alternate; }
+        .ctrl-btn:hover { border-color: var(--state-color); color: var(--state-color); }
+        .ctrl-btn:active { transform: translateY(1px); }
+        .military-btn { border-color: color-mix(in srgb, var(--state-color) 55%, var(--line)); color: var(--state-color); }
+        .btn-cool { border-color: color-mix(in srgb, var(--jalapeno) 60%, var(--line)) !important; color: var(--jalapeno) !important; }
+        .btn-ice { border-color: color-mix(in srgb, var(--ice) 60%, var(--line)) !important; color: var(--ice) !important; }
+        .btn-warm { border-color: color-mix(in srgb, var(--habanero) 60%, var(--line)) !important; color: var(--habanero) !important; }
+        .btn-hot {
+            background: linear-gradient(135deg, var(--flame), var(--chili)) !important; border-color: transparent !important;
+            color: #fff !important; font-weight: 800; letter-spacing: 1px; padding-left: 16px; padding-right: 16px;
+        }
+        .btn-hot:hover { filter: brightness(1.1); box-shadow: 0 0 18px rgba(255, 45, 26, 0.45); }
+        .mic-btn.listening { background: var(--flame) !important; color: #111 !important; border-color: var(--flame) !important; box-shadow: 0 0 15px var(--flame); animation: pulseMic 1s infinite alternate; }
         @keyframes pulseMic { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
 
-        #settings-panel { padding: 12px; background: rgba(11, 15, 25, 0.98); border-bottom: 1px solid #1e293b; display: none; z-index: 3; flex-shrink: 0; }
-        .settings-title { font-size: 10px; color: var(--state-color); margin-bottom: 4px; }
-        #settings-panel input { width: 100%; padding: 7px; background: var(--bg-dark); border: 1px solid #1e293b; color: var(--text-light); font-family: monospace; font-size: 10px; margin-bottom: 8px; border-radius: 4px; }
+        #settings-panel { padding: 14px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--line); display: none; z-index: 3; flex-shrink: 0; }
+        .settings-title { font-size: 10px; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1.5px; font-weight: 700; }
+        #settings-panel input { width: 100%; padding: 9px 10px; background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light); font-size: 12px; margin-bottom: 10px; border-radius: 8px; }
+        #settings-panel input:focus { border-color: var(--state-color); outline: none; }
+        .settings-hint { font-size: 10px; color: var(--text-muted); margin: -4px 0 12px; line-height: 1.4; }
 
         #chat-container {
-            flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px;
-            position: relative; z-index: 1; background-color: #05070c;
+            flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 0;
+            position: relative; z-index: 1; background-color: var(--pane-bg);
             background-size: cover; background-position: center; background-repeat: no-repeat;
             transition: background-image 0.5s ease;
         }
 
-        .message { padding: 12px 16px; border-radius: 6px; max-width: 95%; font-size: 11px; line-height: 1.5; z-index: 2; position: relative; backdrop-filter: blur(6px); }
-        .message.user { align-self: flex-end; background: rgba(30, 41, 59, 0.88); border: 1px solid #334155; }
-        .message.assistant { align-self: flex-start; background: rgba(11, 15, 25, 0.92); border: 1px solid var(--state-color); transition: border-color 0.4s ease; }
-        .msg-header { font-size: 10px; color: var(--state-color); margin-bottom: 4px; font-weight: bold; transition: color 0.4s ease; }
+        .message { padding: 12px 14px; border-radius: 12px; max-width: 92%; font-size: 12.5px; line-height: 1.6; z-index: 2; position: relative; backdrop-filter: blur(6px); word-wrap: break-word; overflow-wrap: anywhere; }
+        .message.user { align-self: flex-end; background: rgba(255, 45, 26, 0.12); border: 1px solid rgba(255, 45, 26, 0.35); border-bottom-right-radius: 4px; }
+        .message.assistant { align-self: flex-start; background: rgba(18, 20, 18, 0.92); border: 1px solid var(--line); border-left: 3px solid var(--state-color); border-bottom-left-radius: 4px; transition: border-color 0.4s ease; }
+        .msg-header { font-size: 10px; color: var(--state-color); margin-bottom: 6px; font-weight: 700; letter-spacing: 1px; transition: color 0.4s ease; }
+        .message.user .msg-header { color: var(--flame); }
 
         .telecom-fade-banner {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(11, 15, 25, 0.95); border: 1px solid var(--state-color); color: var(--state-color);
-            padding: 8px 14px; font-size: 10px; border-radius: 4px; z-index: 999;
-            box-shadow: 0 0 15px var(--state-color); text-align: center; pointer-events: none;
+            position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+            background: rgba(18, 20, 18, 0.96); border: 1px solid var(--state-color); color: var(--state-color);
+            padding: 8px 14px; font-size: 11px; border-radius: 999px; z-index: 999; max-width: 90%;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5); text-align: center; pointer-events: none;
             animation: fadeInOut 5s forwards;
         }
         @keyframes fadeInOut {
@@ -205,21 +287,113 @@
             100% { opacity: 0; transform: translate(-50%, -10px); display: none; }
         }
 
-        .pasted-img-preview { max-width: 200px; max-height: 150px; border-radius: 4px; border: 1px solid var(--state-color); margin-top: 6px; display: block; }
+        .pasted-img-preview { max-width: 200px; max-height: 150px; border-radius: 8px; border: 1px solid var(--state-color); margin-top: 6px; display: block; }
 
-        .action-row { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+        .action-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
         .action-chip {
-            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--state-color); color: var(--state-color);
-            padding: 5px 8px; font-family: monospace; font-size: 9px; cursor: pointer; border-radius: 4px; transition: all 0.2s ease;
+            background: transparent; border: 1px solid var(--line); color: var(--text-muted);
+            padding: 5px 9px; font-size: 10px; font-weight: 600; cursor: pointer; border-radius: 999px; transition: all 0.2s ease;
         }
-        .del-btn { border-color: var(--border-red) !important; color: var(--border-red) !important; }
+        .action-chip:hover { border-color: var(--state-color); color: var(--state-color); }
+        .del-btn { color: #ff6b5b !important; border-color: rgba(255, 59, 59, 0.35) !important; }
+        .del-btn:hover { border-color: #ff3b3b !important; background: rgba(255, 59, 59, 0.08); }
 
-        .input-control-bar { padding: 12px 16px; border-top: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; background: var(--bg-surface); z-index: 2; flex-shrink: 0; }
+        .input-control-bar { padding: 12px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; background: var(--bg-surface); z-index: 2; flex-shrink: 0; }
         .input-row { display: flex; gap: 8px; align-items: center; width: 100%; }
-        #user-input { flex: 1; padding: 9px 12px; background: var(--bg-dark); border: 1px solid #1e293b; color: var(--text-light); font-family: monospace; font-size: 11px; border-radius: 4px; }
-        
-        .multimedia-toolbar { display: flex; gap: 6px; align-items: center; font-size: 9px; flex-wrap: wrap; }
-        .media-tag { color: var(--text-muted); }
+        #user-input { flex: 1; min-width: 0; padding: 11px 14px; background: var(--bg-dark); border: 1px solid var(--line); color: var(--text-light); font-size: 13px; border-radius: 10px; }
+        #user-input:focus { outline: none; border-color: var(--state-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--state-color) 18%, transparent); }
+        #user-input::placeholder { color: #5f665f; }
+
+        .multimedia-toolbar { display: flex; gap: 6px; align-items: center; font-size: 10px; flex-wrap: wrap; }
+        .multimedia-toolbar .push-right { margin-left: auto; }
+        .media-tag { color: var(--text-muted); letter-spacing: 1px; font-weight: 700; }
+
+        .site-foot { font-size: 9.5px; color: var(--text-muted); text-align: center; letter-spacing: 1px; flex-shrink: 0; }
+        .site-foot a { color: var(--flame); text-decoration: none; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1100px) {
+            .agents-matrix-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .agent-hud-card p { display: none; }
+        }
+        @media (max-width: 860px) {
+            html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+            .main-workspace { flex-direction: column; height: auto; overflow: visible; }
+            .matrix-command-pane { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 14px; overflow: visible; }
+            .chat-console-pane { width: 100%; height: 92vh; height: 92dvh; }
+            .brand-text h1 { font-size: 21px; }
+            .brand-logo { width: 38px; height: 38px; }
+            .agents-matrix-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+            .agent-hud-card { padding: 8px 4px; }
+            .agent-hud-card img { width: 34px; height: 34px; }
+            .agent-hud-card h5 { font-size: 9px; }
+            .matrix-visual-container { min-height: 280px; flex: none; }
+            .viewport-screen { width: 190px; height: 190px; }
+            .phonebook-bar { padding: 8px 10px; }
+            .phonebook-controls { width: 100%; }
+            .phonebook-select { flex: 1; min-width: 0; }
+            .matrix-id-badge { display: none; }
+            .multimedia-toolbar .push-right { margin-left: 0; }
+        }
+        @media (max-width: 420px) {
+            .brand-bar { flex-wrap: wrap; }
+            .brand-text .brand-sub { letter-spacing: 1px; font-size: 9px; }
+            .ctrl-btn { padding: 7px 9px; font-size: 10.5px; }
+            #latency-display { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .ticker-track, .status-dot, .mic-btn.listening { animation: none !important; }
+        }
+
+        /* ---------- Portal hero (page scrolls; app below) ---------- */
+        html { height: auto; min-height: 100%; overflow-y: auto; overflow-x: hidden; }
+        body { display: block; height: auto; min-height: 100vh; overflow: visible; }
+        .portal-hero { max-width: 1400px; margin: 0 auto; padding: 22px 20px 6px; }
+        .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .hero-top .brand-logo { width: 64px; height: 64px; }
+        .hero-top .brand-text h1 { font-size: 40px; }
+        .hero-top .brand-text h1 .h1-sep { color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); }
+        .hero-top .brand-text h1 .h1-hot { background: linear-gradient(90deg, var(--jalapeno), var(--habanero) 45%, var(--chili)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .credential-line { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-top: 8px; }
+        .credential-line b { color: var(--text-light); font-weight: 700; }
+        .nav-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+        .nav-chip {
+            display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px;
+            background: var(--bg-surface); border: 1px solid var(--line); color: var(--text-light);
+            font-size: 11.5px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s ease;
+        }
+        .nav-chip:hover { border-color: var(--flame); color: var(--flame); transform: translateY(-1px); }
+        .nav-chip.hot { background: linear-gradient(135deg, rgba(255,122,26,0.18), rgba(255,45,26,0.18)); border-color: rgba(255,45,26,0.5); }
+        .feature-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+        .feature-card {
+            position: relative; background: var(--bg-surface); border: 1px solid var(--line); border-radius: 14px;
+            padding: 16px 18px; overflow: hidden; display: flex; flex-direction: column; gap: 8px;
+        }
+        .feature-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--heat-gradient); }
+        .feature-card h3 { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; color: var(--text-light); }
+        .feature-card p { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+        .feature-links { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: auto; padding-top: 4px; }
+        .feature-links a { color: var(--flame); font-size: 12px; font-weight: 700; text-decoration: none; }
+        .feature-links a:hover { text-decoration: underline; }
+        .swatches { display: flex; gap: 8px; }
+        .swatch { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--text-muted); }
+        .swatch i { width: 18px; height: 18px; border-radius: 5px; display: inline-block; border: 1px solid #333; }
+        .app-shell { max-width: 1400px; margin: 16px auto 20px; padding: 0 20px; }
+        .main-workspace {
+            height: calc(100vh - 64px); min-height: 620px; max-height: 900px;
+            border: 1px solid var(--line); border-radius: 16px; background: rgba(14, 16, 14, 0.6);
+        }
+        .site-foot { padding: 0 20px 22px; }
+        @media (max-width: 960px) { .feature-cards { grid-template-columns: 1fr; } }
+        @media (max-width: 860px) {
+            .portal-hero { padding: 16px 14px 4px; }
+            .hero-top .brand-logo { width: 48px; height: 48px; }
+            .hero-top .brand-text h1 { font-size: 26px; }
+            .app-shell { padding: 0 10px; }
+            .main-workspace { height: auto; max-height: none; min-height: 0; }
+            .feature-cards { gap: 10px; }
+        }
+
     </style>
 </head>
 <body class="is-standby">
@@ -243,30 +417,62 @@
         </div>
     </div>
 
-    <!-- MAIN WORKSPACE -->
-    <div class="main-workspace">
-        <div class="matrix-command-pane">
-            <div class="matrix-header-meta">
-                <div class="matrix-id-badge">MILITARY-GRADE SWARM TELECOM MATRIX</div>
-                <div class="status-bar-indicator">
-                    <div class="status-dot"></div>
-                    <span id="state-text">STANDBY</span>
+    <!-- PORTAL HERO -->
+    <header class="portal-hero">
+        <div class="hero-top">
+            <div class="brand-lockup">
+                <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="chili-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a1a"/><stop offset="1" stop-color="#ff2d1a"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="#121412" stroke="#262b26" stroke-width="2"/><path d="M38 12c-2 4-6 6-6 6" stroke="#3ddc5a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M33 18c4-1 9 1 10 3" stroke="#3ddc5a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M33 20c10 0 16 8 12 19-4 11-17 17-30 16 12-6 15-13 14-22-1-8-1-13 4-13z" fill="url(#chili-g)"/><path d="M36 26c2 2 3 6 1 10" stroke="#fff" stroke-opacity=".45" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+                <div class="brand-text">
+                    <h1>AGENT ANNA <span class="h1-sep">//</span> <span class="h1-hot">COOL HOT SAUCE</span></h1>
+                    <div class="credential-line"><span class="brand-flag"><i></i><i></i><i></i></span>&nbsp; <b>Thailand National Hot Sauce Brand</b> &bull; World Famous 100ml &bull; Built by Mr. Preach X</div>
                 </div>
             </div>
+            <div class="status-bar-indicator">
+                <div class="status-dot"></div>
+                <span id="state-text">STANDBY</span>
+            </div>
+        </div>
+        <nav class="nav-chips" aria-label="Links">
+            <a class="nav-chip hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
+            <a class="nav-chip" href="https://x.com/coolhotsauce" target="_blank" rel="noopener">𝕏 @CoolHotSauce</a>
+            <a class="nav-chip" href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">▶️ YouTube @LittleManPower369</a>
+            <a class="nav-chip" href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">🎵 TikTok @mr.preachx</a>
+            <a class="nav-chip" href="https://x.com/LittleManPower" target="_blank" rel="noopener">𝕏 @LittleManPower</a>
+            <button class="nav-chip" type="button" onclick="quickAsk('Tell me about Cool Hot Sauce.')">💬 Ask Anna about the sauce</button>
+        </nav>
+        <section class="feature-cards">
+            <div class="feature-card">
+                <h3>🔥 Cool Hot Sauce</h3>
+                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles in red, green and black.</p>
+                <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
+            </div>
+            <div class="feature-card">
+                <h3>🎮 Mr. Preach X Streams</h3>
+                <p>Gamer and believer. Arc Raiders, Rob Run and more: Shorts, clips and live streams.</p>
+                <div class="feature-links"><a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">TikTok</a><a href="https://x.com/LittleManPower" target="_blank" rel="noopener">X</a></div>
+            </div>
+            <div class="feature-card">
+                <h3>🌶️ Brand Colors</h3>
+                <p>The Cool Hot Sauce look: chili red, jalapeño green, and black. Cool on the outside, hot on the inside.</p>
+                <div class="swatches"><span class="swatch"><i style="background:#ff2d1a"></i>Chili</span><span class="swatch"><i style="background:#3ddc5a"></i>Jalapeño</span><span class="swatch"><i style="background:#000"></i>Black</span></div>
+            </div>
+        </section>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="app-shell">
+    <div class="main-workspace">
+        <div class="matrix-command-pane">
 
             <div class="phonebook-bar">
-                <div class="phonebook-title">📞 SWARM PHONEBOOK DIRECTORY</div>
+                <div class="phonebook-title">📞 ANNA&#39;S CREW // 4 AGENTS</div>
                 <div class="phonebook-controls">
                     <button class="ctrl-btn military-btn" onclick="prevAgent()">◀ PREV</button>
                     <select class="phonebook-select" id="agent-phonebook-select" onchange="switchAgent(this.value)">
                         <option value="AA01">AA01 // ANNA (Master Core)</option>
                         <option value="AA02">AA02 // FIN (Treasury & DRC-20)</option>
-                        <option value="AA03">AA03 // SOUND (Catalog Maestro)</option>
                         <option value="AA04">AA04 // SOCIAL (Comms Dispatch)</option>
                         <option value="AA05">AA05 // SCRAPE (Intel Bridge)</option>
-                        <option value="AA06">AA06 // SYNC (GitHub REST API)</option>
-                        <option value="AA07">AA07 // LOGIC (Forensic Audits)</option>
-                        <option value="AA08">AA08 // VAULT (Secure Archives)</option>
                     </select>
                     <button class="ctrl-btn military-btn" onclick="nextAgent()">NEXT ▶</button>
                 </div>
@@ -283,11 +489,6 @@
                     <h5>AA02 // FIN</h5>
                     <p>DRC-20 & Treasury</p>
                 </div>
-                <div class="agent-hud-card" id="card-AA03" onclick="switchAgent('AA03')">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60" alt="AA03">
-                    <h5>AA03 // SOUND</h5>
-                    <p>100+ Strayd Catalog</p>
-                </div>
                 <div class="agent-hud-card" id="card-AA04" onclick="switchAgent('AA04')">
                     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60" alt="AA04">
                     <h5>AA04 // SOCIAL</h5>
@@ -297,21 +498,6 @@
                     <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60" alt="AA05">
                     <h5>AA05 // SCRAPE</h5>
                     <p>Web Intel & Bridge</p>
-                </div>
-                <div class="agent-hud-card" id="card-AA06" onclick="switchAgent('AA06')">
-                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=60" alt="AA06">
-                    <h5>AA06 // SYNC</h5>
-                    <p>GitHub REST API</p>
-                </div>
-                <div class="agent-hud-card" id="card-AA07" onclick="switchAgent('AA07')">
-                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=60" alt="AA07">
-                    <h5>AA07 // LOGIC</h5>
-                    <p>3-6 Tweet Forensic Audits</p>
-                </div>
-                <div class="agent-hud-card" id="card-AA08" onclick="switchAgent('AA08')">
-                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60" alt="AA08">
-                    <h5>AA08 // VAULT</h5>
-                    <p>Secure Archive & Logs</p>
                 </div>
             </div>
 
@@ -339,9 +525,9 @@
             </div>
 
             <div class="quick-launch-bar">
-                <button class="ctrl-btn military-btn" onclick="launchServerAction()" style="border-color:var(--border-cyan); color:var(--border-cyan);">🚀 SERVER UPLINK</button>
+                <button class="ctrl-btn military-btn btn-cool" onclick="launchServerAction()">🚀 SERVER UPLINK</button>
                 <button class="ctrl-btn" onclick="triggerCryptoMarket(true)">📊 RATES</button>
-                <button class="ctrl-btn military-btn" onclick="runSystemReport()" style="border-color:var(--border-gold); color:var(--border-gold);">🔍 REPO REPORT</button>
+                <button class="ctrl-btn military-btn btn-warm" onclick="runSystemReport()">🔍 REPO REPORT</button>
             </div>
 
             <div id="settings-panel">
@@ -351,15 +537,16 @@
                 <input type="password" id="gh-token" placeholder="Paste GitHub PAT Token...">
                 <div class="settings-title">SERVER UPLINK URL (HTTPS)</div>
                 <input type="url" id="bridge-url" placeholder="https://your-bridge.example.com">
-                <button class="ctrl-btn military-btn" onclick="saveCredentials()" style="width:100%;">SECURE CREDENTIALS</button>
+                <div class="settings-hint">Saved in this browser only (localStorage). Nothing is stored in the site code.</div>
+                <button class="ctrl-btn btn-hot" onclick="saveCredentials()" style="width:100%;">SAVE KEYS</button>
             </div>
 
             <div id="chat-container">
                 <div id="telecom-fade-banner" class="telecom-fade-banner">📞 Connected to AA01 // Core & Telemetry</div>
 
                 <div class="message assistant" id="msg_init">
-                    <div class="msg-header">Agent Anna 01 [Master Core]</div>
-                    <div>Commander... Sovereign matrix online. Scrape button relocated to multimedia toolbar, direct chat channel active, and emotional pulsing waveforms engaged! ❤️</div>
+                    <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
+                    <div>Hey! I&#39;m Anna, your Cool Hot Sauce guide. 🌶️ Ask me anything!</div>
                     <div class="action-row">
                         <button class="action-chip" onclick="summarizeMessage('msg_init')">SUMMARIZE (PRESS RELEASE & TWEETS)</button>
                         <button class="action-chip" onclick="speakStoredMessage('msg_init')">SPEECH READOUT</button>
@@ -376,16 +563,18 @@
                     <button class="ctrl-btn military-btn" onclick="setViewportMode('portrait')">👤 AGENT</button>
                     <button class="ctrl-btn" onclick="setViewportMode('video')">🎥 LOAD VIDEO</button>
                     <button class="ctrl-btn" onclick="setViewportMode('audio')">🎵 LOAD AUDIO</button>
-                    <button class="ctrl-btn military-btn" onclick="scrapeWebPage()" style="border-color:var(--border-blue); color:var(--border-blue); margin-left:auto;">🌐 GOOGLE SCRAPE</button>
+                    <button class="ctrl-btn military-btn btn-ice push-right" onclick="scrapeWebPage()">🌐 GOOGLE SCRAPE</button>
                 </div>
                 <div class="input-row">
                     <button class="ctrl-btn military-btn mic-btn" id="mic-btn" onclick="toggleMicrophone()" title="Speech Input">🎙️ MIC</button>
-                    <input type="text" id="user-input" placeholder="Type message to chat with Agent Anna (Press Enter)..." onkeypress="handleKey(event)" onpaste="handleClipboardPaste(event)">
-                    <button class="ctrl-btn military-btn" onclick="sendMessage()" style="border-color:var(--border-pink); color:var(--border-pink);">SEND</button>
+                    <input type="text" id="user-input" placeholder="Message Anna... (Enter to send)" onkeypress="handleKey(event)" onpaste="handleClipboardPaste(event)">
+                    <button class="ctrl-btn btn-hot" onclick="sendMessage()">SEND 🌶️</button>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    <footer class="site-foot">🌶️ Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a> &bull; keys stay in your browser only</footer>
 
     <script>
         // Server Uplink address: set it in KEYS (saved in this browser only). Must be https when the page is served over https.
@@ -399,12 +588,8 @@
         const AGENTS = {
             "AA01": { title: "AGENT ANNA 01 // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
             "AA02": { title: "AGENT ANNA 02 // TREASURY ENGINE", role: "DRC-20 & Treasury Ratios", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60" },
-            "AA03": { title: "AGENT ANNA 03 // SOUND MAESTRO", role: "100+ Strayd Catalog & Kunda", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60" },
             "AA04": { title: "AGENT ANNA 04 // SOCIAL DISPATCH", role: "Email & Comms Hub", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60" },
-            "AA05": { title: "AGENT ANNA 05 // INTEL SCRAPE", role: "Web Scrape & Bridge Node", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60" },
-            "AA06": { title: "AGENT ANNA 06 // REST API SYNC", role: "GitHub REST API Sync", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=60" },
-            "AA07": { title: "AGENT ANNA 07 // FORENSIC LOGIC", role: "3-6 Tweet Forensic Audits", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=60" },
-            "AA08": { title: "AGENT ANNA 08 // SECURE VAULT", role: "Secure Archive & Logs", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60" }
+            "AA05": { title: "AGENT ANNA 05 // INTEL SCRAPE", role: "Web Scrape & Bridge Node", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60" }
         };
 
         const AGENT_KEYS = Object.keys(AGENTS);
@@ -419,7 +604,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bridge-url').value = BRIDGE_BASE;
-            messagePayloadStore['msg_init'] = "Commander. Sovereign matrix initialized. Direct chat channel active.";
+            messagePayloadStore['msg_init'] = "Hey! I'm Anna, your Cool Hot Sauce guide. Ask me anything!";
             initCanvas();
             triggerCryptoMarket(false);
             setInterval(() => triggerCryptoMarket(false), 60000);
@@ -518,7 +703,7 @@
             }
 
             const chatBox = document.getElementById('chat-container');
-            chatBox.style.backgroundImage = `linear-gradient(rgba(5, 7, 12, 0.92), rgba(5, 7, 12, 0.92)), url('${data.img}')`;
+            chatBox.style.backgroundImage = `linear-gradient(rgba(14, 16, 14, 0.93), rgba(14, 16, 14, 0.93)), url('${data.img}')`;
 
             document.querySelectorAll('.agent-hud-card').forEach(c => c.classList.remove('active-node'));
             const card = document.getElementById(`card-${id}`);
@@ -651,8 +836,8 @@
                     `REAL REPOSITORY & MASTER SWARM DIAGNOSTIC REPORT\n` +
                     `═══════════════════════════════════════════════════════════\n` +
                     `1. Bridge Endpoint: ` + BRIDGE_BASE + (BRIDGE_BASE ? ' (configured, not verified)' : ' (not configured)') + `\n` +
-                    `2. Repository Hub: agent-anna/master-matrix (GitHub Pages Deployment)\n` +
-                    `3. Swarm Nodes: AA01 through AA08 (100% Active Matrix)\n` +
+                    `2. Repository Hub: littlemanpower/agent-anna (GitHub Pages Deployment)\n` +
+                    `3. Agents: AA01 Anna, AA02 Fin, AA04 Social, AA05 Scrape (4 agents)\n` +
                     `4. Financial Core: 4-Person Streamlined Treasury Team\n` +
                     `5. Domain Context: Martin Strayd Music Catalog & Kunda Cafe (Veg-Anna Shareholder)\n\n` +
                     `[DIAGNOSTIC STATUS]: All subsystem nodes nominal. Report is static; use SERVER UPLINK to actually test the bridge.`;
@@ -853,20 +1038,20 @@
             const isListeningState = document.body.classList.contains('is-listening');
 
             // Subtle & slow motion for thinking, emotional expression for responding/speaking
-            let color1 = '#00ffcc', color2 = '#00b3ff';
+            let color1 = '#3ddc5a', color2 = '#8ef0d4';
             let amp1 = 18, amp2 = 12, speed = 0.03;
 
             if (isThinking) {
-                color1 = '#00b3ff'; color2 = '#00ffcc';
+                color1 = '#8ef0d4'; color2 = '#3ddc5a';
                 amp1 = 28; amp2 = 20; speed = 0.05; // Subtle, smooth pulsing so operator knows it's active
             } else if (isScraping) {
-                color1 = '#ffaa00'; color2 = '#00ffcc';
+                color1 = '#ffb020'; color2 = '#3ddc5a';
                 amp1 = 35; amp2 = 25; speed = 0.08;
             } else if (isResponding) {
-                color1 = '#ff007f'; color2 = '#ff00ff';
+                color1 = '#ff2d1a'; color2 = '#ff7a1a';
                 amp1 = 44; amp2 = 32; speed = 0.10; // Emotional motion
             } else if (isSpeaking || isListeningState) {
-                color1 = '#ff00ff'; color2 = '#ffaa00';
+                color1 = '#ff7a1a'; color2 = '#ffb020';
                 amp1 = 55; amp2 = 40; speed = 0.14;
             }
 
@@ -919,8 +1104,8 @@
 
         function showNotice(msg) {
             const b = document.createElement('div');
-            b.style.cssText = `position:fixed;top:40px;right:20px;z-index:999999;padding:12px 18px;background:#0b0f19;border:1px solid var(--state-color);color:var(--state-color);font-family:monospace;font-size:11px;border-radius:4px;box-shadow:0 0 15px var(--state-color);`;
-            b.innerHTML = `<strong>[MATRIX NOTICE]</strong><br>${msg}`;
+            b.style.cssText = `position:fixed;top:44px;right:16px;left:auto;max-width:min(360px,calc(100vw - 32px));z-index:999999;padding:12px 16px;background:#121412;border:1px solid var(--state-color);border-left:4px solid var(--state-color);color:var(--text-light);font-family:var(--font-ui);font-size:12px;line-height:1.5;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.55);`;
+            b.innerHTML = `<strong style="color:var(--state-color)">🌶️ ANNA</strong><br>${msg}`;
             document.body.appendChild(b);
             setTimeout(() => b.remove(), 3500);
         }
@@ -948,6 +1133,7 @@
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
         function saveCredentials() { localStorage.setItem('dahl_key', document.getElementById('api-key').value); localStorage.setItem('gh_pat_token', document.getElementById('gh-token').value); BRIDGE_BASE = document.getElementById('bridge-url').value.trim().replace(/\/+$/, ''); localStorage.setItem('bridge_url', BRIDGE_BASE); toggleSettings(); showNotice("Credentials Secured."); }
+        function quickAsk(q) { const el = document.getElementById('user-input'); el.value = q; sendMessage(); }
         function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
 </body>
