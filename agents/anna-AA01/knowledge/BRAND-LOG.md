@@ -21,7 +21,8 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 - Flavors, confirmed by Martin, Nov 13, 2026: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. (Replaces earlier log wording Smoked Black, Green Jalapeño, Red Thai Chili. Drop Prick chi fa.)
 - Website: https://coolhotsauce.com
 
-## Public contacts and channels (approved for public use, Nov 12 2026)
+## Public contacts and channels (pending Preach's okay for public use)
+These contacts came from Martin's Note of Today (logged Nov 12, 2026). No source in this pass shows Preach approved the Gmail help line for public use. Do not volunteer the address as a public help line until he okays it.
 - Agent Anna help line / public email: agent.anna.aa01@gmail.com
 - Agent Anna on X: https://x.com/agentannashow
 - Agent Anna on YouTube: https://www.youtube.com/@agentannashow
@@ -43,3 +44,4 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 - 2026-11-12: Added public contacts and channels from Martin's Note of Today (Anna email, X, YouTube; Martin's YouTube). Cool Hot Sauce backup contact still pending.
 - 2026-11-13: Flavour names confirmed by Martin: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Martin's site role confirmed as shareholder and hot sauce lover.
 - 2026-11-13, 11:50 AM ET: Martin (reply on X, screenshot shared by Preach, relayed by Mr. Boss) said to keep Cool Hot Sauce and KUNDA separate: Cool Hot Sauce is the No. 1 stand-alone seed-to-table entity, served at many fine dining establishments, including daily at Kunda Cafe locations; KUNDA Co. Ltd is the licensed distributor of Thailand's hot sauce to the greater world; same shareholder team, different shells; manufacturing and farming pipeline separate from the cafe and restaurant franchise; Cool Hot Sauce is part of the franchise rollout. Preach is not an owner, co-owner, or shareholder; he only helps push the brand.
+- 2026-11-13: Gmail help-line heading changed to pending Preach's okay for public use. The contacts themselves are unchanged; they still come from Martin's Note of Today. No Preach approval was found in this pass.

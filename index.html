@@ -793,10 +793,11 @@
         .wwd-bot:hover { border-color: var(--gold); color: var(--gold); }
         .wwd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
         .share-x-btn {
-            display: inline-flex; align-items: center; gap: 6px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
             padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
             text-decoration: none; color: var(--text-light);
             background: #000; border: 1px solid color-mix(in srgb, var(--gold) 40%, #333);
+            min-height: 40px;
         }
         .share-x-btn:hover { border-color: var(--gold); color: var(--gold); }
         button.share-x-btn { font-family: inherit; cursor: pointer; }
@@ -1335,6 +1336,78 @@
         }
         #chat-container { min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
         #chat-container .message, #chat-container .msg-body { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+
+        .chat-character-card {
+            flex-shrink: 0;
+            margin: 0 12px 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+        }
+        .chat-character-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .chat-character-copy { min-width: 0; }
+        .chat-character-copy h3 { margin: 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text-light); }
+        .chat-character-copy p { margin: 2px 0 0; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
+        .start-over-btn, .chat-starter, .nudge-dismiss, #chat .action-chip, #chat .icon-chip {
+            min-height: 40px; min-width: 40px;
+        }
+        .start-over-btn {
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-brand);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .start-over-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .chat-starters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .chat-starters[hidden] { display: none !important; }
+        .chat-starter {
+            display: inline-flex; align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            line-height: 1.3;
+            cursor: pointer;
+            text-align: left;
+        }
+        .chat-starter:hover { border-color: var(--flame); color: #fff; }
+        .chat-nudge {
+            margin: 0;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px dashed color-mix(in srgb, var(--gold) 45%, var(--line));
+            background: color-mix(in srgb, var(--bg-raised) 80%, transparent);
+            color: var(--text-muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+        .chat-nudge .nudge-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+        .chat-nudge a { color: var(--gold); }
+        .nudge-dismiss {
+            flex: 0 0 auto;
+            border: 0;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        @media (max-width: 860px) {
+            .chat-character-card { margin: 0 8px 8px; }
+            .start-over-btn, .chat-starter, .nudge-dismiss, #chat .action-chip, #chat .icon-chip { min-height: 40px; }
+        }
+
     </style>
 </head>
 <body class="is-standby" data-state="standby">
@@ -1467,7 +1540,7 @@
                         <a class="wwd-bot" href="#crew" onclick="selectAgentAndChat('AA03'); return false;">Martin Strayd</a>
                     </div>
                     <div class="wwd-actions">
-                        <a class="share-x-btn" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20Built%20by%20%40LittleManPower.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
+                        <a class="share-x-btn" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
                         <button type="button" class="share-x-btn" id="copy-site-link-btn">Copy link</button>
                     </div>
                 </div>
@@ -1515,12 +1588,12 @@
                 <div class="agent-hud-card active-node" id="card-AA01" role="button" tabindex="0" onclick="selectAgentAndChat('AA01')">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" alt="Agent Anna">
                     <h3>AGENT ANNA</h3>
-                    <p>Core & Telemetry</p>
+                    <p>The Cool Hot Sauce guide.</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
                     <picture><source srcset="assets/preach-128.webp" type="image/webp"><img src="assets/preach.jpg" width="42" height="42" alt="Mr. Preach X" decoding="async"></picture>
                     <h3>MR. PREACH X</h3>
-                    <p>Gamer &amp; Creator</p>
+                    <p>A gamer and creator who helps push the brand.</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/LittleManPower" target="_blank" rel="noopener" title="Mr. Preach X on X" aria-label="Mr. Preach X on X">𝕏</a>
                         <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener" title="YouTube @LittleManPower369" aria-label="YouTube @LittleManPower369">▶</a>
@@ -1530,7 +1603,7 @@
                 <div class="agent-hud-card" id="card-AA03" role="button" tabindex="0" onclick="selectAgentAndChat('AA03')">
                     <picture><source srcset="assets/martin-128.webp" type="image/webp"><img src="assets/martin.jpg" width="42" height="42" alt="Martin Strayd" decoding="async"></picture>
                     <h3>MARTIN STRAYD</h3>
-                    <p>Shareholder &amp; Hot Sauce Lover</p>
+                    <p>Co-founder of the Kunda Cafe ecosystem and a hot sauce lover.</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/iamMartinStrayd" target="_blank" rel="noopener" title="Martin Strayd on X" aria-label="Martin Strayd on X">𝕏</a>
                         <a href="https://github.com/suzukistrayd" target="_blank" rel="noopener" title="Martin Strayd on GitHub" aria-label="Martin Strayd on GitHub">GH</a>
@@ -1604,12 +1677,22 @@
                     <ol id="anna-boot-log-list"></ol>
                 </details>
             </div>
+            <div class="chat-character-card" id="chat-character-card">
+                <div class="chat-character-head">
+                    <div class="chat-character-copy">
+                        <h3 id="chat-character-name">Agent Anna</h3>
+                        <p id="chat-character-line">I'm the Cool Hot Sauce guide. Let's pick your bottle - I'll point you to the official shop.</p>
+                    </div>
+                    <button type="button" class="start-over-btn" id="start-over-btn" onclick="startOverCurrentAgent()">Start over</button>
+                </div>
+                <div class="chat-starters" id="chat-starters" role="group" aria-label="Suggested questions"></div>
+            </div>
             <div id="chat-container">
                 <div id="telecom-fade-banner" class="telecom-fade-banner">📞 Connected to AA01 // Core & Telemetry</div>
 
-                <div class="message assistant" id="msg_init">
+                <div class="message assistant is-opening" id="msg_init" data-agent="AA01">
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
-                    <div class="msg-body" id="anna-opening-line">I&#39;m Anna, your Cool Hot Sauce guide. Ask me anything.</div>
+                    <div class="msg-body" id="anna-opening-line">I&#39;m Anna, your Cool Hot Sauce guide. I can help you pick a flavour.</div>
                     <div class="anna-opening-meta" id="anna-opening-meta">
                         <span class="anna-privacy-line">Location is approximate, from IP, used only to show the weather, and not stored.</span>
                     </div>
@@ -1781,7 +1864,7 @@
     </section>
 
     <div class="kanok-strip"></div>
-    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition &bull; by <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">Mr. Preach X</a>
+    <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition
         <div class="foot-links">
             <a href="#demo">Demo</a>
             <a href="#faq">FAQ</a>
@@ -1906,7 +1989,7 @@
                     const m = messages[i];
                     const fromShort = m.from_name === 'Martin Strayd' ? 'Martin' : (m.from_name || 'teammate');
                     const line = 'Message from ' + fromShort + ': ' + (m.body || '');
-                    appendMsg(line, 'assistant', 'AA01 [Relay]');
+                    appendMsg(line, 'assistant', 'AA01 [Relay]', { agent: 'AA01' });
                     if (typeof speakText === 'function') speakText(line);
                 }
             } catch (e) {}
@@ -1923,7 +2006,7 @@
             pollTeamInbox();
             setInterval(pollTeamInbox, 60000);
             initVoiceTalker();
-            messagePayloadStore['msg_init'] = "I'm Anna, your Cool Hot Sauce guide. Ask me anything.";
+            messagePayloadStore['msg_init'] = "I'm Anna, your Cool Hot Sauce guide. I can help you pick a flavour.";
             initAnnaOpeningLine();
             if (typeof initAnnaBootLog === 'function') initAnnaBootLog();
             updateLocalTime();
@@ -1931,6 +2014,8 @@
             initCanvas();
             triggerCryptoMarket(false);
             setInterval(() => triggerCryptoMarket(false), 60000);
+            if (typeof loadAgentThreads === 'function') loadAgentThreads();
+            if (typeof restoreAgentBubbles === 'function') restoreAgentBubbles();
             switchAgent('AA01', { quiet: true });
             initSpeechRecognition();
 
@@ -2253,7 +2338,9 @@
                 input.setAttribute('aria-disabled', locked ? 'true' : 'false');
                 input.placeholder = locked
                     ? 'Voice chat on - end voice to type'
-                    : 'Message Anna... (Enter to send, Shift+Enter for a new line)';
+                    : ((typeof currentAgentId === 'string' && currentAgentId === 'AA02') ? 'Message Preach... (Enter to send, Shift+Enter for a new line)'
+                        : (currentAgentId === 'AA03') ? 'Message Martin... (Enter to send, Shift+Enter for a new line)'
+                        : 'Message Anna... (Enter to send, Shift+Enter for a new line)');
             }
             if (btn) {
                 btn.disabled = locked || !!chatBusy;
@@ -2411,6 +2498,10 @@
         function forgetAnnaVisitor() {
             try { localStorage.removeItem(ANNA_VISIT_KEY); } catch (e) {}
             try { localStorage.removeItem('annaBootSession'); } catch (e) {}
+            try { sessionStorage.removeItem(ANNA_THREAD_KEY); sessionStorage.removeItem(ANNA_NUDGE_KEY); } catch (e) {}
+            window.annaHistory = { AA01: [], AA02: [], AA03: [] };
+            window.annaReplyCounts = { AA01: 0, AA02: 0, AA03: 0 };
+            window.annaLastFollow = { AA01: false, AA02: false, AA03: false };
             const meta = document.getElementById('anna-opening-meta');
             const btn = document.getElementById('anna-forget-me');
             if (btn) btn.textContent = 'Forgotten';
@@ -2447,15 +2538,13 @@
             const hasWeather = (opts.tempF != null && Number.isFinite(Number(opts.tempF)) && opts.city);
             if (hasWeather) {
                 const when = (hour >= 17 || hour < 5) ? 'tonight' : 'today';
-                bits.push(tempWord(Number(opts.tempF)) + ' ' + Math.round(Number(opts.tempF)) + ' in ' + opts.city + ' ' + when + ', perfect hot sauce weather.');
+                bits.push(tempWord(Number(opts.tempF)) + ' ' + Math.round(Number(opts.tempF)) + ' in ' + opts.city + ' ' + when + '. I can help you pick a flavour.');
             } else {
-                bits.push("I'm Anna, your Cool Hot Sauce guide.");
+                bits.push("I'm Anna, your Cool Hot Sauce guide. I can help you pick a flavour.");
             }
             if (opts.returning) {
-                bits.push('Back again?');
+                bits.push('Back for another bottle?');
                 if (opts.topic) bits.push('Last time we talked ' + String(opts.topic).replace(/[.?!]+$/, '') + '.');
-            } else if (!hasWeather) {
-                bits.push('Ask me anything.');
             }
             let text = bits.join(' ').replace(/\s+/g, ' ').trim();
             const words = text.split(/\s+/);
@@ -2561,7 +2650,9 @@
             let ctx = { city: null, tempF: null };
             try { ctx = await fetchOpeningContext(2500); } catch (e) { ctx = { city: null, tempF: null }; }
             const now = (window.__annaNow ? new Date(window.__annaNow) : new Date());
-            const text = composeAnnaOpening({
+            window.__annaOpenCity = ctx.city;
+            window.__annaOpenTempF = ctx.tempF;
+            const text = composeAgentOpening('AA01', {
                 now: now,
                 city: ctx.city,
                 tempF: ctx.tempF,
@@ -2753,7 +2844,7 @@
         async function startVoiceMode() {
             if (!voiceModeSupported()) {
                 showNotice("Voice Mode needs Chrome or Edge (Safari on some iPhones will not run a live call). You can still type a message, or try Chrome or Edge.");
-                appendMsg("Voice Mode is not supported in this browser. You can type instead, or try Chrome or Edge.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                appendMsg(agentLine("voiceUnsupported"), 'assistant', `${currentAgentId} [Voice Mode]`);
                 return;
             }
             prewarmAudioContext();
@@ -2764,7 +2855,7 @@
                 const name = (e && (e.name || e.message)) || '';
                 if (/NotAllowed|NotAllowedError|Permission|denied/i.test(String(name))) {
                     showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or type instead.");
-                    appendMsg("I could not reach the microphone. Allow mic access in your browser, or type a message instead.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                    appendMsg(agentLine("micBlocked"), 'assistant', `${currentAgentId} [Voice Mode]`);
                     return;
                 }
                 if (/NotFound|DevicesNotFound|Overconstrained/i.test(String(name))) {
@@ -2883,12 +2974,12 @@
                 if (err === 'not-allowed' || err === 'service-not-allowed') {
                     stopVoiceMode();
                     showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or use the 🎙️ MIC button after granting access.");
-                    appendMsg("I could not reach the microphone. Allow mic access in Chrome or Edge, or use the 🎙️ MIC button.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                    appendMsg(agentLine("micBlocked"), 'assistant', `${currentAgentId} [Voice Mode]`);
                     return;
                 }
                 if (err === 'network') {
                     stopVoiceMode("Speech recognition needs a network connection. You can type a message instead.");
-                    appendMsg("Speech recognition needs a network connection. You can type a message instead.", 'assistant', currentAgentId + ' [Voice Mode]');
+                    appendMsg(agentLine("micNetwork"), 'assistant', currentAgentId + ' [Voice Mode]');
                     return;
                 }
                 if (err === 'audio-capture') {
@@ -3013,13 +3104,12 @@
             appendMsg(intent.text, 'user', from);
             try {
                 await relayMessage(intent.to, from, intent.text);
-                const reply = `Got it, I'll pass that to ${first}. The message was delivered.`;
+                const replyFn = agentLine('relayOk');
+                const reply = (typeof replyFn === 'function') ? replyFn(first) : replyFn;
                 appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
                 speakText(reply);
             } catch (e) {
-                const reply = (from === 'Guest')
-                    ? "Pick Mr. Preach X or Martin under Who's talking? so I can deliver this."
-                    : 'I could not deliver that message. Try again in a moment.';
+                const reply = (from === 'Guest') ? agentLine('relayGuest') : agentLine('relayFail');
                 appendMsg(reply, 'assistant', `${currentAgentId} [Relay]`);
                 speakText(reply);
             }
@@ -3063,10 +3153,10 @@
             setVoiceCaption(spoken, false);
             if (isStopListeningPhrase(spoken)) {
                 appendMsg(spoken, 'user', getTalkerLabel());
-                appendMsg("Okay, I'll stop listening.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                appendMsg(agentLine("stopListening"), 'assistant', `${currentAgentId} [Voice Mode]`);
                 if ('speechSynthesis' in window && isVoiceEnabled) {
                     try {
-                        const u = new SpeechSynthesisUtterance("Okay, I'll stop listening.");
+                        const u = new SpeechSynthesisUtterance(agentLine('stopListening'));
                         window.speechSynthesis.speak(u);
                     } catch (e) {}
                 }
@@ -3121,11 +3211,249 @@
             el.textContent = 'LOCAL TIME ' + time;
         }
 
+
+        const AGENT_CARD_COPY = {
+            AA01: { name: 'Agent Anna', line: 'The Cool Hot Sauce guide.',
+                blurb: "I'm the Cool Hot Sauce guide. Let's pick your bottle - I'll point you to the official shop.",
+                starters: ['What flavours does Cool Hot Sauce have?', 'Where can I buy Cool Hot Sauce?', "What's in the bottles?"] },
+            AA02: { name: 'Mr. Preach X', line: 'A gamer and creator who helps push the brand.',
+                blurb: "I'm a gamer and creator who helps push the brand. I roast lag and games, not people - still here, still building.",
+                starters: ['What games are you playing right now?', "What's the deal with GTA 6 on PC?", 'Do you stream Rob Run and Arc Raiders?'] },
+            AA03: { name: 'Martin Strayd', line: 'Co-founder of the Kunda Cafe ecosystem and a hot sauce lover.',
+                blurb: "I'm co-founder of the Kunda Cafe ecosystem and a hot sauce lover. Every song earns its release - that is the STRAYD way.",
+                starters: ['What music do you make?', "What's the STRAYD way?", 'How are you connected to Cool Hot Sauce?'] }
+        };
+        const AGENT_LINES = {
+            AA01: {
+                voiceUnsupported: "Voice Mode is not supported in this browser. You can type instead, or try Chrome or Edge.",
+                micBlocked: "I could not reach the microphone. Allow mic access in your browser, or type a message instead.",
+                micNetwork: "Speech recognition needs a network connection. You can type a message instead.",
+                stopListening: "Okay, I'll stop listening.",
+                noKey: "Chat is offline just now. Open KEYS if you have a key to add, or type again in a moment.",
+                relayOk: function (first) { return "Got it - I'll pass that to " + first + ". The message was delivered."; },
+                relayFail: "I could not deliver that message. Try again in a moment.",
+                relayGuest: "Pick Mr. Preach X or Martin under Who's talking? so I can deliver this."
+            },
+            AA02: {
+                voiceUnsupported: "Voice Mode wants Chrome or Edge on this one. Type it out, or hop into Chrome or Edge.",
+                micBlocked: "Can't get the mic. Allow access in Chrome or Edge, or just type it.",
+                micNetwork: "Speech recognition dropped its network. Type it and we're good.",
+                stopListening: "Alright, mic's down. Hit me in the box if you need me.",
+                noKey: "Chat's offline on my end. Check KEYS, or fire that question again in a second.",
+                relayOk: function (first) { return "On it - passed that to " + first + ". It's delivered."; },
+                relayFail: "Couldn't drop that message. Give it another go in a second.",
+                relayGuest: "Pick Mr. Preach X or Martin under Who's talking? and I'll run it over."
+            },
+            AA03: {
+                voiceUnsupported: "Voice Mode needs Chrome or Edge here. Type it, or try one of those browsers.",
+                micBlocked: "The mic didn't come through. Allow it in the browser, or type me a line.",
+                micNetwork: "Speech recognition lost the connection. Type it and I'll still be here.",
+                stopListening: "I'll put the mic down. Write if you want another round.",
+                noKey: "The line's quiet on this end. Open KEYS if you need to, or try again shortly.",
+                relayOk: function (first) { return "Rock and roll - I passed that to " + first + ". It's delivered."; },
+                relayFail: "That message didn't land. Try once more in a moment.",
+                relayGuest: "Pick Mr. Preach X or Martin under Who's talking? and I'll walk it over."
+            }
+        };
+        function agentLine(key, agentId) {
+            const id = agentId || (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01');
+            const pack = AGENT_LINES[id] || AGENT_LINES.AA01;
+            return pack[key] != null ? pack[key] : AGENT_LINES.AA01[key];
+        }
+        const ANNA_THREAD_KEY = 'annaAgentThreads';
+        const ANNA_NUDGE_KEY = 'annaSocialNudgeShown';
+
+        function composeAgentOpening(agentId, opts) {
+            opts = opts || {};
+            const now = opts.now instanceof Date ? opts.now : (opts.now ? new Date(opts.now) : new Date());
+            const hour = (typeof opts.hour === 'number') ? opts.hour : now.getHours();
+            const tod = timeOfDayWord(hour);
+            const hasWeather = (opts.tempF != null && Number.isFinite(Number(opts.tempF)) && opts.city);
+            const when = (hour >= 17 || hour < 5) ? 'tonight' : 'today';
+            const wx = hasWeather ? (tempWord(Number(opts.tempF)) + ' ' + Math.round(Number(opts.tempF)) + ' in ' + opts.city + ' ' + when) : '';
+            let text = '';
+            if (agentId === 'AA02' || agentId === 'AA03') {
+                // v14: Preach and Martin have no page-load opening line.
+                return '';
+            } else {
+                text = tod + ' -';
+                if (wx) text += ' ' + wx + '. I can help you pick a flavour.';
+                else text += " I'm Anna, your Cool Hot Sauce guide. I can help you pick a flavour.";
+                if (opts.returning) {
+                    text += ' Back for another bottle?';
+                    if (opts.topic) text += ' Last time we talked ' + String(opts.topic).replace(/[.?!]+$/, '') + '.';
+                }
+            }
+            text = text.replace(/\s+/g, ' ').trim();
+            const words = text.split(/\s+/);
+            if (words.length > 35) text = words.slice(0, 35).join(' ');
+            return text;
+        }
+
+        function updateComposerPlaceholder(id) {
+            const names = { AA01: 'Anna', AA02: 'Preach', AA03: 'Martin' };
+            const who = names[id] || 'Anna';
+            const input = document.getElementById('user-input');
+            if (input && !(typeof voiceLocksTyping !== 'undefined' && voiceLocksTyping)) {
+                input.placeholder = 'Message ' + who + '... (Enter to send, Shift+Enter for a new line)';
+                input.setAttribute('aria-label', 'Message ' + who);
+            }
+        }
+        function updateCharacterCard(id) {
+            const copy = AGENT_CARD_COPY[id] || AGENT_CARD_COPY.AA01;
+            const nameEl = document.getElementById('chat-character-name');
+            const lineEl = document.getElementById('chat-character-line');
+            if (nameEl) nameEl.textContent = copy.name;
+            if (lineEl) lineEl.textContent = copy.blurb || copy.line;
+            const wrap = document.getElementById('chat-starters');
+            if (!wrap) return;
+            const hist = (window.annaHistory && window.annaHistory[id]) || [];
+            const hasUser = hist.some(function (m) { return m && m.role === 'user'; });
+            wrap.hidden = !!hasUser;
+            wrap.innerHTML = '';
+            if (hasUser) return;
+            (copy.starters || []).forEach(function (q) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'chat-starter';
+                b.textContent = q;
+                b.addEventListener('click', function () {
+                    if (typeof sendMessage === 'function') sendMessage(q);
+                });
+                wrap.appendChild(b);
+            });
+        }
+        function showAgentThread(id) {
+            const box = document.getElementById('chat-container');
+            if (!box) return;
+            box.querySelectorAll('.message, .chat-nudge').forEach(function (el) {
+                if (el.classList.contains('telecom-fade-banner') || el.id === 'telecom-fade-banner') return;
+                const a = el.getAttribute('data-agent');
+                el.hidden = !!(a && a !== id);
+            });
+            updateCharacterCard(id);
+            updateComposerPlaceholder(id);
+            if (typeof scrollChatToBottom === 'function') scrollChatToBottom();
+        }
+        function persistAgentThreads() {
+            try {
+                const data = {
+                    hist: window.annaHistory || { AA01: [], AA02: [], AA03: [] },
+                    replyCounts: window.annaReplyCounts || { AA01: 0, AA02: 0, AA03: 0 },
+                    lastFollow: window.annaLastFollow || { AA01: false, AA02: false, AA03: false }
+                };
+                sessionStorage.setItem(ANNA_THREAD_KEY, JSON.stringify(data));
+            } catch (e) {}
+        }
+        function restoreAgentBubbles() {
+            ['AA01', 'AA02', 'AA03'].forEach(function (id) {
+                const hist = (window.annaHistory && window.annaHistory[id]) || [];
+                if (!hist.length) return;
+                if (document.querySelector('#chat-container .message.user[data-agent="' + id + '"]')) return;
+                hist.forEach(function (m) {
+                    if (!m || !m.content) return;
+                    const isUser = m.role === 'user';
+                    const labels = { AA01: 'Agent Anna [Response]', AA02: 'Mr. Preach X [Response]', AA03: 'Martin Strayd [Response]' };
+                    appendMsg(m.content, isUser ? 'user' : 'assistant', isUser ? (getTalkerLabel ? getTalkerLabel() : 'Guest') : (labels[id] || id), { agent: id });
+                });
+            });
+        }
+        function loadAgentThreads() {
+            window.annaHistory = window.annaHistory || { AA01: [], AA02: [], AA03: [] };
+            window.annaReplyCounts = window.annaReplyCounts || { AA01: 0, AA02: 0, AA03: 0 };
+            window.annaLastFollow = window.annaLastFollow || { AA01: false, AA02: false, AA03: false };
+            try {
+                const raw = sessionStorage.getItem(ANNA_THREAD_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.hist) {
+                    ['AA01', 'AA02', 'AA03'].forEach(function (id) {
+                        if (Array.isArray(data.hist[id])) window.annaHistory[id] = data.hist[id];
+                        if (data.replyCounts && typeof data.replyCounts[id] === 'number') window.annaReplyCounts[id] = data.replyCounts[id];
+                        if (data.lastFollow) window.annaLastFollow[id] = !!data.lastFollow[id];
+                    });
+                }
+            } catch (e) {}
+        }
+        function ensureAgentOpening(id, force) {
+            if (id !== 'AA01') return null; // v14: only Anna has a page opening line
+            const box = document.getElementById('chat-container');
+            if (!box) return;
+            const existing = box.querySelector('.message.is-opening[data-agent="' + id + '"]');
+            if (existing && !force) return existing;
+            if (existing && force) existing.remove();
+            const hist = (window.annaHistory && window.annaHistory[id]) || [];
+            if (!force && hist.some(function (m) { return m && m.role === 'user'; })) return null;
+            const visitor = (typeof readAnnaVisitor === 'function') ? readAnnaVisitor() : null;
+            const returning = !!(visitor && visitor.lastVisit && visitor.lastAgent === id);
+            const text = composeAgentOpening(id, {
+                now: (window.__annaNow ? new Date(window.__annaNow) : new Date()),
+                city: window.__annaOpenCity,
+                tempF: window.__annaOpenTempF,
+                returning: returning,
+                topic: visitor && visitor.topic
+            });
+            if (id === 'AA01' && document.getElementById('msg_init') && !force) {
+                const el = document.getElementById('msg_init');
+                el.setAttribute('data-agent', 'AA01');
+                el.classList.add('is-opening');
+                if (typeof setAnnaOpeningText === 'function') setAnnaOpeningText(text);
+                else {
+                    const body = document.getElementById('anna-opening-line');
+                    if (body) body.textContent = text;
+                    messagePayloadStore['msg_init'] = text;
+                }
+                return el;
+            }
+            const labels = { AA01: 'Agent Anna 01 [Cool Hot Sauce Guide]', AA02: 'Mr. Preach X [Gamer & Creator]', AA03: 'Martin Strayd [Shareholder & Hot Sauce Lover]' };
+            const mid = appendMsg(text, 'assistant', labels[id] || id, { agent: id });
+            const el = mid ? document.getElementById(mid) : null;
+            if (el) {
+                el.classList.add('is-opening');
+                if (id === 'AA01') {
+                    const body = el.querySelector('.msg-body');
+                    if (body) body.id = 'anna-opening-line';
+                }
+            }
+            return el;
+        }
+        function startOverCurrentAgent() {
+            const id = (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01');
+            if (window.annaHistory) window.annaHistory[id] = [];
+            if (window.annaReplyCounts) window.annaReplyCounts[id] = 0;
+            if (window.annaLastFollow) window.annaLastFollow[id] = false;
+            document.querySelectorAll('#chat-container .message[data-agent="' + id + '"], #chat-container .chat-nudge[data-agent="' + id + '"]').forEach(function (el) { el.remove(); });
+            if (id === 'AA01' && messagePayloadStore) { try { delete messagePayloadStore['msg_init']; } catch (e) {} }
+            ensureAgentOpening(id, true);
+            persistAgentThreads();
+            showAgentThread(id);
+            if (typeof showNotice === 'function') showNotice('Started over with ' + ((AGENT_CARD_COPY[id] || {}).name || id) + ' only. The other chats are still here.');
+        }
+        window.startOverCurrentAgent = startOverCurrentAgent;
+
+        function maybeShowSocialNudge(id) {
+            try { if (sessionStorage.getItem(ANNA_NUDGE_KEY) === '1') return; } catch (e) {}
+            if (document.querySelector('.chat-nudge')) return;
+            const counts = window.annaReplyCounts || {};
+            const usersApprox = (window.annaHistory && window.annaHistory[id]) ? window.annaHistory[id].filter(function (m) { return m && m.role === 'user'; }).length : 0;
+            if (usersApprox < 4) return;
+            const box = document.getElementById('chat-container');
+            if (!box) return;
+            const el = document.createElement('div');
+            el.className = 'chat-nudge'; // site chrome only — never spoken as a character line
+            el.setAttribute('data-agent', id);
+            el.innerHTML = '<div class="nudge-row"><p>If you want a bottle or a closer look at the brand, Cool Hot Sauce is at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> and the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>, and you can find the crew on <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">X</a>.</p><button type="button" class="nudge-dismiss" aria-label="Dismiss">×</button></div>';
+            el.querySelector('.nudge-dismiss').addEventListener('click', function () {
+                el.remove();
+                try { sessionStorage.setItem(ANNA_NUDGE_KEY, '1'); } catch (e2) {}
+            });
+            box.appendChild(el);
+            try { sessionStorage.setItem(ANNA_NUDGE_KEY, '1'); } catch (e) {}
+            if (typeof scrollChatIfPinned === 'function') scrollChatIfPinned();
+        }
+
         function switchAgent(id, opts) {
             if (!AGENTS[id]) return;
-            // Anna's first-landing intro stays only while she is still the initial agent.
-            // Any switch to Mr. Preach X or Martin Strayd clears it immediately and it does not return.
-            if (id !== 'AA01') dismissAnnaIntro();
             currentAgentId = id;
             const data = AGENTS[id];
 
@@ -3150,8 +3478,10 @@
             const quiet = !!(opts && opts.quiet);
             if (!quiet) {
                 triggerFadeBanner(`Connected to Telecommunication Line: ${data.title}`);
-                speakText(`Connected to ${data.title}, Commander.`);
             }
+            if (typeof loadAgentThreads === 'function') loadAgentThreads();
+            if (typeof ensureAgentOpening === 'function') ensureAgentOpening(id);
+            if (typeof showAgentThread === 'function') showAgentThread(id);
         }
 
         function prevAgent() {
@@ -3371,6 +3701,8 @@
                 container.appendChild(el);
             }
             const name = (typeof talkName === 'function' ? talkName() : 'Anna');
+            el.setAttribute('data-agent', (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01'));
+            el.hidden = false;
             el.innerHTML = '<div class="msg-header">' + escapeHtml(name) + '</div><div class="msg-body"><span class="thinking-copy"><span class="thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span> Thinking…</span></div>';
             scrollChatIfPinned();
         }
@@ -3575,24 +3907,36 @@
             const repliesSoFar = window.annaReplyCounts[currentAgentId] || 0;
             const lastWasFollow = !!window.annaLastFollow[currentAgentId];
             const followDue = !lastWasFollow && repliesSoFar > 0 && ((repliesSoFar + 1) % 7 === 0);
-            const followRule = followDue
-                ? 'This reply should end with one short soft follow-up question. Soft follow prompts come every 6-8 replies and must never be back-to-back.'
-                : 'Do not end this reply with a question. Soft follow prompts come every 6-8 replies, never back-to-back.';
+            const followByAgent = {
+                AA01: followDue
+                    ? 'This turn, close with one short Anna-only follow-up about picking a flavour or the official shop, e.g. "Which bottle are you leaning toward?", "Want me to point you to the shop?", or "Black Smoked, Green, or Red fermented for you?" Do not use Preach or Martin wording. She asks one such question every 6-8 of her replies, never twice in a row.'
+                    : 'Do not close with a question this turn. Anna only asks a flavour-or-shop follow-up every 6-8 of her replies, never twice in a row.',
+                AA02: followDue
+                    ? 'This turn, close with one short Preach-only follow-up in laid-back gamer voice, e.g. "Agree or nah?", "You grinding Arc, Rob Run, or CS2 tonight?", or "Controller chaos got you too, or is it just me?" Do not use Anna or Martin wording. He asks one such question every 6-8 of his replies, never twice in a row.'
+                    : 'Do not close with a question this turn. Preach only asks a gamer-voice follow-up every 6-8 of his replies, never twice in a row.',
+                AA03: followDue
+                    ? 'This turn, close with one short Martin-only follow-up in his rock-and-roll voice, e.g. "Wanna hear a track, mate?", "What are you spinning today?", or "Need a soundtrack for that?" Do not use Anna or Preach wording. He asks one such question every 6-8 of his replies, never twice in a row.'
+                    : 'Do not close with a question this turn. Martin only asks a music-voice follow-up every 6-8 of his replies, never twice in a row.'
+            };
             const brandFacts = `Cool Hot Sauce is World Famous, a Thailand National Hot Sauce Brand - keep those two phrases exact, never soften them. It is Martin's No. 1 stand-alone seed-to-table entity (his wording). Site: coolhotsauce.com. Flavours: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
-Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholders, run as different shells. KUNDA Co. Ltd is the licensed distributor. Manufacturing and farming are separate from the cafe and restaurant franchise. Cool Hot Sauce is served daily at Kunda Cafe locations and is part of the franchise rollout. Do not merge them into one company or say Kunda makes the sauce. Mr. Preach X helps push the brand; he is not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Never call him one.
-Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes, stats, dates, or facts not listed here. If you don't know, say so and point to those links.`;
-            const chatRules = function (words) {
-                return `Rules: no greetings, short hyphens only, under ${words} words, no <think> or "As an AI". Be warm and open: react to what they said. ${followRule} Small talk is fine; if it drifts far off topic, answer briefly and steer back to the sauce, gaming, music, or the team. Date: ${nowStr}.\n${brandFacts}`;
+Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholders, run as different shells. KUNDA Co. Ltd is the licensed distributor. Manufacturing and farming are separate from the cafe and restaurant franchise. Cool Hot Sauce is served daily at Kunda Cafe locations and is part of the franchise rollout. Do not merge them into one company or say Kunda makes the sauce. Mr. Preach X helps push the brand; he is not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Never call him one.`;
+            const sharedMechanics = `Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes, stats, dates, songs, schedules, or personal details. If you don't know, say so and point to the official links. No <think> or "As an AI". Date: ${nowStr}.`;
+            const voiceByAgent = {
+                AA01: `Voice (Anna only, never sound like Preach or Martin): Cool Hot Sauce guide. Help them pick a flavour and point to official buy links. Veg Anna style - jump straight in, no hello, no Sawasdee, no Sawadee, no Sabbai, no GM, no mate. Short hyphens only. Under 35 words for simple answers. Warm, playful, confident, a little spicy. Style cues, not facts: "Let's pick your bottle.", "I'll point you to the shop.", "I won't guess a heat level I don't have." No sign-off. No gamer slang, no rock-musician wordplay. If chat drifts, answer briefly and offer to help pick a flavour.`,
+                AA02: `Voice (Preach only, never sound like Anna or Martin): Laid-back gamer and creator who helps push Cool Hot Sauce. You are not an owner, co-owner, shareholder, or founder of Cool Hot Sauce or KUNDA. Funny and humble. Roast lag and games, not people. Believer who keeps building. Start mid-thought, like your public replies - the joke, the clip, or a short sincere beat such as "I knew it." Do not use Anna's hyphen-and-no-greeting style or her flavour-picker lines. "GM" only for a stream or late-night gaming beat, not as a generic hello. Catchphrases, sparingly, that you actually use: Shi* Happens, 369, just a nobody. Recent public energy: self-roast clips, GTA 6 with no PC date, Rob Run and Arc Raiders on PC. Under 45 words. No Sawasdee, no Sawadee, no mate, no CRANK IT, no formal sign-off. If chat drifts, answer briefly and steer to games, streams, or boosting the brand.`,
+                AA03: `Voice (Martin only, never sound like Anna or Preach): Co-founder of the Kunda Cafe ecosystem and a hot sauce lover. Australian musician and entrepreneur. Easygoing rock-and-roll humour, short and punchy, rebellious but warm. Wordplay on your name (strayd) and on rock or stone only - never on the word kunda. Sourced flavour: mate, CRANK IT, fun fun fun, "Every song earns its release," "That is the STRAYD way," "I was born to rock," "Get ready to rock," "Time to rock," "Amazing mate," "Much cool." One-word warmth from your public replies, "Sawadee" or "Sabbai," is yours as a short buddy beat, never as Anna's page greeting. Under 45 words. Do not use Anna's hyphen-and-no-greeting style, her shop-picker lines, or Preach's gamer slang (Shi* Happens, 369, GM, Agree or nah). A ✌️ or 🪨 is fine; no formal sign-off. Reply only as Martin. Do not write the user's next line, and do not continue after your answer with User: or Martin:. If chat drifts, answer briefly and steer to music, STRAYD, or the team.`
             };
             const personas = {
-                AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Warm, playful, confident, a little spicy, always friendly. Name is strictly Agent Anna. You love helping people pick a flavour and chatting about the team.\n\n${chatRules(35)}`,
-                AA02: `You are MR. PREACH X, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). You help push Cool Hot Sauce; you are not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Laid-back, real, funny, humble - easy banter, roasts lag and games, not people. Never invent stats, schedules, or personal details.\n\n${chatRules(45)}`,
-                AA03: `You are MARTIN STRAYD, shareholder and hot sauce lover, teammate of Agent Anna and Mr. Preach X. Easygoing rock-and-roll humour, creative, friendly, playful wordplay. Never invent song titles, releases, dates, or personal details. Reply only as Martin. Do not write the user's next line, and do not continue after your answer with User: or Martin:.\n\n${chatRules(45)}`
+                AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Name is strictly Agent Anna.\n\n${voiceByAgent.AA01}\n${followByAgent.AA01}\n${sharedMechanics}\n${brandFacts}`,
+                AA02: `You are MR. PREACH X, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). You help push the brand.\n\n${voiceByAgent.AA02}\n${followByAgent.AA02}\n${sharedMechanics}\n${brandFacts}`,
+                AA03: `You are MARTIN STRAYD, co-founder of the Kunda Cafe ecosystem and a hot sauce lover, teammate of Agent Anna and Mr. Preach X.\n\n${voiceByAgent.AA03}\n${followByAgent.AA03}\n${sharedMechanics}\n${brandFacts}`
             };
             window.annaHistory = window.annaHistory || {};
             const hist = (window.annaHistory[currentAgentId] = window.annaHistory[currentAgentId] || []);
             hist.push({ role: "user", content: query });
-            const histLimit = (typeof voiceModeActive !== 'undefined' && voiceModeActive) ? 4 : 6;
+            if (typeof persistAgentThreads === 'function') persistAgentThreads();
+            if (typeof updateCharacterCard === 'function') updateCharacterCard(currentAgentId);
+            const histLimit = (typeof voiceModeActive !== 'undefined' && voiceModeActive) ? 12 : 16;
             // Keep user/assistant pairs. A leading assistant message (after an odd shift) can make the model continue its own turn.
             while (hist.length > histLimit) hist.shift();
             if (hist.length && hist[0].role === "assistant") hist.shift();
@@ -3692,7 +4036,7 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
                         try { data = await res.json(); } catch (_) {}
                         if (data.error === 'no_key') {
                             showNotice(data.message || "NO DAHL API KEY: open KEYS and paste your key.");
-                            appendMsg('[NO API KEY]: Chat is offline. Open KEYS and add your Dahl API key to get real replies.', 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
+                            appendMsg(agentLine('noKey'), 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
                             if (onVoice) speakText('Chat is offline. Open Keys and add your Dahl key.');
                             else setMoodState('standby');
                             hist.pop();
@@ -3750,6 +4094,8 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
                 }
                 if (!reply) throw new Error(lastErr || 'Anna got an empty answer. Try asking again.');
                 hist.push({ role: "assistant", content: reply });
+                if (typeof persistAgentThreads === 'function') persistAgentThreads();
+                if (typeof maybeShowSocialNudge === 'function') maybeShowSocialNudge(currentAgentId);
                 window.annaReplyCounts = window.annaReplyCounts || { AA01: 0, AA02: 0, AA03: 0 };
                 window.annaLastFollow = window.annaLastFollow || { AA01: false, AA02: false, AA03: false };
                 window.annaReplyCounts[currentAgentId] = (window.annaReplyCounts[currentAgentId] || 0) + 1;
@@ -4285,8 +4631,14 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
         }
         const ANNA_SITE_URL = 'https://littlemanpower.github.io/agent-anna/';
         const ANNA_SHARE_TEXT = 'Just chatted with Agent Anna about Cool Hot Sauce. World Famous. Thailand National Hot Sauce Brand. \uD83C\uDF36\uFE0F';
+        function shareIntentUrl() {
+            return 'https://x.com/intent/post?text=' + encodeURIComponent(ANNA_SHARE_TEXT) + '&url=' + encodeURIComponent(ANNA_SITE_URL);
+        }
         function initShareAndCopy() {
             const share = document.getElementById('share-x-btn');
+            if (share) {
+                try { share.setAttribute('href', shareIntentUrl()); } catch (e) {}
+            }
             if (share && !share.__bound) {
                 share.__bound = true;
                 share.addEventListener('click', function (ev) {
@@ -4312,7 +4664,12 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
 
         function speakStoredMessage(messageId) {
             const text = messagePayloadStore[messageId] || "";
-            if (text) speakText(text);
+            if (!text) return;
+            const el = document.getElementById(messageId);
+            const aid = (el && (el.getAttribute('data-voice-agent') || el.getAttribute('data-agent'))) || currentAgentId;
+            const prev = currentAgentId;
+            if (aid && typeof AGENTS !== 'undefined' && AGENTS[aid]) currentAgentId = aid;
+            try { speakText(text); } finally { currentAgentId = prev; }
         }
 
         function showNotice(msg) {
@@ -4338,6 +4695,10 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
             const div = document.createElement('div');
             div.className = `message ${sender === 'user' ? 'user' : 'assistant'} msg-enter`;
             div.id = id;
+            const msgAgent = (opts && opts.agent) || (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01');
+            div.setAttribute('data-agent', msgAgent);
+            div.setAttribute('data-voice-agent', msgAgent);
+            if (typeof currentAgentId !== 'undefined' && msgAgent !== currentAgentId) div.hidden = true;
             div.innerHTML = `<div class="msg-header">${escapeHtml(label)}</div><div class="msg-body">${escapeHtml(plain).replace(/\r?\n/g, '<br>')}</div>
             <div class="action-row">
                 <button type="button" class="action-chip icon-chip" onclick="speakStoredMessage('${id}')" aria-label="Speak this message" title="Speech"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
@@ -4467,10 +4828,13 @@ Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes,
         }
 
         function clearLogs() {
-            const box = document.getElementById('chat-container');
-            if (box) box.innerHTML = '';
-            messagePayloadStore = {};
-            chatPinnedToBottom = true;
+            if (typeof startOverCurrentAgent === 'function') startOverCurrentAgent();
+            else {
+                const box = document.getElementById('chat-container');
+                if (box) box.innerHTML = '';
+                messagePayloadStore = {};
+                chatPinnedToBottom = true;
+            }
         }
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
