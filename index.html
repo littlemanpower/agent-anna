@@ -2102,7 +2102,19 @@
                 document.getElementById('user-input').value = transcript;
             };
 
-            recognition.onerror = () => { stopMicrophone(); };
+            recognition.onerror = (event) => {
+                const err = (event && event.error) || '';
+                if (err === 'not-allowed' || err === 'service-not-allowed') {
+                    showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or type instead.");
+                } else if (err === 'audio-capture') {
+                    showNotice("The microphone is busy or wasn't found. Close other apps using it, or type instead.");
+                } else if (err === 'network') {
+                    showNotice("Speech recognition needs a network connection. You can type a message instead.");
+                } else if (err && err !== 'no-speech' && err !== 'aborted') {
+                    showNotice("Could not use the microphone. You can type a message instead.");
+                }
+                stopMicrophone();
+            };
             recognition.onend = () => { stopMicrophone(); };
         }
 
@@ -2120,7 +2132,11 @@
                 return;
             }
             try {
-                await acquireVoiceMic();
+                if (typeof releaseVoiceMic === 'function') releaseVoiceMic();
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const probe = await navigator.mediaDevices.getUserMedia(VOICE_MIC_CONSTRAINTS);
+                    try { probe.getTracks().forEach(function (tr) { tr.stop(); }); } catch (e) {}
+                }
             } catch (e) {
                 const name = (e && (e.name || e.message)) || '';
                 if (/NotAllowed|NotAllowedError|Permission|denied/i.test(String(name))) {
@@ -2737,6 +2753,7 @@
                 // No usable stream (headless, missing device): still run recognition if the browser offers it.
             }
             if (isListening && recognition) { try { recognition.stop(); } catch (e) {} }
+            window.__annaReleasedMicForCapture = false;
             voiceModeActive = true;
             voiceLocksTyping = true;
             voicePausedForSpeech = false;
@@ -2848,7 +2865,19 @@
                     return;
                 }
                 if (err === 'audio-capture') {
-                    showNotice("No microphone was found. Plug one in, or use the text box.");
+                    // On some PCs, holding getUserMedia and SpeechRecognition at once blocks capture.
+                    if (!window.__annaReleasedMicForCapture) {
+                        window.__annaReleasedMicForCapture = true;
+                        try { if (typeof releaseVoiceMic === 'function') releaseVoiceMic(); } catch (e) {}
+                        setTimeout(function () {
+                            if (!voiceModeActive || voiceSending) return;
+                            try { ensureVoiceRec().start(); } catch (e2) {
+                                showNotice("The microphone is busy or wasn't found. Close other apps using it, or type instead.");
+                            }
+                        }, 200);
+                        return;
+                    }
+                    showNotice("The microphone is busy or wasn't found. Close other apps using it, or type instead.");
                 }
             };
             rec.onend = () => {
