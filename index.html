@@ -1279,6 +1279,17 @@
             select, #agent-phonebook-select, #voice-talker { min-height: 44px; }
             #user-input { font-size: 16px; } /* stops iPhone Safari zooming in when the box is tapped */
         }
+        /* Chat panel (Nov 13): fixed-height console on the right; messages scroll inside it instead of stretching the page. */
+        @media (min-width: 861px) {
+            .page-stage > .app-shell { align-self: start; }
+            .main-workspace, .page-stage .main-workspace {
+                height: clamp(820px, calc(100vh - 40px), 1000px) !important;
+                max-height: clamp(820px, calc(100vh - 40px), 1000px) !important;
+                min-height: 0 !important; overflow: hidden;
+            }
+            .chat-console-pane { height: 100%; min-height: 0; }
+        }
+        #chat-container { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     </style>
 </head>
 <body class="is-standby" data-state="standby">
