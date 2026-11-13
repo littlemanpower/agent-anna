@@ -2131,6 +2131,7 @@
                 try { recognition.stop(); } catch (e) {}
                 return;
             }
+            if (typeof prewarmAudioContext === 'function') prewarmAudioContext();
             try {
                 if (typeof releaseVoiceMic === 'function') releaseVoiceMic();
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -2142,6 +2143,11 @@
                 if (/NotAllowed|NotAllowedError|Permission|denied/i.test(String(name))) {
                     showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or type instead.");
                     return;
+                }
+                if (/NotFound|DevicesNotFound|Overconstrained/i.test(String(name))) {
+                    showNotice("No microphone was found. Plug one in, or type a message instead.");
+                } else if (/NotReadable|AbortError|Could not start audio/i.test(String(name))) {
+                    showNotice("The microphone is busy or wasn't found. Close other apps using it, or type instead.");
                 }
                 // Headless or missing device: SpeechRecognition may still run without a getUserMedia stream.
             }
@@ -2280,7 +2286,16 @@
                 if (!voiceMicCtx) voiceMicCtx = new AC();
                 if (voiceMicCtx.state === 'suspended') voiceMicCtx.resume().catch(function () {});
                 if (loudnessCtx && loudnessCtx.state === 'suspended') loudnessCtx.resume().catch(function () {});
+                if (voiceMicCtx && !window.__annaAudioUnlocked) {
+                    const buf = voiceMicCtx.createBuffer(1, 1, 22050);
+                    const src = voiceMicCtx.createBufferSource();
+                    src.buffer = buf;
+                    src.connect(voiceMicCtx.destination);
+                    src.start(0);
+                    window.__annaAudioUnlocked = true;
+                }
             } catch (e) {}
+            try { if ('speechSynthesis' in window) window.speechSynthesis.getVoices(); } catch (e) {}
         }
 
         function setVoiceLevel(rms) {
@@ -2359,10 +2374,12 @@
             if (alnum.length < VOICE_MIN_ALNUM) return true;
             const low = spoken.toLowerCase().replace(/[?!.,]+/g, ' ').replace(/\s+/g, ' ').trim();
             if (/^(uh|um|ah|hmm|mm|mhm|huh)$/.test(low)) return true;
-            // Ignore likely noise if the mic never crossed the gate and the phrase is very short.
+            // Only drop likely noise clicks (one very short token) when the level meter is live
+            // and never saw real volume. Do not eat short real phrases such as "hi Anna".
             const peak = (typeof window.__annaVadPeak === 'number' ? window.__annaVadPeak : voiceVadPeak);
-            const vadOn = !window.__annaDisableVad && peak > 0 && peak < VOICE_VAD_THRESHOLD;
-            if (vadOn && spoken.split(/\s+/).filter(Boolean).length < 3 && alnum.length < 12) return true;
+            const words = spoken.split(/\s+/).filter(Boolean);
+            const vadOn = !!voiceMicAnalyser && !window.__annaDisableVad && peak > 0 && peak < VOICE_VAD_THRESHOLD;
+            if (vadOn && words.length === 1 && alnum.length < 4) return true;
             return false;
         }
 
@@ -2750,6 +2767,11 @@
                     appendMsg("I could not reach the microphone. Allow mic access in your browser, or type a message instead.", 'assistant', `${currentAgentId} [Voice Mode]`);
                     return;
                 }
+                if (/NotFound|DevicesNotFound|Overconstrained/i.test(String(name))) {
+                    showNotice("No microphone was found. Plug one in, or type a message instead.");
+                } else if (/NotReadable|AbortError|Could not start audio/i.test(String(name))) {
+                    showNotice("The microphone is busy or wasn't found. Close other apps using it, or type instead.");
+                }
                 // No usable stream (headless, missing device): still run recognition if the browser offers it.
             }
             if (isListening && recognition) { try { recognition.stop(); } catch (e) {} }
@@ -2862,6 +2884,11 @@
                     stopVoiceMode();
                     showNotice("Microphone permission was blocked. Allow the mic for this site in Chrome or Edge, or use the 🎙️ MIC button after granting access.");
                     appendMsg("I could not reach the microphone. Allow mic access in Chrome or Edge, or use the 🎙️ MIC button.", 'assistant', `${currentAgentId} [Voice Mode]`);
+                    return;
+                }
+                if (err === 'network') {
+                    stopVoiceMode("Speech recognition needs a network connection. You can type a message instead.");
+                    appendMsg("Speech recognition needs a network connection. You can type a message instead.", 'assistant', currentAgentId + ' [Voice Mode]');
                     return;
                 }
                 if (err === 'audio-capture') {
@@ -3868,11 +3895,14 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
 
         async function fetchClonedAudio(agentId, text, opts) {
             const latency = (opts && opts.latency === 'low') ? 'low' : 'balanced';
+            const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+            const timer = setTimeout(function () { try { if (ctrl) ctrl.abort(); } catch (e) {} }, 8000);
             const res = await fetch(ANNA_TTS_FN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'apikey': ANNA_ANON, 'Authorization': 'Bearer ' + ANNA_ANON },
-                body: JSON.stringify({ agentId: agentId, text: text, latency: latency })
-            });
+                body: JSON.stringify({ agentId: agentId, text: text, latency: latency }),
+                signal: ctrl ? ctrl.signal : undefined
+            }).finally(function () { clearTimeout(timer); });
             const type = res.headers.get('Content-Type') || '';
             if (!res.ok || type.indexOf('audio/') !== 0) throw new Error('tts_unavailable');
             const blob = await res.blob();
@@ -3916,6 +3946,7 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
 
         function speakText(text, opts) {
             opts = opts || {};
+            if (typeof prewarmAudioContext === 'function') prewarmAudioContext();
             const parts = chunkForSpeech(text, { firstSeparate: !opts.append });
             if (!parts.length) return;
             const agentId = currentAgentId;
@@ -3954,6 +3985,10 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
                 ttsQueue = [];
                 ttsPrefetch = {};
                 stopCloudAudio();
+                if (!ttsStarted && window.__annaTtsBlocked) {
+                    showNotice("Your browser blocked the spoken reply. Tap the speaker icon on a message to hear it.");
+                    window.__annaTtsBlocked = false;
+                }
                 if (voiceModeActive) onAgentSpeechEnded();
                 else if (!(typeof chatBusy !== 'undefined' && chatBusy)) setMoodState('standby');
             };
@@ -4002,7 +4037,11 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
                     };
                     a.addEventListener('loadedmetadata', armWatch, { once: true });
                     if (a.readyState >= 1) armWatch();
-                    a.play().then(function () { ttsStarted = true; window.__annaTtsPath = 'clone'; armWatch(); }).catch(function () { fallback([chunk].concat(ttsQueue)); });
+                    a.play().then(function () { ttsStarted = true; window.__annaTtsBlocked = false; window.__annaTtsPath = 'clone'; armWatch(); }).catch(function (err) {
+                        const name = (err && (err.name || err.message)) || '';
+                        if (/NotAllowed|not-allowed|NotSupported/i.test(String(name))) window.__annaTtsBlocked = true;
+                        fallback([chunk].concat(ttsQueue));
+                    });
                 }).catch(function () { fallback([chunk].concat(ttsQueue)); });
             };
             playNext();
@@ -4012,11 +4051,19 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
             opts = opts || {};
             const finishSpeak = function () {
                 ttsPlaying = false;
+                if (!ttsStarted && window.__annaTtsBlocked) {
+                    showNotice("Your browser blocked the spoken reply. Tap the speaker icon on a message to hear it.");
+                    window.__annaTtsBlocked = false;
+                }
                 if (voiceModeActive) onAgentSpeechEnded();
                 else if (!(typeof chatBusy !== 'undefined' && chatBusy)) setMoodState('standby');
             };
             if (!isVoiceEnabled && !voiceModeActive) { schedulePresenceIdle(1800); return; }
-            if (!('speechSynthesis' in window)) { finishSpeak(); return; }
+            if (!('speechSynthesis' in window)) {
+                showNotice("This browser cannot speak replies out loud. You can still read them in the chat.");
+                finishSpeak();
+                return;
+            }
             try {
                 const gen = (opts && typeof opts.gen === 'number') ? opts.gen : ++speakGen;
                 if (!opts.append) window.speechSynthesis.cancel();
@@ -4084,9 +4131,25 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
                     utterance.volume = 1.0;
                     const safety = setTimeout(function () { if (gen !== speakGen) return; speakNext(); }, Math.min(20000, Math.max(4000, part.length * 90)));
+                    utterance.onstart = function () { ttsStarted = true; window.__annaTtsBlocked = false; window.__annaTtsPath = 'browser'; };
                     utterance.onend = function () { if (gen !== speakGen) return; clearTimeout(safety); speakNext(); };
-                    utterance.onerror = function () { if (gen !== speakGen) return; clearTimeout(safety); speakNext(); };
-                    window.speechSynthesis.speak(utterance);
+                    utterance.onerror = function (ev) {
+                        if (gen !== speakGen) return;
+                        clearTimeout(safety);
+                        const err = (ev && ev.error) || '';
+                        if (err === 'not-allowed') window.__annaTtsBlocked = true;
+                        if (err === 'not-allowed' || err === 'synthesis-failed' || err === 'audio-busy') {
+                            // Skip remaining chunks; finishSpeak will tell the user if nothing started.
+                            idx = parts.length;
+                        }
+                        speakNext();
+                    };
+                    try { window.speechSynthesis.speak(utterance); } catch (e2) {
+                        window.__annaTtsBlocked = true;
+                        idx = parts.length;
+                        speakNext();
+                        return;
+                    }
                 };
                 speakNext();
             } catch (e) {
