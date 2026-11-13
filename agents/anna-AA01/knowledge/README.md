@@ -1,3 +1,5 @@
 # Agent Anna (AA01) knowledge
 
 Facts, notes and reference files this agent should know. Add .md or .txt files here.
+
+`BOOT-LOG.md` is the public startup log Anna reads on boot.
