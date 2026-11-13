@@ -2861,8 +2861,8 @@
         }
 
         /* STANDARD CHAT SEND FUNCTION */
-        // Server budget is ~40 s (25 s per try, 1 hedged/automatic retry). The browser waits a little longer, as one hard cap.
-        let CHAT_TIMEOUT_MS = 46000;
+        // Server budget is ~42 s (28 s first try, 1 automatic retry in the time left). The browser waits a little longer, as one hard cap.
+        let CHAT_TIMEOUT_MS = 48000;
         const FRIENDLY_RETRY = {
             AA01: "Oops - my chili brain needed a second there. Ask me that again? I'm right here.",
             AA02: "Lag spike on my end, my bad. Hit me with that one more time?",
