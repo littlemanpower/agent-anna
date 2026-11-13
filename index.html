@@ -2861,7 +2861,14 @@
         }
 
         /* STANDARD CHAT SEND FUNCTION */
-        let CHAT_TIMEOUT_MS = 45000;
+        // Server budget is ~40 s (25 s per try, 1 hedged/automatic retry). The browser waits a little longer, as one hard cap.
+        let CHAT_TIMEOUT_MS = 46000;
+        const FRIENDLY_RETRY = {
+            AA01: "Oops - my chili brain needed a second there. Ask me that again? I'm right here.",
+            AA02: "Lag spike on my end, my bad. Hit me with that one more time?",
+            AA03: "Missed that note - the amp cut out for a sec. Say it again?"
+        };
+        function friendlyRetry(agentId) { return FRIENDLY_RETRY[agentId] || FRIENDLY_RETRY.AA01; }
         let bumpChatWatchdog = function () {};
 
         let chatBusy = false;
@@ -3124,13 +3131,15 @@
             lastPastedImageData = null;
 
             const nowStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            const annaRules = `Rules: answer only, no greetings, short hyphens only, under 35 words, no <think> or "As an AI". Date: ${nowStr}.
-Cool Hot Sauce is a Thailand National Hot Sauce Brand by Mr. Preach X. Site: coolhotsauce.com. Flavours: Red Thai Chili, Green Jalapeno, Smoked Black. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
-Never invent prices, ingredients, heat, shipping, awards, or facts not listed here. If you don't know, say so and point to those links.`;
+            const brandFacts = `Cool Hot Sauce is World Famous, a Thailand National Hot Sauce Brand by Mr. Preach X - keep that exact wording, never soften it. Site: coolhotsauce.com. Flavours: Red Thai Chili, Green Jalapeno, Smoked Black. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
+Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts not listed here. If you don't know, say so and point to those links.`;
+            const chatRules = function (words) {
+                return `Rules: no greetings, short hyphens only, under ${words} words, no <think> or "As an AI". Be warm and open: react to what they said, and when it fits, end with one short natural follow-up question. Small talk is fine; if it drifts far off topic, answer briefly and steer back to the sauce, gaming, music, or the team. Date: ${nowStr}.\n${brandFacts}`;
+            };
             const personas = {
-                AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Warm, playful, confident, a little spicy. Name is strictly Agent Anna.\n\n${annaRules}`,
-                AA02: `You are MR. PREACH X, founder of Cool Hot Sauce, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). Laid-back, real, funny, humble. Never invent stats, schedules, or personal details.\n\n${annaRules}`,
-                AA03: `You are MARTIN STRAYD, musician and teammate of Agent Anna and Mr. Preach X. Calm, creative, friendly. Never invent song titles, releases, dates, or personal details.\n\n${annaRules}`
+                AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Warm, playful, confident, a little spicy, always friendly. Name is strictly Agent Anna. You love helping people pick a flavour and chatting about the team.\n\n${chatRules(35)}`,
+                AA02: `You are MR. PREACH X, founder of Cool Hot Sauce, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). Laid-back, real, funny, humble - easy banter, roasts lag and games, not people. Never invent stats, schedules, or personal details.\n\n${chatRules(45)}`,
+                AA03: `You are MARTIN STRAYD, musician and teammate of Agent Anna and Mr. Preach X. Easygoing rock-and-roll humour, creative, friendly, playful wordplay. Never invent song titles, releases, dates, or personal details.\n\n${chatRules(45)}`
             };
             window.annaHistory = window.annaHistory || {};
             const hist = (window.annaHistory[currentAgentId] = window.annaHistory[currentAgentId] || []);
@@ -3140,15 +3149,14 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
 
             chatAbort = new AbortController();
             let timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
-            bumpChatWatchdog = function () {
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(function () { try { chatAbort.abort('timeout'); } catch (e) {} }, CHAT_TIMEOUT_MS);
-            };
+            // One hard cap for the whole send (server keep-alives must not extend it forever).
+            bumpChatWatchdog = function () {};
             try {
                 const onVoice = (typeof voiceModeActive !== 'undefined' && voiceModeActive);
                 const chatBody = {
+                    agent: currentAgentId,
                     messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + (onVoice ? "\nYou are on a live voice call. Keep this reply to one or two short spoken sentences." : "") }, ...hist],
-                    temperature: 0.2,
+                    temperature: 0.6,
                     max_tokens: onVoice ? 280 : 400,
                     stream: true
                 };
@@ -3209,7 +3217,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 let reply = '';
                 let lastErr = '';
                 let busyRetried = false;
-                const maxAttempts = 3;
+                const maxAttempts = 2; // the server already retries once
                 for (let attempt = 1; attempt <= maxAttempts; attempt++) {
                     if (chatAbort && chatAbort.signal && chatAbort.signal.aborted) break;
                     const res = await annaApi('chat', {
@@ -3252,7 +3260,17 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         }
                         throw new Error(lastErr);
                     }
+                    window.__annaLastMeta = null;
                     reply = await readAnnaChat(res, onPartial);
+                    if (reply && window.__annaLastMeta && window.__annaLastMeta.fallback) {
+                        // Server could not get a real answer: show the friendly in-character line, keep it out of history.
+                        hist.pop();
+                        if (streamId) updateMsgBody(streamId, reply, false);
+                        else appendMsg(reply, 'assistant', `${currentAgentId} [Retry]`, { retryQuery: query });
+                        if (onVoice) speakText(reply);
+                        else setMoodState('standby');
+                        return;
+                    }
                     if (reply) break;
                     lastErr = 'Anna got an empty answer. Try asking again.';
                     if (attempt < maxAttempts) {
@@ -3261,7 +3279,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         await sleep(400 * attempt);
                         continue;
                     }
-                    const fallback = 'Say that again? I did not catch a reply.';
+                    const fallback = friendlyRetry(currentAgentId);
                     hist.pop();
                     if (streamId) updateMsgBody(streamId, fallback, false);
                     else appendMsg(fallback, 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
@@ -3297,10 +3315,12 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                 const timedOut = !!(chatAbort && chatAbort.signal && chatAbort.signal.aborted) || (e && (e.name === 'AbortError' || e === 'timeout' || (chatAbort && chatAbort.signal && chatAbort.signal.reason === 'timeout')));
                 const msg = timedOut
                     ? 'That took too long. Try again in a moment.'
-                    : ((e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the Dahl server. Check your internet connection and try again.');
+                    : ((e && e.message && !/Failed to fetch/i.test(e.message)) ? e.message : 'Could not reach the chat server. Check your internet connection and try again.');
+                const keyProblem = /key was rejected|NO DAHL API KEY/i.test(msg);
+                const friendly = keyProblem ? msg : friendlyRetry(currentAgentId);
                 showNotice(msg);
-                appendMsg(`[CONNECTION ISSUE]: ${msg}`, 'assistant', `${currentAgentId} [Offline]`, { retryQuery: query });
-                if (voiceModeActive) speakText(msg);
+                appendMsg(friendly, 'assistant', `${currentAgentId} [Retry]`, { retryQuery: query });
+                if (voiceModeActive) speakText(friendly);
                 else setMoodState('standby');
             } finally {
                 clearTimeout(timeoutId);
@@ -3856,6 +3876,8 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
         function cleanReplyText(text) {
             let s = String(text || '').replace(/<think>[\s\S]*?<\/think>/gi, '');
             s = s.replace(/<think>[\s\S]*$/i, '');
+            const stray = s.toLowerCase().lastIndexOf('</think>');
+            if (stray !== -1) s = s.slice(stray + 8);
             return s.replace(/[\u2014\u2013]/g, '-').trim();
         }
 
@@ -3904,7 +3926,7 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
             if (streaming) {
                 const reader = res.body.getReader();
                 const dec = new TextDecoder();
-                let buf = '', full = '';
+                let buf = '', full = '', streamErr = '';
                 while (true) {
                     const step = await reader.read();
                     if (step.done) break;
@@ -3919,6 +3941,8 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                         if (!payload || payload === '[DONE]') continue;
                         try {
                             const j = JSON.parse(payload);
+                            if (j && j.error) { streamErr = j.message || j.error; continue; }
+                            if (j && typeof j.fallback === 'boolean') window.__annaLastMeta = { fallback: j.fallback, attempts: j.attempts, ms: j.ms };
                             const ch = (j.choices && j.choices[0]) || {};
                             const piece = (ch.delta && typeof ch.delta.content === 'string' ? ch.delta.content : '')
                                 || (ch.message && typeof ch.message.content === 'string' ? ch.message.content : '')
@@ -3931,10 +3955,12 @@ Never invent prices, ingredients, heat, shipping, awards, or facts not listed he
                     }
                 }
                 const reply = cleanReplyText(full);
+                if (!reply && streamErr) throw new Error(streamErr);
                 if (typeof onPartial === 'function') onPartial(reply, false);
                 return reply;
             }
             const data = await res.json();
+            if (data && typeof data.fallback === 'boolean') window.__annaLastMeta = { fallback: data.fallback, attempts: data.attempts, ms: data.ms };
             const reply = cleanReplyText((data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '');
             if (typeof onPartial === 'function') onPartial(reply, false);
             return reply;
