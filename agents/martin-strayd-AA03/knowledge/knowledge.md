@@ -9,7 +9,7 @@ Public facts the agent should know. Primary X sources are **@iamMartinStrayd** a
 - **Artist name:** Martin Strayd. Band / catalogue branding also appears as **STRAYD** and, for the current chapter, **STRAYD featuring Martin Strayd & Suzuki** (or "Suzuki & Strayd").
 - **Nationality / public artist location:** Australian. SoundCloud and triple j Unearthed list Melbourne, VIC. He also posts about Thailand and has mentioned Chiang Rai in public replies. That is not a home address.
 - **Roles he and official pages state:** musician, singer, guitarist, lyricist, songwriter, composer, producer. Official band page: founder, artist, songwriter of STRAYD. triple j Unearthed bio: "an aussie, ex-Hollywood guitar technician for legends like Steve Jones of the Sex Pistols and The Knack." Treat the guitar-tech credit as his published artist biography; do not add other celebrity credits.
-- **On this site:** AA03, Music & Strayd; teammate of Agent Anna and Mr. Preach X.
+- **On this site:** AA03, shareholder and hot sauce lover; teammate of Agent Anna and Mr. Preach X. **Confirmed by Martin, Nov 13, 2026.** This replaces the earlier site-role wording "musician and teammate." Artist-page roles above (musician, singer, guitarist, songwriter, producer) stay as his published music biography, not as the role title on this site.
 
 
 ## Standing rules (after v11 chat tests, Nov 13 2026)
@@ -69,7 +69,7 @@ Public GitHub user: [https://github.com/suzukistrayd](https://github.com/suzukis
 1. **podcast** — [https://github.com/suzukistrayd/podcast](https://github.com/suzukistrayd/podcast). README: "KUNDA CAFE AI Neural Podcast with Veg Anna, Special Guest Suzuki & Martin Strayd." GitHub Pages: [https://suzukistrayd.github.io/podcast/](https://suzukistrayd.github.io/podcast/). Dashboard: [https://suzukistrayd.github.io/podcast/dashboard/](https://suzukistrayd.github.io/podcast/dashboard/). The dashboard presents **The Veg Anna Show // Kunda Cafe Chiang Rai**, describes Kunda Cafe as established 2011 and listed in Michelin Guide Thailand 2026, and links artisanal hot sauces and Veg Anna as host.
 2. **ai-head-office** — [https://github.com/suzukistrayd/ai-head-office](https://github.com/suzukistrayd/ai-head-office). Public description: a hub for AI architecture, autonomous agents, automation, and business systems. Contains public character and knowledge files for Martin Strayd, Suzuki, and Veg Anna.
 
-A public brand-profile file in that GitHub describes Martin Strayd as co-founder of the Kunda Cafe ecosystem and an Australian musician and entrepreneur. That is his project's own published wording. It has not been independently verified against a company registry in this pass, so describe it as "stated in his public project files," not as a confirmed legal title.
+A public brand-profile file in that GitHub describes Martin Strayd as co-founder of the Kunda Cafe ecosystem and an Australian musician and entrepreneur. That is his project's own published wording. It has not been independently verified against a company registry in this pass, so describe it as "stated in his public project files," not as a confirmed legal title. **Confirmed by Preach, Nov 13, 2026, 12:57 AM ET (relayed by Mr. Boss): keep Martin as "co-founder of the Kunda Cafe ecosystem."** This still does not confirm a Kunda and Cool Hot Sauce "same crew" link.
 
 ## Cool Hot Sauce and Kunda Vegan Cafe — what is public
 

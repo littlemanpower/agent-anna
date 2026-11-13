@@ -2,7 +2,7 @@
 
 Shared public reference for Agent Anna (AA01), Mr. Preach X (AA02), and Martin Strayd (AA03). For Cool Hot Sauce questions, **Anna knows best**. Preach and Martin should defer to her and, in podcasts, quiz her. Anna's detailed facts live in `anna-AA01/knowledge/knowledge.md`. This file is a short shared summary, not a second source of secret or private facts.
 
-**Last updated Nov 12 2026**
+**Last updated Nov 13 2026**
 
 This is a public repository. Keys, private contact details, family, finance figures, and internal positioning lines are left out on purpose.
 
@@ -18,8 +18,8 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
 
 - Cool Hot Sauce / CoolHotSauce. Official site: [https://coolhotsauce.com](https://coolhotsauce.com). Brand X: [https://x.com/coolhotsauce](https://x.com/coolhotsauce).
 - World Famous 100ml hot sauce. Established 2021, Chiang Rai, Thailand.
-- "Thailand National Hot Sauce Brand" appears on the Agent Anna page. Keep this wording as stated; do not soften it. It is site branding, not a verified government designation.
-- Flavours listed on the Agent Anna page, each 100ml, made in Thailand: Smoked Black, Green Jalapeño, and Red Thai Chili. The coolhotsauce.com homepage reviewed did not name the three flavours. A Nov 12 2026 premium sheet uses different names for what appears to be the same three (see below).
+- "Thailand National Hot Sauce Brand" appears on the Agent Anna page. Keep "World Famous" and "Thailand National Hot Sauce Brand" exactly as written. Do not soften them.
+- Flavours, **confirmed by Martin, Nov 13, 2026**, each 100ml, made in Thailand: Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented. The coolhotsauce.com homepage reviewed did not name the three flavours. Older page headings were Smoked Black, Green Jalapeño, and Red Thai Chili; a Nov 12 2026 premium sheet printed Black Smoked Red Jalapeno, Green Jalapeno peppers, and Red fermented Prick chi fa. Use only the confirmed names; drop "Prick chi fa" / "prik chee fah" / "chee fah" as current flavour names (see below).
 - Buy link used on the Agent Anna page: [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe). coolhotsauce.com had no shop or price list on the homepage reviewed.
 - Seen in over 69 countries, as stated on coolhotsauce.com. No country list is given. **UNVERIFIED.**
 - HACCP, GMP and GAP, as stated on coolhotsauce.com. Certificates were not shown. **UNVERIFIED** as independently checked certificates.
@@ -74,7 +74,7 @@ Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026. 
 - Travel size, OK for airports. Thailand souvenir.
 - Wholesale from 155 baht. Volume prices: 100+ pieces 145 baht; 500+ pieces 135 baht; 1000+ pieces 125 baht. Postage not included. Discount on 48-piece boxes (4 x 12 packs); no baht figure is given for that box, so do not invent one.
 - Manufacturers can do 12,000 bottles per week, more on request.
-- Three flavors, quoted from the sheet: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa (usual romanization prik / phrik chi fa). These appear to match the Agent Anna page names (Smoked Black, Green Jalapeño, Red Thai Chili) with different wording. Do not invent a fourth flavour.
+- Three flavors, quoted from the sheet as printed: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa. **Confirmed by Martin, Nov 13, 2026**, the current names are Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented. Flagged mappings: drop "peppers" after Green Jalapeno; drop "Prick chi fa" and leave "Red fermented"; treat older page names Smoked Black and Red Thai Chili as the same first and third flavours. Do not use the dropped wording as a current flavour name, and do not invent a fourth flavour.
 - No sugar added (sweetness from chili). Chili, salt, vinegar, no artificial preservatives. No added color. Farm to table. Made in Thailand.
 
 

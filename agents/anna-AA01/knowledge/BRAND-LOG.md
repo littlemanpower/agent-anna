@@ -16,7 +16,7 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 - A decade's experience. [TO CONFIRM vs. 15-year reputation]
 - Bottles in 69 countries. [TO CONFIRM]
 - 100 million [TO CONFIRM: units, reach, or other]
-- Flavors: Smoked Black, Green Jalapeño, Red Thai Chili.
+- Flavors, confirmed by Martin, Nov 13, 2026: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. (Replaces earlier log wording Smoked Black, Green Jalapeño, Red Thai Chili. Drop Prick chi fa.)
 - Website: https://coolhotsauce.com
 
 ## Public contacts and channels (owner-approved for public use, Nov 12 2026)
@@ -39,3 +39,4 @@ Anna reads this file at the start of every conversation. It holds ONLY Cool Hot 
 ## Log
 - 2026-11-12: Log created. Brand facts above stated by Preach on the call; full details due Nov 13.
 - 2026-11-12: Added public contacts and channels from Martin's Note of Today (Anna email, X, YouTube; Martin's YouTube). Cool Hot Sauce backup contact still pending.
+- 2026-11-13: Flavour names confirmed by Martin: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Martin's site role confirmed as shareholder and hot sauce lover.

@@ -7,8 +7,8 @@ Public facts the agent should know about Cool Hot Sauce and her role on the Agen
 ## Public profile
 
 - **Name:** Agent Anna. On the Agent Anna page she is AA01, labeled Cool Hot Sauce Guide, Core & Telemetry, and in the chat prompt "the Cool Hot Sauce guru from Thailand." (source: `/workspace/agent-anna-repo/index.html`)
-- **Role:** Help people pick a flavour and point them to official buy links. Teammate of Mr. Preach X (AA02, Founder & Gamer) and Martin Strayd (AA03, Music & Strayd). (source: `index.html`)
-- **Reply style:** Veg Anna-style, as stated in her character README and in the on-page `annaRules`: no greetings, short hyphens only, under 35 words for simple questions, strict truth about the sauces, natural female voice. Details are in character.md, including when to add one short follow-up question.
+- **Role:** Help people pick a flavour and point them to official buy links. Teammate of Mr. Preach X (AA02, Founder & Gamer) and Martin Strayd (AA03, shareholder and hot sauce lover; confirmed by Martin, Nov 13, 2026). (source: `index.html`; Martin's role confirmed by Martin, Nov 13, 2026)
+- **Reply style:** Veg Anna-style, as stated in her character README and in the on-page `annaRules`: no greetings, short hyphens only, under 35 words for simple questions, strict truth about the sauces, natural female voice. Details are in character.md, including the soft follow-up cadence: every 6-8 replies, never back-to-back (Preach spec, Nov 13 2026).
 
 ## Standing rules (after v11 chat tests, Nov 13 2026)
 
@@ -30,15 +30,15 @@ Facts below are quoted or closely paraphrased from the two sources. Marketing cl
 
 ## The sauces
 
-The Agent Anna page lists three flavours, each with a bottle image, the line "100ML • Made in Thailand," and a buy button that goes to the same Lazada shop. A Nov 12 2026 premium sheet uses different names for what appears to be the same three-flavour lineup (see the premium sheet section below).
+The three Cool Hot Sauce flavours, **confirmed by Martin, Nov 13, 2026**, are exactly:
 
-| Flavour | How the page labels it | Size / origin, as stated | Source |
+| Flavour (use this name) | Place in the three-flavour lineup | Size / origin, as stated | Source |
 | --- | --- | --- | --- |
-| Smoked Black | Flavour 01 | 100ml, made in Thailand | `index.html` sauce card; also named in the AA01 prompt |
-| Green Jalapeño | Flavour 02 (page heading uses the accent; the AA01 prompt writes "Green Jalapeno") | 100ml, made in Thailand | `index.html` sauce card and AA01 prompt |
-| Red Thai Chili | Flavour 03 | 100ml, made in Thailand | `index.html` sauce card; also named in the AA01 prompt |
+| Black Smoked Red Jalapeno | Flavour 01 | 100ml, made in Thailand | Confirmed by Martin, Nov 13, 2026. The Agent Anna page sauce cards still used the older heading "Smoked Black" before this update; both refer to this flavour. |
+| Green Jalapeno | Flavour 02 | 100ml, made in Thailand | Confirmed by Martin, Nov 13, 2026. The page heading had written "Green Jalapeño" with an accent; use "Green Jalapeno" without the accent. |
+| Red fermented | Flavour 03 | 100ml, made in Thailand | Confirmed by Martin, Nov 13, 2026. This replaces the older page heading "Red Thai Chili" and the premium-sheet wording "Red fermented Prick chi fa." Drop "Prick chi fa," "prik chee fah," and "chee fah" as current flavour names. |
 
-The AA01 prompt lists the same three names in a different order (Red Thai Chili, Green Jalapeno, Smoked Black). That is a list-order difference only, not a different lineup.
+Each sauce card uses the line "100ML • Made in Thailand" and a buy button that goes to the same Lazada shop. Do not invent a fourth flavour.
 
 **Still not published (do not invent):**
 
@@ -48,7 +48,7 @@ The AA01 prompt lists the same three names in a different order (Red Thai Chili,
 - Postage amounts, shipping times, shipping regions, or stock status
 - A fourth flavour, a gift set, a baht price for the 48-piece box, or any private-label product beyond the KUNDA Cafe CLASSIC bottle shown in the Nov 12 2026 videos
 
-Retail and wholesale baht prices, a short ingredient line, and a second set of flavour names come from the Nov 12 2026 premium sheet below. CLASSIC back-label ingredient percentages, producer and distributor names, the Thai FDA number, and the KUNDA private-label bottle come from the Nov 12 2026 WhatsApp videos below. coolhotsauce.com's visible homepage still does not name the three flavours or list prices or ingredients. **UNVERIFIED:** any recipe, pepper, or heat detail beyond what those sources and the Agent Anna page actually name.
+Retail and wholesale baht prices and a short ingredient line come from the Nov 12 2026 premium sheet below. The sheet used slightly different flavour wording, now aligned to Martin's Nov 13 confirmation (see that section). CLASSIC back-label ingredient percentages, producer and distributor names, the Thai FDA number, and the KUNDA private-label bottle come from the Nov 12 2026 WhatsApp videos below. coolhotsauce.com's visible homepage still does not name the three flavours or list prices or ingredients. **UNVERIFIED:** any recipe, pepper, or heat detail beyond what those sources and the Agent Anna page actually name.
 
 ## Where to buy
 
@@ -140,7 +140,7 @@ Source: one-page "PREMIUM HOT SAUCE CoolHotSauce.com" PDF provided Nov 12 2026 (
 - Thailand souvenir (sheet wording: "Souvenir Thailand tasty").
 - Wholesale starts at 155 baht. Volume prices on the sheet: 100+ pieces 145 baht; 500+ pieces 135 baht; 1000+ pieces 125 baht (sheet wording: "100 pc more," "500pc more," "1000pc more"). Postage is not included. Discount on 48-piece box orders; a 48-piece box is 4 x 12 packs. The sheet does not give a baht figure for the 48-piece box, so do not invent one. It also says larger orders have a discount, without a further price.
 - "Manufacturers can do 12,000 bottles per week if required. More by request."
-- Three flavors, quoted from the sheet: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa (usual Thai romanization is prik / phrik chi fa). These appear to be the same three-flavour lineup as the Agent Anna page (Smoked Black, Green Jalapeño, Red Thai Chili), with different wording. Do not treat that pairing as independently confirmed, and do not invent a fourth flavour.
+- Three flavors, quoted from the sheet as printed: Black Smoked Red Jalapeno; Green Jalapeno peppers; Red fermented Prick chi fa. **Confirmed by Martin, Nov 13, 2026**, the current names are Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented. Mapping flagged in the v12 change list: drop the sheet's word "peppers" after Green Jalapeno; drop "Prick chi fa" (and prik / phrik chi fa / chee fah) from the current name, leaving "Red fermented"; treat the older page headings Smoked Black and Red Thai Chili as the same first and third flavours. Do not use the dropped wording as a current flavour name, and do not invent a fourth flavour.
 - No sugar added. Sweetness from chili.
 - Chili, salt, vinegar, no artificial preservatives.
 - No added color. The sheet also says "pure sunshine and seeds."
@@ -161,7 +161,7 @@ Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-1
 - Thai FDA mark with registration number 57-2-05560-6-0018, as shown on this CLASSIC bottle. The number was not independently checked in this pass.
 - Three small certification seals, too small to read in the video. They are likely HACCP, GMP and GAP, but that was not readable, so do not claim the seal names from the video.
 - Front label: white oval with a map of Thailand in Thai flag stripes; "THAILAND"; "100ML"; "HOT HOT SAUCE MADE IN THAILAND"; "WARNING: HOT HOT HOT CHILI...".
-- Shown at a cafe table with a caddy of green, dark and red bottles (the three flavors). The CLASSIC bottle shown has a red cap. Do not assume from the video alone that CLASSIC equals a specific Agent Anna page or premium-sheet flavour name.
+- Shown at a cafe table with a caddy of green, dark and red bottles (the three flavors). The CLASSIC bottle shown has a red cap. Do not assume from the video alone that CLASSIC equals a specific current flavour name (Black Smoked Red Jalapeno, Green Jalapeno, or Red fermented). That mapping is not obvious, so the CLASSIC back-label percentages stay on the CLASSIC bottle only.
 - Ends on "Made in Thailand."
 
 ### Video 2 (~13 seconds, KUNDA Cafe social story, stock-style jazzy music)
@@ -178,7 +178,7 @@ Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-1
 - Heat levels, stock, and postage amounts are still unpublished. Retail/wholesale baht prices are on the Nov 12 2026 premium sheet. CLASSIC ingredient percentages, producer, distributor, FDA number, and the KUNDA private label are on the Nov 12 2026 WhatsApp videos. Do not copy those CLASSIC percentages onto the other flavours.
 - "World Famous" and "Thailand National Hot Sauce Brand" are owner-stated (Preach, Nov 12), with full details coming Nov 13. Keep both phrases exactly as written. Do not soften them or fold them into the UNVERIFIED list below.
 - Award, ranking, #1, HACCP/GMP/GAP, "69 countries," "vegan," and "world's 1st crypto-liquidity-utility" claims are site wording only (**UNVERIFIED**), with a #1 tagline that conflicts with "ranked among" in the body.
-- Flavour names appear on the Agent Anna page, not on the coolhotsauce.com homepage text reviewed.
+- Flavour names, confirmed by Martin, Nov 13, 2026: Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented. The coolhotsauce.com homepage text reviewed did not name the three flavours.
 - Founder vs. "Established 2021 by KUNDA Co Ltd." vs. "Exclusively Licenced Distribution by KUNDA Co. Ltd." is not fully explained. The CLASSIC back label in the Nov 12 2026 videos names Thai Pepper Product Co., Ltd (Chiang Rai) as producer and KUNDA Co., Ltd. (Chiang Rai) as distributor. **UNVERIFIED** beyond that label.
 - iTunes / Spotify listings for the three promotional songs were not checked.
 - Lazada shop contents, live prices, and stock were not fetched for this file (the task limited sauce facts to `index.html` and coolhotsauce.com). The URL itself is sourced from `index.html`.

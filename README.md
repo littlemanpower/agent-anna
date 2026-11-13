@@ -18,7 +18,7 @@ Open the live page, click **KEYS**, paste your Dahl API key once, and click **SA
 
 ## Changes from the original
 - Removed the fake canned chat replies shown when no API key is set.
-- Cool Hot Sauce red/black/gold Thailand theme: the real Cool Hot Sauce diamond logo (header + favicon), Kanit font, Thai kanok borders, photo hero and scenes, flavour cards (Smoked Black, Green Jalapeño, Red Thai Chili) with "Buy on Lazada" links (URL decoded from the brand's own Lazada QR code).
+- Cool Hot Sauce red/black/gold Thailand theme: the real Cool Hot Sauce diamond logo (header + favicon), Kanit font, Thai kanok borders, photo hero and scenes, flavour cards (Black Smoked Red Jalapeno, Green Jalapeno, Red fermented) with "Buy on Lazada" links (URL decoded from the brand's own Lazada QR code).
 - Agent roster is Anna, Mr. Preach X, and Martin Strayd.
 
 ## Assets and credits
