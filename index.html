@@ -1256,13 +1256,23 @@
         .mode-btn { background: transparent; border: 0; color: var(--text-muted); font-family: var(--font-brand); font-size: 12px; font-weight: 600; padding: 8px 14px; cursor: pointer; min-height: 36px; }
         .mode-btn.is-on { background: linear-gradient(135deg, var(--chili), #9e0b12); color: #fff; }
         .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
-        @media (max-width: 860px) { .mode-toggle { width: 100%; } .mode-btn { flex: 1; } }
+        @media (max-width: 860px) {
+            /* Keep the chat transcript roomy on phones: Type/Talk toggle and Talk button share one row. */
+            .voice-call-bar { flex-wrap: wrap; }
+            .mode-toggle { flex: 0 0 auto; }
+            .mode-btn { padding: 8px 12px; }
+            .voice-call-bar .voice-talk-btn { flex: 1 1 0; width: auto; min-width: 0; white-space: normal; }
+        }
         @media (pointer: coarse) {
             .mode-btn { min-height: 44px; }
             /* Finger-sized tap targets (about 44px) without changing the look on desktop. */
             .site-nav a, .nav-chip, .ctrl-btn, #send-btn, .anna-forget-link, .lazada-btn, .voice-talk-btn, .share-x-btn, #copy-site-link-btn, #anna-message-submit, #anna-subscribe-submit { min-height: 44px; }
             #anna-msg-name, #anna-msg-contact, #anna-sub-email { min-height: 44px; font-size: 16px; }
             .ctrl-btn, #send-btn { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+            #chat .ctrl-btn:not(#send-btn) { min-height: 38px; }
+            #chat .ctrl-btn:not(#send-btn) { padding-left: 8px; padding-right: 8px; }
+            #user-input::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            #chat .action-chip { min-height: 32px; }
             .action-chip { min-height: 36px; padding-left: 12px; padding-right: 12px; }
             .wwd-bot { min-height: 40px; display: inline-flex; align-items: center; }
             .agent-links a { min-width: 32px; min-height: 32px; }
