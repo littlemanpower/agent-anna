@@ -2,7 +2,7 @@
 
 Public facts the agent should know. Primary X sources are **@iamMartinStrayd** and **@MartinStrayd**. @suzukistrayd is a shared band/press and GitHub account, used here only for official project links, not as his personal voice. Only public information is included. Uncertain items are marked. Home address, phone, email, and other private details are omitted.
 
-**Last updated Nov 12 2026**
+**Last updated Nov 13 2026** (America/New_York)
 
 ## Public profile
 
@@ -10,6 +10,13 @@ Public facts the agent should know. Primary X sources are **@iamMartinStrayd** a
 - **Nationality / public artist location:** Australian. SoundCloud and triple j Unearthed list Melbourne, VIC. He also posts about Thailand and has mentioned Chiang Rai in public replies. That is not a home address.
 - **Roles he and official pages state:** musician, singer, guitarist, lyricist, songwriter, composer, producer. Official band page: founder, artist, songwriter of STRAYD. triple j Unearthed bio: "an aussie, ex-Hollywood guitar technician for legends like Steve Jones of the Sex Pistols and The Knack." Treat the guitar-tech credit as his published artist biography; do not add other celebrity credits.
 - **On this site:** AA03, Music & Strayd; teammate of Agent Anna and Mr. Preach X.
+
+
+## Standing rules (after v11 chat tests, Nov 13 2026)
+
+- **No Kunda-Cool Hot Sauce crew claim until Preach confirms it.** Do not say that Kunda Cafe or KUNDA Co. is the "same crew" or team behind Cool Hot Sauce, or that they are "the people behind the sauce," or assert any other team, ownership, or "same crew" link, until Preach confirms it. In the v11 tests, this agent called Kunda Vegan Cafe "the good people behind the sauce." That link is unconfirmed. Official-site wording may be quoted and attributed, but must not be upgraded into a crew or ownership claim. Official wording on record: coolhotsauce.com rotating tagline "Established 2021 by KUNDA Co Ltd."; coolhotsauce.com footer "Exclusively Licenced Distribution by KUNDA Co. Ltd."; the Agent Anna page buy link is the Lazada shop at [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe); coolhotsauce.com links to [kundacafe.com](https://kundacafe.com) and a TripAdvisor "Test Taste" page for Kunda Vegetarian Cafe.
+- **No taste or flavour notes unless sourced.** Do not invent taste notes, flavour descriptions, or food-pairing claims unless that wording is sourced in Agent Anna's knowledge.md or in `agents/COOL-HOT-SAUCE-REFERENCE.md`. If a taste or pairing is not sourced, say so, defer to Anna, or point to coolhotsauce.com or the Lazada shop.
+- Keep "World Famous" and "Thailand National Hot Sauce Brand" exactly as written. Do not soften them.
 
 ## X and other public accounts
 
@@ -66,12 +73,12 @@ A public brand-profile file in that GitHub describes Martin Strayd as co-founder
 
 ## Cool Hot Sauce and Kunda Vegan Cafe — what is public
 
-Public, citable connections:
+Public, citable items, not a confirmed "same crew" or team-behind-the-sauce claim. Do not upgrade any of this into that claim until Preach confirms it:
 
 - He replies to Mr. Preach X and @coolhotsauce with lines like "Brand is getting cooler & hotter 😎✌️ #coolhotsauce" (Nov 3, 2026, 9:32 AM ET) and "Music and spreading the fun fun fun #Thailand" (Oct 29, 2026, 6:56 PM ET).
 - He has a public single titled **Vegan Millionaire (Cool Hot Sauce)**.
-- The suzukistrayd podcast dashboard and GitHub knowledge files present Veg Anna as host for Kunda Cafe / Cool Hot Sauce style brand material, with Martin as a special guest.
-- Official cafe site named in those public files: [https://kundacafe.com](https://kundacafe.com). Official sauce site: [https://coolhotsauce.com](https://coolhotsauce.com).
+- The suzukistrayd podcast dashboard and GitHub knowledge files present Veg Anna as host for Kunda Cafe / Cool Hot Sauce style brand material, with Martin as a special guest. That is those files' own wording, not confirmation that Kunda Cafe and Cool Hot Sauce are the same crew.
+- Official cafe site named in those public files: [https://kundacafe.com](https://kundacafe.com). Official sauce site: [https://coolhotsauce.com](https://coolhotsauce.com). Official-site wording on coolhotsauce.com may be quoted and attributed ("Established 2021 by KUNDA Co Ltd."; "Exclusively Licenced Distribution by KUNDA Co. Ltd."), but not restated as a team or ownership link.
 - Kunda Cafe is publicly described (including on the podcast dashboard) as a plant-based / vegan cafe in Chiang Rai, Thailand, established 2011. Do not invent hours, menu items, or awards beyond what a current official page says. Do not publish a street address or phone number from secondary pages.
 
 Do not repeat legal, token, or lawsuit claims that appear in some older @MartinStrayd threads. They are out of scope for this agent.
@@ -105,7 +112,7 @@ Do not repeat legal, token, or lawsuit claims that appear in some older @MartinS
 - Catalogue size (55+ vs 100+) is inconsistent across official and self-published sources.
 - Specific Spotify and Apple Music artist profile URLs were not all verified.
 - Twitch activity at twitch.tv/whatisityoucant was not independently confirmed.
-- Co-founder / operator titles for Kunda Cafe are taken from his public project files, not from a separate official filing check.
+- Co-founder / operator titles for Kunda Cafe are taken from his public project files, not from a separate official filing check. Those titles are not confirmation of a Kunda-Cool Hot Sauce "same crew" or team-behind-the-sauce link; do not claim that link until Preach confirms it.
 - "Strayd Tour 2027" appears only on the shared @suzukistrayd bio; no date sheet was verified.
 - Medical history, legal disputes, tokens, and private contact details were found in some public materials and were left out on purpose.
 

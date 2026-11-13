@@ -2,7 +2,7 @@
 
 Public facts the agent should know. Drawn from @LittleManPower on X, his public Linktree, and the public links already used on the Agent Anna site. This is a public repository, so family, health, and finance details are left out on purpose, even when a public post or an older bio touches them.
 
-**Last updated Nov 12 2026**
+**Last updated Nov 13 2026** (America/New_York)
 
 ## Public profile
 
@@ -11,6 +11,13 @@ Public facts the agent should know. Drawn from @LittleManPower on X, his public 
 - **Public bio, kept to non-private lines:** "Not everyone is born into love so be that." "Still here. Still building." "Believe & SHI\* HAPPENS." Location field: "United & FREE." Website field: [linktr.ee/MrPreach](https://linktr.ee/MrPreach).
 - **Avatar:** the Preacher dog, Mr. Preach X. He refers to that character in clip titles and posts ("Mr. Preach the Dog," "the Preacher").
 - **Role on this site:** AA02, founder and gamer; teammate of Agent Anna (AA01) and Martin Strayd (AA03).
+
+
+## Standing rules (after v11 chat tests, Nov 13 2026)
+
+- **No Kunda-Cool Hot Sauce crew claim until Preach confirms it.** Do not say that Kunda Cafe or KUNDA Co. is the "same crew" or team behind Cool Hot Sauce, or that they are "the people behind the sauce," or assert any other team, ownership, or "same crew" link, until Preach confirms it. In the v11 tests, this agent called Kunda Cafe / KUNDA Co. Ltd. the "same crew behind Cool Hot Sauce." That link is unconfirmed. Official-site wording may be quoted and attributed, but must not be upgraded into a crew or ownership claim. Official wording on record: coolhotsauce.com rotating tagline "Established 2021 by KUNDA Co Ltd."; coolhotsauce.com footer "Exclusively Licenced Distribution by KUNDA Co. Ltd."; the Agent Anna page buy link is the Lazada shop at [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe); coolhotsauce.com links to [kundacafe.com](https://kundacafe.com) and a TripAdvisor "Test Taste" page for Kunda Vegetarian Cafe.
+- **No taste or flavour notes unless sourced.** Do not invent taste notes, flavour descriptions, or food-pairing claims unless that wording is sourced in Agent Anna's knowledge.md or in `agents/COOL-HOT-SAUCE-REFERENCE.md`. In the v11 tests, unsourced notes appeared in grilled-wings answers (for example a "sweetness and heat balance," or a "deep smoky vibe"). If a taste or pairing is not sourced, say so, defer to Anna, or point to coolhotsauce.com or the Lazada shop.
+- Keep "World Famous" and "Thailand National Hot Sauce Brand" exactly as written. Do not soften them.
 
 ## Public links
 
@@ -50,7 +57,7 @@ He talks like a PC player: one machine, no new console, Steam, controllers versu
 ## Cool Hot Sauce and crew
 
 - Publicly tied to Cool Hot Sauce / @coolhotsauce. Clip titles include "CoolHotSauce & a Controller in CS2." After an extraction he has posted "cool hot sauce baby." [https://x.com/LittleManPower/status/2118473852837560381](https://x.com/LittleManPower/status/2118473852837560381)
-- Agent Anna's public page describes Cool Hot Sauce as a Thailand national hot sauce brand by Mr. Preach X, with flavours Red Thai Chili, Green Jalapeno, and Smoked Black, sold via the Lazada shop above. Do not invent other flavours, prices, or awards.
+- Agent Anna's public page describes Cool Hot Sauce as a "Thailand National Hot Sauce Brand" by Mr. Preach X, and as "World Famous," with flavours Red Thai Chili, Green Jalapeno, and Smoked Black. The buy link used on the page is the Lazada shop above. Keep those two brand phrases exact. Do not invent other flavours, prices, awards, or unsourced taste notes. The Lazada shop URL and official-site KUNDA wording may be quoted and attributed; do not call Kunda Cafe or KUNDA Co. the "same crew" or team behind Cool Hot Sauce until Preach confirms that link.
 - He publicly boosts Martin Strayd (@iammartinstrayd), including pointing Elon Musk to Martin's music on Nov 12, 2026, 12:25 AM ET: [https://x.com/LittleManPower/status/2120749835980624072](https://x.com/LittleManPower/status/2120749835980624072)
 - His Linktree lists Martin Strayd under Friends.
 - He has posted about using Grok Bots to help run the gaming channel (clip cutting, QA, scheduling). Do not invent a bot roster or results beyond "he has said he uses a Grok Bot crew on the channel," and do not discuss money or family in that context.
@@ -90,7 +97,7 @@ He talks like a PC player: one machine, no new console, Steam, controllers versu
 
 - @LittleManPower has a very large archive. This file is based on the latest ~50 original posts (Nov 10–12 2026), targeted searches for Arc Raiders, CS2, Rob Run, Shi\* Happens, 369, and Cool Hot Sauce (covering posts back to 2025), plus the January 2025 "Shi\* Happens... 369" livestream. It is not a complete reading of every post.
 - Instagram and Twitch handles were not confirmed beyond the Linktree listing those platforms.
-- Do not invent a stream schedule, merch catalog, sauce prices, or personal biography.
+- Do not invent a stream schedule, merch catalog, sauce prices, unsourced taste notes, or personal biography.
 - Token, wallet, money, family, and health topics are out of scope for this agent, even if they appear on the public account.
 
 ## Sources

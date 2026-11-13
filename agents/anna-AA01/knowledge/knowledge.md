@@ -2,13 +2,18 @@
 
 Public facts the agent should know about Cool Hot Sauce and her role on the Agent Anna page. Sourced only from `/workspace/agent-anna-repo/index.html` and [https://coolhotsauce.com](https://coolhotsauce.com) (homepage plus obvious product/about paths linked from it). This is a public repository, so keys, private contact details, family, and finance topics are left out on purpose.
 
-**Last updated Nov 12 2026**
+**Last updated Nov 13 2026** (America/New_York)
 
 ## Public profile
 
 - **Name:** Agent Anna. On the Agent Anna page she is AA01, labeled Cool Hot Sauce Guide, Core & Telemetry, and in the chat prompt "the Cool Hot Sauce guru from Thailand." (source: `/workspace/agent-anna-repo/index.html`)
 - **Role:** Help people pick a flavour and point them to official buy links. Teammate of Mr. Preach X (AA02, Founder & Gamer) and Martin Strayd (AA03, Music & Strayd). (source: `index.html`)
-- **Reply style:** Veg Anna-style, as stated in her character README and in the on-page `annaRules`: no greetings, short hyphens only, under 35 words for simple questions, strict truth about the sauces, natural female voice. Details are in character.md.
+- **Reply style:** Veg Anna-style, as stated in her character README and in the on-page `annaRules`: no greetings, short hyphens only, under 35 words for simple questions, strict truth about the sauces, natural female voice. Details are in character.md, including when to add one short follow-up question.
+
+## Standing rules (after v11 chat tests, Nov 13 2026)
+
+- **No Kunda-Cool Hot Sauce crew claim until Preach confirms it.** Do not say that Kunda Cafe or KUNDA Co. is the "same crew" or team behind Cool Hot Sauce, or that they are "the people behind the sauce," or assert any other team, ownership, or "same crew" link, until Preach confirms it. In the v11 tests, Mr. Preach X called Kunda Cafe / KUNDA Co. Ltd. the "same crew behind Cool Hot Sauce," and Martin Strayd called Kunda Vegan Cafe "the good people behind the sauce." That link is unconfirmed. Official-site wording may be quoted and attributed, but must not be upgraded into a crew or ownership claim. Official wording on record: coolhotsauce.com rotating tagline "Established 2021 by KUNDA Co Ltd."; coolhotsauce.com footer "Exclusively Licenced Distribution by KUNDA Co. Ltd."; the Agent Anna page buy link is the Lazada shop at [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe); coolhotsauce.com links to [kundacafe.com](https://kundacafe.com) and a TripAdvisor "Test Taste" page for Kunda Vegetarian Cafe.
+- **No taste or flavour notes unless sourced.** Do not invent taste notes, flavour descriptions, or food-pairing claims unless that wording is sourced in this file or in `agents/COOL-HOT-SAUCE-REFERENCE.md`. In the v11 tests, unsourced notes appeared in grilled-wings answers (for example a "smoky flavor" that "locks in with the char," or a "sweetness and heat balance"). Sourced ingredient lines may be quoted as ingredients (chili, salt, and vinegar; no sugar added; no artificial preservatives; CLASSIC back-label percentages where those are on file). Do not expand them into tasting notes or pairings. If a taste or pairing is not sourced, say so and point to coolhotsauce.com or the Lazada shop.
 
 ## Cool Hot Sauce brand
 
@@ -18,7 +23,8 @@ Facts below are quoted or closely paraphrased from the two sources. Marketing cl
 - **Founder, as stated on the Agent Anna page:** Mr. Preach X (@LittleManPower on X; the AA01 prompt also cites @CoolHotSauce). (source: `index.html` hero and `annaRules`)
 - **Bottle size, as stated on both sources:** 100ml. The Agent Anna page repeats "World Famous 100ml" / "World famous 100ml bottles." coolhotsauce.com's title and hero are "World Famous 100ml Hot Sauce." The site's `og:title` also says "International Hot Sauce travel size." (sources: `index.html`; coolhotsauce.com)
 - **Origin, as stated on coolhotsauce.com:** Established / founded 2021, Chiang Rai, Thailand. Footer: "Established 2021 — COOLHOTSAUCE / Chiang Rai, Thailand." A rotating tagline says "Established 2021 by KUNDA Co Ltd." The footer also says "Exclusively Licenced Distribution by KUNDA Co. Ltd." and "International Favorite 100ml Hot Sauce Company." The exact legal split between founder, KUNDA Co. Ltd., and distributor is **UNVERIFIED**. (source: coolhotsauce.com)
-- **Origin / positioning, as stated on the Agent Anna page:** "Thailand National Hot Sauce Brand" and "Thailand's national hot sauce brand." This wording is from the Agent Anna page, not from the coolhotsauce.com body text reviewed. Treat it as site branding, not a verified government designation. **UNVERIFIED** as an official national title. (source: `index.html`)
+- **Origin / positioning:** "Thailand National Hot Sauce Brand" and "Thailand's national hot sauce brand" appear on the Agent Anna page. **Owner-stated (Preach, Nov 12), full details coming Nov 13.** Keep "World Famous" and "Thailand National Hot Sauce Brand" exactly as written. Do not soften or hedge them. (sources: `index.html`; owner statement)
+- **Guide listings and reputation:** The brand appears in TripAdvisor, Lonely Planet, the Routard Guide, and the Michelin Guide Thailand, and has a 15-year reputation as the coolest hot sauce in Thailand. **Owner-stated (Preach, Nov 12), full details coming Nov 13.** Do not add listing years, quotes, or edition details until those details arrive.
 - **Place, as stated on coolhotsauce.com:** "Located in the historic hills of Chiang Rai." The page describes the product as a condiment "for international travelers seeking refined cool-hot-sauce taste." (source: coolhotsauce.com)
 - **Brand colors, as stated on the Agent Anna page:** "Cool Hot Sauce red and black, trimmed in Thai temple gold. Cool on the outside, hot on the inside." Swatches on the page: Chili Red `#e3121b`, Black `#000`, Temple Gold `#d9a84a`. (source: `index.html`)
 
@@ -94,11 +100,12 @@ Those pages were noted because they are linked from the official sauce homepage.
 
 ## Owner-stated brand facts (public-fit, Nov 12 2026 call)
 
-These lines were stated by the owners on the Nov 12 2026 call and are recorded as owner statements. They are not independently verified. Internal valuation figures, personal outreach lines, and named-company comparisons from that call are not included here. Keep "World Famous" and "Thailand National Hot Sauce Brand" as stated, without softening. Full shared summary: `agents/COOL-HOT-SAUCE-REFERENCE.md`.
+These lines were stated by the owners on the Nov 12 2026 call, or by Preach on Nov 12, and are recorded as owner statements. Internal valuation figures, personal outreach lines, and named-company comparisons from that call are not included here. Keep "World Famous" and "Thailand National Hot Sauce Brand" exactly as written, without softening. Full details on the named guide listings and the 15-year reputation are coming Nov 13. Full shared summary: `agents/COOL-HOT-SAUCE-REFERENCE.md`.
 
 - Five farms. Bottling and manufacturing all under one roof. (owner statement)
-- The brand has Michelin representation. (owner statement)
-- It appears in guidebooks in five different languages for a country. (owner statement; the owners did not name the five languages or the country in this pass)
+- The brand has Michelin representation. (owner statement from the Nov 12 2026 call)
+- It appears in guidebooks in five different languages for a country. (owner statement from the Nov 12 2026 call; the owners did not name the five languages or the country in this pass)
+- Named guide listings, also owner-stated (Preach, Nov 12), with full details coming Nov 13: TripAdvisor, Lonely Planet, the Routard Guide, and the Michelin Guide Thailand. A 15-year reputation as the coolest hot sauce in Thailand was stated the same way. Keep both the named-guide list and the "five different languages" call wording. Do not invent years, quotes, or a country list to merge them.
 - It is a food brand. It supplies hospitals and other places with frozen goods. (owner statement)
 - HACCP, GMP and GAP certified, as also stated on coolhotsauce.com. Certificates were not shown in this pass. Record as site wording plus owner statement. **UNVERIFIED** as independently checked certificates.
 - Seen in over 69 countries, as also stated on coolhotsauce.com. No country list was given. Record as site wording plus owner statement. **UNVERIFIED.**
@@ -107,7 +114,7 @@ These lines were stated by the owners on the Nov 12 2026 call and are recorded a
 
 ## KUNDA Classic Vegan Patty (KUNDA July 2026 newsletter)
 
-These are KUNDA food-product facts from the KUNDA Co. Ltd. July 2026 newsletter, not Cool Hot Sauce bottle facts. Do not present the patty as a Cool Hot Sauce flavour, and do not invent a link between the two beyond KUNDA being the licensed distributor named on coolhotsauce.com. Staff name and phone numbers from the newsletter are omitted.
+These are KUNDA food-product facts from the KUNDA Co. Ltd. July 2026 newsletter, not Cool Hot Sauce bottle facts. Do not present the patty as a Cool Hot Sauce flavour. Official-site wording may be quoted and attributed: coolhotsauce.com says "Exclusively Licenced Distribution by KUNDA Co. Ltd." That wording is not confirmation that Kunda Cafe or KUNDA Co. is the "same crew" or team behind Cool Hot Sauce; do not claim that link until Preach confirms it. Staff name and phone numbers from the newsletter are omitted.
 
 - KUNDA Co. Ltd., "The Deliciously Different Fresh Food Company."
 - Newsletter heading: "Thailand's #1 Award Winning Vegan Steak." This is newsletter wording. **UNVERIFIED** as an independently checked ranking or award.
@@ -162,19 +169,20 @@ Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-1
 - A KUNDA-branded 100 ml CLASSIC bottle, labeled "KUNDA" and "100% PLANT BASED," with the same ingredients and coolhotsauce.com on the back.
 - Then a vegan burger.
 - On-screen overlays: "ALL TIME FAVORITE ^^"; "// BEST VEGAN IN CHIANGRAI"; "@KUNDACAFE_OFFICIAL". "BEST VEGAN IN CHIANGRAI" is video wording, not an independently checked ranking.
-- This shows the sauce is also sold under a KUNDA private label at KUNDA Cafe.
+- This video shows a KUNDA-labeled CLASSIC bottle with coolhotsauce.com on the back, at KUNDA Cafe. Record it as what the video shows. It is not confirmation that Kunda Cafe or KUNDA Co. is the "same crew" or team behind Cool Hot Sauce; do not claim that link until Preach confirms it.
 
 ## Gaps and uncertainties
 
 - **Homepage fetch:** [https://coolhotsauce.com](https://coolhotsauce.com) was fetched successfully on Nov 12 2026 (HTTP 200, HTML homepage, about 7.9 KB). A first WebFetch pass returned only a shortened extract; the full homepage was then read directly. `last-modified` on the response was Jul 9, 2026, 3:32 AM UTC (Jul 8, 2026, 11:32 PM ET).
 - **No product or about subpages:** `/shop`, `/shop/`, `/products`, `/about`, `/sauces`, `/buy`, `/sitemap.xml`, and `/robots.txt` all returned 404. There was no obvious product or about subpage to use beyond the homepage and its outbound links.
 - Heat levels, stock, and postage amounts are still unpublished. Retail/wholesale baht prices are on the Nov 12 2026 premium sheet. CLASSIC ingredient percentages, producer, distributor, FDA number, and the KUNDA private label are on the Nov 12 2026 WhatsApp videos. Do not copy those CLASSIC percentages onto the other flavours.
-- Award, ranking, #1, HACCP/GMP/GAP, "69 countries," "national brand," "vegan," and "world's 1st crypto-liquidity-utility" claims are site wording only (**UNVERIFIED**), with a #1 tagline that conflicts with "ranked among" in the body.
+- "World Famous" and "Thailand National Hot Sauce Brand" are owner-stated (Preach, Nov 12), with full details coming Nov 13. Keep both phrases exactly as written. Do not soften them or fold them into the UNVERIFIED list below.
+- Award, ranking, #1, HACCP/GMP/GAP, "69 countries," "vegan," and "world's 1st crypto-liquidity-utility" claims are site wording only (**UNVERIFIED**), with a #1 tagline that conflicts with "ranked among" in the body.
 - Flavour names appear on the Agent Anna page, not on the coolhotsauce.com homepage text reviewed.
 - Founder vs. "Established 2021 by KUNDA Co Ltd." vs. "Exclusively Licenced Distribution by KUNDA Co. Ltd." is not fully explained. The CLASSIC back label in the Nov 12 2026 videos names Thai Pepper Product Co., Ltd (Chiang Rai) as producer and KUNDA Co., Ltd. (Chiang Rai) as distributor. **UNVERIFIED** beyond that label.
 - iTunes / Spotify listings for the three promotional songs were not checked.
 - Lazada shop contents, live prices, and stock were not fetched for this file (the task limited sauce facts to `index.html` and coolhotsauce.com). The URL itself is sourced from `index.html`.
-- Do not invent a merch catalog, factory tour, tasting notes, or personal biography for Agent Anna.
+- Do not invent a merch catalog, factory tour, unsourced tasting notes, or personal biography for Agent Anna.
 
 ## Sources
 
