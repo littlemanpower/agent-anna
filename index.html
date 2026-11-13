@@ -3975,31 +3975,12 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
         function toggleVoice() { isVoiceEnabled = !isVoiceEnabled; document.getElementById('voice-btn').innerText = isVoiceEnabled ? "🔊 ON" : "🔇 OFF"; }
         function toggleSettings() { const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
         function saveCredentials() {
+            // Key updates from the page are locked on the server (403 key_updates_disabled), so never send a key.
             const input = document.getElementById('api-key');
-            const key = (input && input.value || '').trim();
-            try { localStorage.removeItem('bridge_url'); } catch (e) {}
-            if (!key) {
-                toggleSettings();
-                showNotice('Paste a Dahl API key to save it on the server.');
-                return;
-            }
-            (async function () {
-                try {
-                    const res = await annaApi('set-key', { method: 'POST', body: { key: key } });
-                    const data = await res.json().catch(function () { return {}; });
-                    if (!res.ok) {
-                        showNotice(data.message || 'Could not save the key on the server.');
-                        return;
-                    }
-                    if (input) input.value = '';
-                    try { localStorage.removeItem('dahl_key'); } catch (e) {}
-                    await refreshKeyStatus();
-                    toggleSettings();
-                    showNotice('Key saved on server');
-                } catch (e) {
-                    showNotice('Could not reach the key server. Try again.');
-                }
-            })();
+            if (input) input.value = '';
+            try { localStorage.removeItem('bridge_url'); localStorage.removeItem('dahl_key'); } catch (e) {}
+            toggleSettings();
+            showNotice('Key updates are locked; contact the owner.');
         }
         function quickAsk(q) { const el = document.getElementById('user-input'); if (el) { el.value = q; autosizeUserInput(); } scrollToChatAndFocus(); sendMessage(); }
         function handleKey(e) {

@@ -6,7 +6,7 @@ Copied from https://agent-anna.github.io/agent-anna/agent-anna/index.html (origi
 
 ## How it works
 - All HTML, CSS and JavaScript live in `index.html`; images live in `assets/`.
-- Chat goes through a Supabase Edge Function (`anna-chat`) that keeps the Dahl API key on the server and calls Dahl (model `MiniMaxAI/MiniMax-M2.7`). The key is not in the page source or in localStorage.
+- Chat goes through a Supabase Edge Function (`anna-chat`) that keeps the Dahl API key on the server and calls Dahl (model `deepseek-ai/DeepSeek-V4-Flash-0731`, falling back to `MiniMaxAI/MiniMax-M2.7` and `zai-org/GLM-5.3-Flash` when busy). The key is not in the page source or in localStorage.
 - Without a key saved on the server, the chat says it is offline and asks for a key (no fake replies).
 - Team notes spoken as "tell Martin/Preach/Anna …" are delivered through the same function.
 - Visitors can leave Anna a saved message through a small form. That goes to a separate `anna-message` Edge Function and is stored in `anna_messages` (not readable from the browser). Those notes are meant to be surfaced in the existing Agent Anna team daily report - no new email service.
