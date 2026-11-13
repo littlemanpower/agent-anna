@@ -1256,13 +1256,23 @@
         .mode-btn { background: transparent; border: 0; color: var(--text-muted); font-family: var(--font-brand); font-size: 12px; font-weight: 600; padding: 8px 14px; cursor: pointer; min-height: 36px; }
         .mode-btn.is-on { background: linear-gradient(135deg, var(--chili), #9e0b12); color: #fff; }
         .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
-        @media (max-width: 860px) { .mode-toggle { width: 100%; } .mode-btn { flex: 1; } }
+        @media (max-width: 860px) {
+            /* Keep the chat transcript roomy on phones: Type/Talk toggle and Talk button share one row. */
+            .voice-call-bar { flex-wrap: wrap; }
+            .mode-toggle { flex: 0 0 auto; }
+            .mode-btn { padding: 8px 12px; }
+            .voice-call-bar .voice-talk-btn { flex: 1 1 0; width: auto; min-width: 0; white-space: normal; }
+        }
         @media (pointer: coarse) {
             .mode-btn { min-height: 44px; }
             /* Finger-sized tap targets (about 44px) without changing the look on desktop. */
             .site-nav a, .nav-chip, .ctrl-btn, #send-btn, .anna-forget-link, .lazada-btn, .voice-talk-btn, .share-x-btn, #copy-site-link-btn, #anna-message-submit, #anna-subscribe-submit { min-height: 44px; }
             #anna-msg-name, #anna-msg-contact, #anna-sub-email { min-height: 44px; font-size: 16px; }
             .ctrl-btn, #send-btn { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+            #chat .ctrl-btn:not(#send-btn) { min-height: 38px; }
+            #chat .ctrl-btn:not(#send-btn) { padding-left: 8px; padding-right: 8px; }
+            #user-input::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            #chat .action-chip { min-height: 32px; }
             .action-chip { min-height: 36px; padding-left: 12px; padding-right: 12px; }
             .wwd-bot { min-height: 40px; display: inline-flex; align-items: center; }
             .agent-links a { min-width: 32px; min-height: 32px; }
@@ -1300,7 +1310,7 @@
         <a href="#crew" data-section="crew">Crew &amp; Chat</a>
         <a href="#faq" data-section="faq">FAQ</a>
         <a href="#updates" data-section="updates">Updates</a>
-        <a class="nav-ext buy" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
+        <a class="nav-ext buy" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Lazada Shop</a>
         <a class="nav-ext hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
     </nav>
 
@@ -1574,7 +1584,7 @@
             <div class="feature-card reveal">
                 <picture><source srcset="assets/bottle-red-thai-chili.webp" type="image/webp"><img class="bottle-shot" src="assets/bottle-red-thai-chili.png" width="73" height="298" alt="Cool Hot Sauce Red fermented 100ml bottle" loading="lazy" decoding="async"></picture>
                 <h3>🔥 Cool Hot Sauce</h3>
-                <p>Thailand National Hot Sauce Brand. World Famous 100ml bottles.</p>
+                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles.</p>
                 <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
             </div>
             <div class="feature-card reveal">
@@ -1646,7 +1656,7 @@
             </details>
             <details class="faq-item">
                 <summary>Where can I buy Cool Hot Sauce?</summary>
-                <div class="faq-a">On the official <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>. Every flavour card on this page links there too. Check the shop for current prices, postage and stock.</div>
+                <div class="faq-a">On the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>. Every flavour card on this page links there too. Check the shop for current prices, postage and stock.</div>
             </details>
             <details class="faq-item">
                 <summary>Can I type and use voice at the same time?</summary>
@@ -1658,7 +1668,7 @@
             </details>
             <details class="faq-item">
                 <summary>What is Cool Hot Sauce?</summary>
-                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavours are Black Smoked Red Jalapeno, Green Jalapeno and Red fermented. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
+                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavors are Black Smoked Red Jalapeno, Green Jalapeno and Red fermented. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
             </details>
             <details class="faq-item">
                 <summary>How do I leave Anna a message?</summary>
