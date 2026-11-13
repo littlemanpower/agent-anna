@@ -16,8 +16,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://xyhbdkbqwfsdciczpqnx.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://xyhbdkbqwfsdciczpqnx.supabase.co">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <!-- Hero photo is a CSS background, so tell the browser about it early (WebP, sized for the screen). -->
+    <link rel="preload" as="image" type="image/webp" href="assets/white-temple-800.webp" media="(max-width: 860px)" fetchpriority="high">
+    <link rel="preload" as="image" type="image/webp" href="assets/white-temple-1280.webp" media="(min-width: 861px)" fetchpriority="high">
+    <!-- Fonts load without blocking first paint; size-matched fallbacks below keep the layout from jumping when they arrive. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
+    <script>if ('IntersectionObserver' in window) document.documentElement.classList.add('lazy-scenes');</script>
     <style>
+        /* Size-matched fallbacks for Kanit so the page does not shift when the web font swaps in. */
+        @font-face { font-family: "Kanit Fallback"; src: local("Arial"), local("Helvetica"), local("Liberation Sans"), local("Roboto"); font-weight: 100 500; size-adjust: 97%; ascent-override: 113%; descent-override: 41%; line-gap-override: 0%; }
+        @font-face { font-family: "Kanit Fallback"; src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"), local("Liberation Sans Bold"), local("Roboto Bold"); font-weight: 600 900; size-adjust: 96%; ascent-override: 114%; descent-override: 41%; line-gap-override: 0%; }
         /* ===== AGENT ANNA // COOL HOT SAUCE EDITION =====
            Red + black Thailand edition: chili red, black, Thai temple-gold trim. */
         :root {
@@ -42,9 +53,9 @@
             --pane-bg: #0e0505;
             --state-color: var(--chili);
             --heat-gradient: linear-gradient(90deg, var(--gold) 0%, var(--chili) 30%, var(--chili) 70%, var(--gold) 100%);
-            --font-ui: "Kanit", "Segoe UI", Roboto, sans-serif;
+            --font-ui: "Kanit", "Kanit Fallback", "Segoe UI", Roboto, sans-serif;
             --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            --font-brand: "Kanit", "Arial Black", sans-serif;
+            --font-brand: "Kanit", "Kanit Fallback", "Arial Black", sans-serif;
             --radius: 10px;
             --glow: 0 0 0 1px color-mix(in srgb, var(--state-color) 55%, transparent), 0 0 18px color-mix(in srgb, var(--state-color) 28%, transparent);
         }
@@ -499,6 +510,37 @@
             --img-tea: url("assets/tea-hills.jpg");
             --img-gold: url("assets/golden-temple.jpg");
             --img-market: url("assets/night-market.jpg");
+            --img-card-white: url("assets/white-temple-800.jpg");
+            --img-card-gold: url("assets/golden-temple-800.jpg");
+            --img-card-tea: url("assets/tea-hills-800.jpg");
+        }
+        @media (max-width: 860px) {
+            :root {
+                --img-hero: url("assets/white-temple-800.jpg");
+                --img-tea: url("assets/tea-hills-800.jpg");
+                --img-gold: url("assets/golden-temple-800.jpg");
+                --img-market: url("assets/night-market-800.jpg");
+            }
+        }
+        /* WebP where the browser supports it (same photos, about 3x smaller on phones). */
+        @supports (background-image: image-set(url("assets/white-temple-800.webp") type("image/webp"))) {
+            :root {
+                --img-hero: image-set(url("assets/white-temple-1280.webp") type("image/webp"), url("assets/white-temple.jpg") type("image/jpeg"));
+                --img-tea: image-set(url("assets/tea-hills-1280.webp") type("image/webp"), url("assets/tea-hills.jpg") type("image/jpeg"));
+                --img-gold: image-set(url("assets/golden-temple-1280.webp") type("image/webp"), url("assets/golden-temple.jpg") type("image/jpeg"));
+                --img-market: image-set(url("assets/night-market-1280.webp") type("image/webp"), url("assets/night-market.jpg") type("image/jpeg"));
+                --img-card-white: image-set(url("assets/white-temple-800.webp") type("image/webp"), url("assets/white-temple-800.jpg") type("image/jpeg"));
+                --img-card-gold: image-set(url("assets/golden-temple-800.webp") type("image/webp"), url("assets/golden-temple-800.jpg") type("image/jpeg"));
+                --img-card-tea: image-set(url("assets/tea-hills-800.webp") type("image/webp"), url("assets/tea-hills-800.jpg") type("image/jpeg"));
+            }
+            @media (max-width: 860px) {
+                :root {
+                    --img-hero: image-set(url("assets/white-temple-800.webp") type("image/webp"), url("assets/white-temple-800.jpg") type("image/jpeg"));
+                    --img-tea: image-set(url("assets/tea-hills-800.webp") type("image/webp"), url("assets/tea-hills-800.jpg") type("image/jpeg"));
+                    --img-gold: image-set(url("assets/golden-temple-800.webp") type("image/webp"), url("assets/golden-temple-800.jpg") type("image/jpeg"));
+                    --img-market: image-set(url("assets/night-market-800.webp") type("image/webp"), url("assets/night-market-800.jpg") type("image/jpeg"));
+                }
+            }
         }
         body {
             background:
@@ -529,9 +571,11 @@
         }
         .scene-card:hover { transform: translateY(-3px); }
         .scene-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,4,4,0) 45%, rgba(8,4,4,.88) 100%), linear-gradient(0deg, rgba(227,18,27,.12), rgba(227,18,27,.12)); }
-        .scene-white { background-image: var(--img-hero); }
-        .scene-gold { background-image: var(--img-gold); }
-        .scene-tea { background-image: var(--img-tea); }
+        .scene-white { background-image: var(--img-card-white); }
+        .scene-gold { background-image: var(--img-card-gold); }
+        .scene-tea { background-image: var(--img-card-tea); }
+        /* Scene photos sit below the fold: fetch them only when they scroll near (see initLazyScenes). */
+        html.lazy-scenes .scene-card:not(.bg-in) { background-image: none; }
         .scene-card figcaption, .scene-card .scene-caption { position: absolute; left: 16px; right: 16px; bottom: 14px; font-family: var(--font-brand); font-weight: 600; font-size: 16px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.7); display: block; }
         .scene-card .scene-kicker { position: absolute; left: 16px; right: 16px; bottom: 36px; z-index: 1; }
         .scene-card .scene-caption { z-index: 1; }
@@ -672,7 +716,7 @@
         .foot-links { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 8px; }
         .foot-links a { font-weight: 700; }
         @media (max-width: 860px) {
-            html { scroll-padding-top: 120px; }
+            html { scroll-padding-top: var(--sticky-h, 120px); }
             .agent-links { margin-top: 5px; }
         }
 
@@ -1194,6 +1238,37 @@
             }
         }
 
+        /* ---------- Site polish (Nov 13): no layout jumps, phone-friendly taps, one-row nav on phones ---------- */
+        picture { display: contents; }
+        @media (max-width: 860px) {
+            /* Sticky nav was wrapping to three rows (~110px) on phones; keep it to one swipeable row. */
+            .site-nav { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+            .site-nav::-webkit-scrollbar { display: none; }
+            .site-nav a { flex: 0 0 auto; white-space: nowrap; }
+        }
+        /* Lazada is the only checkout: make the buy links stand out (gold = buy). */
+        .site-nav a.nav-ext.buy, .nav-chip.buy { background: linear-gradient(135deg, #f2c14e, #d9a84a); color: #1a0606; border-color: var(--gold); font-weight: 700; }
+        .site-nav a.nav-ext.buy:hover, .nav-chip.buy:hover { color: #1a0606; filter: brightness(1.08); }
+        .wwd-buy { margin-top: 10px; }
+        #send-btn { min-height: 44px; min-width: 44px; }
+        .thinking-still { display: block; margin-top: 6px; font-size: 11px; color: var(--text-muted); }
+        .mode-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--bg-dark); flex-shrink: 0; }
+        .mode-btn { background: transparent; border: 0; color: var(--text-muted); font-family: var(--font-brand); font-size: 12px; font-weight: 600; padding: 8px 14px; cursor: pointer; min-height: 36px; }
+        .mode-btn.is-on { background: linear-gradient(135deg, var(--chili), #9e0b12); color: #fff; }
+        .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+        @media (max-width: 860px) { .mode-toggle { width: 100%; } .mode-btn { flex: 1; } }
+        @media (pointer: coarse) {
+            .mode-btn { min-height: 44px; }
+            /* Finger-sized tap targets (about 44px) without changing the look on desktop. */
+            .site-nav a, .nav-chip, .ctrl-btn, #send-btn, .anna-forget-link, .lazada-btn, .voice-talk-btn, .share-x-btn, #copy-site-link-btn, #anna-message-submit, #anna-subscribe-submit { min-height: 44px; }
+            #anna-msg-name, #anna-msg-contact, #anna-sub-email { min-height: 44px; font-size: 16px; }
+            .ctrl-btn, #send-btn { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+            .action-chip { min-height: 36px; padding-left: 12px; padding-right: 12px; }
+            .wwd-bot { min-height: 40px; display: inline-flex; align-items: center; }
+            .agent-links a { min-width: 32px; min-height: 32px; }
+            select, #agent-phonebook-select, #voice-talker { min-height: 44px; }
+            #user-input { font-size: 16px; } /* stops iPhone Safari zooming in when the box is tapped */
+        }
     </style>
 </head>
 <body class="is-standby" data-state="standby">
@@ -1225,7 +1300,7 @@
         <a href="#crew" data-section="crew">Crew &amp; Chat</a>
         <a href="#faq" data-section="faq">FAQ</a>
         <a href="#updates" data-section="updates">Updates</a>
-        <a class="nav-ext" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Lazada Shop</a>
+        <a class="nav-ext buy" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
         <a class="nav-ext hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
     </nav>
 
@@ -1276,7 +1351,7 @@
         <div class="page-stage">
         <div class="hero-top">
             <div class="brand-lockup">
-                <a class="brand-logo-link" href="https://coolhotsauce.com" target="_blank" rel="noopener" title="CoolHotSauce.com"><img class="brand-logo" src="assets/coolhotsauce-logo.png" width="96" height="96" alt="Cool Hot Sauce logo" fetchpriority="high" decoding="async"></a>
+                <a class="brand-logo-link" href="https://coolhotsauce.com" target="_blank" rel="noopener" title="CoolHotSauce.com"><picture><source srcset="assets/coolhotsauce-logo.webp" type="image/webp"><img class="brand-logo" src="assets/coolhotsauce-logo.png" width="96" height="96" alt="Cool Hot Sauce logo" fetchpriority="high" decoding="async"></picture></a>
                 <div class="brand-text">
                     <h1>AGENT ANNA <span class="h1-sep">//</span> <span class="h1-hot">COOL HOT SAUCE</span></h1>
                     <div class="thai-sub">สวัสดีค่ะ &nbsp;·&nbsp; Welcome to the Land of Smiles 🪷</div>
@@ -1286,7 +1361,7 @@
         </div>
         <nav class="nav-chips" aria-label="Links">
             <a class="nav-chip hot" href="https://coolhotsauce.com" target="_blank" rel="noopener">🔥 CoolHotSauce.com</a>
-            <a class="nav-chip" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
+            <a class="nav-chip buy" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
             <a class="nav-chip" href="https://x.com/coolhotsauce" target="_blank" rel="noopener">𝕏 @CoolHotSauce</a>
             <a class="nav-chip" href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">▶️ YouTube @LittleManPower369</a>
             <a class="nav-chip" href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">🎵 TikTok @mr.preachx</a>
@@ -1309,10 +1384,11 @@
                     <h2>World Famous Cool Hot Sauce</h2>
                     <p><b>Thailand National Hot Sauce Brand.</b> Just chili, salt and vinegar. No sugar added. No artificial preservatives.</p>
                     <ul class="wwd-flavors">
-                        <li>Black Smoked Red Jalapeno</li>
-                        <li>Green Jalapeno</li>
-                        <li>Red fermented Prick chi fa</li>
+                        <li>Smoked Black</li>
+                        <li>Green Jalapeño</li>
+                        <li>Red Thai Chili</li>
                     </ul>
+                    <a class="lazada-btn wwd-buy" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">🛒 Buy on Lazada</a>
                 </div>
                 <div class="wwd-card">
                     <div class="wwd-kicker">The crew</div>
@@ -1375,7 +1451,7 @@
                     <p>Core & Telemetry</p>
                 </div>
                 <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
-                    <img src="assets/preach.jpg" alt="Mr. Preach X">
+                    <picture><source srcset="assets/preach-128.webp" type="image/webp"><img src="assets/preach.jpg" width="42" height="42" alt="Mr. Preach X" decoding="async"></picture>
                     <h3>MR. PREACH X</h3>
                     <p>Founder & Gamer</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
@@ -1385,7 +1461,7 @@
                     </div>
                 </div>
                 <div class="agent-hud-card" id="card-AA03" role="button" tabindex="0" onclick="selectAgentAndChat('AA03')">
-                    <img src="assets/martin.jpg" alt="Martin Strayd">
+                    <picture><source srcset="assets/martin-128.webp" type="image/webp"><img src="assets/martin.jpg" width="42" height="42" alt="Martin Strayd" decoding="async"></picture>
                     <h3>MARTIN STRAYD</h3>
                     <p>Music & Strayd</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
@@ -1426,6 +1502,10 @@
             </div>
 
             <div class="voice-call-bar" id="voice-call-bar">
+                <div class="mode-toggle" id="chat-mode-toggle" role="group" aria-label="Chat by typing or talking">
+                    <button type="button" class="mode-btn is-on" id="mode-type-btn" aria-pressed="true">⌨️ Type</button>
+                    <button type="button" class="mode-btn" id="mode-talk-btn" aria-pressed="false">🎙 Talk</button>
+                </div>
                 <button type="button" class="voice-talk-btn" id="voice-talk-btn" onclick="toggleVoiceMode()" aria-pressed="false">🎙 TALK TO ANNA</button>
                 <span class="voice-pill" id="voice-pill" aria-live="polite"><span class="voice-level" id="voice-level" aria-hidden="true"><i></i></span><span class="voice-pill-label" id="voice-pill-label">Idle</span></span>
                 <label class="voice-talker" for="voice-talker">Who's talking?
@@ -1492,9 +1572,9 @@
     </div>
         <section class="feature-cards" id="features">
             <div class="feature-card reveal">
-                <img class="bottle-shot" src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle">
+                <picture><source srcset="assets/bottle-red-thai-chili.webp" type="image/webp"><img class="bottle-shot" src="assets/bottle-red-thai-chili.png" width="73" height="298" alt="Cool Hot Sauce Red Thai Chili 100ml bottle" loading="lazy" decoding="async"></picture>
                 <h3>🔥 Cool Hot Sauce</h3>
-                <p>Thailand&#39;s national hot sauce brand. World famous 100ml bottles.</p>
+                <p>Thailand National Hot Sauce Brand. World Famous 100ml bottles.</p>
                 <div class="feature-links"><a href="https://coolhotsauce.com" target="_blank" rel="noopener">Visit CoolHotSauce.com →</a><a href="https://x.com/coolhotsauce" target="_blank" rel="noopener">@CoolHotSauce on X</a></div>
             </div>
             <div class="feature-card reveal">
@@ -1512,17 +1592,17 @@
             <h2 class="section-title">🌶️ The Sauces <span>// ซอสพริก</span></h2>
             <div class="flavor-grid">
             <a class="flavor-card flavor-smoked-black reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Smoked Black — Buy on Lazada">
-                <img src="assets/bottle-smoked-black.png" alt="Cool Hot Sauce Smoked Black 100ml bottle" loading="lazy">
+                <picture><source srcset="assets/bottle-smoked-black.webp" type="image/webp"><img src="assets/bottle-smoked-black.png" width="80" height="310" alt="Cool Hot Sauce Smoked Black 100ml bottle" loading="lazy" decoding="async"></picture>
                 <div class="flavor-info"><span class="scene-kicker">Flavour 01</span><h3>Smoked Black</h3><p>100ML &bull; Made in Thailand</p>
                 <span class="lazada-btn">🛒 Buy on Lazada</span></div>
             </a>
             <a class="flavor-card flavor-green-jalapeno reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Green Jalapeño — Buy on Lazada">
-                <img src="assets/bottle-green-jalapeno.png" alt="Cool Hot Sauce Green Jalapeño 100ml bottle" loading="lazy">
+                <picture><source srcset="assets/bottle-green-jalapeno.webp" type="image/webp"><img src="assets/bottle-green-jalapeno.png" width="76" height="306" alt="Cool Hot Sauce Green Jalapeño 100ml bottle" loading="lazy" decoding="async"></picture>
                 <div class="flavor-info"><span class="scene-kicker">Flavour 02</span><h3>Green Jalapeño</h3><p>100ML &bull; Made in Thailand</p>
                 <span class="lazada-btn">🛒 Buy on Lazada</span></div>
             </a>
             <a class="flavor-card flavor-red-thai-chili reveal" href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener" aria-label="Red Thai Chili — Buy on Lazada">
-                <img src="assets/bottle-red-thai-chili.png" alt="Cool Hot Sauce Red Thai Chili 100ml bottle" loading="lazy">
+                <picture><source srcset="assets/bottle-red-thai-chili.webp" type="image/webp"><img src="assets/bottle-red-thai-chili.png" width="73" height="298" alt="Cool Hot Sauce Red Thai Chili 100ml bottle" loading="lazy" decoding="async"></picture>
                 <div class="flavor-info"><span class="scene-kicker">Flavour 03</span><h3>Red Thai Chili</h3><p>100ML &bull; Made in Thailand</p>
                 <span class="lazada-btn">🛒 Buy on Lazada</span></div>
             </a>
@@ -1561,6 +1641,14 @@
                 <div class="faq-a">Anna is the Cool Hot Sauce guide. Mr. Preach X is the founder of Cool Hot Sauce, a gamer and streamer at <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a>. Martin Strayd is a musician and teammate. Choose any of them in <a href="#crew">Crew &amp; Chat</a>.</div>
             </details>
             <details class="faq-item">
+                <summary>Which flavours are there?</summary>
+                <div class="faq-a">Three 100ml bottles, all made in Thailand: <b>Smoked Black</b>, <b>Green Jalapeño</b> and <b>Red Thai Chili</b>. See them in <a href="#sauces">The Sauces</a>, or ask Anna to help you pick one.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Where can I buy Cool Hot Sauce?</summary>
+                <div class="faq-a">On the official <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>. Every flavour card on this page links there too. Check the shop for current prices, postage and stock.</div>
+            </details>
+            <details class="faq-item">
                 <summary>Can I type and use voice at the same time?</summary>
                 <div class="faq-a">No. Typing and voice are one at a time. While a voice chat is on, the page says “Voice chat on - end voice to type.” Hang up voice to type again.</div>
             </details>
@@ -1570,7 +1658,7 @@
             </details>
             <details class="faq-item">
                 <summary>What is Cool Hot Sauce?</summary>
-                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavors are Black Smoked Red Jalapeno, Green Jalapeno, and Red fermented Prick chi fa. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
+                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavours are Smoked Black, Green Jalapeño and Red Thai Chili. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
             </details>
             <details class="faq-item">
                 <summary>How do I leave Anna a message?</summary>
@@ -3991,6 +4079,97 @@ Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts
             e.preventDefault();
             sendMessage();
         }
+    </script>
+    <script>
+        /* Site polish: load the scene photos only when they come near the screen. */
+        (function initLazyScenes() {
+            var root = document.documentElement;
+            if (!root.classList.contains('lazy-scenes')) return;
+            function reveal(el) { el.classList.add('bg-in'); }
+            function start() {
+                var cards = document.querySelectorAll('.scene-card');
+                if (!cards.length) return;
+                try {
+                    var io = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (e) { if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); } });
+                    }, { rootMargin: '400px 0px' });
+                    cards.forEach(function (c) { io.observe(c); });
+                } catch (e) { root.classList.remove('lazy-scenes'); }
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+        })();
+        /* Site polish: Type / Talk toggle. Mirrors the Talk button so both always agree. */
+        (function initModeToggle() {
+            function start() {
+                var talkBtn = document.getElementById('voice-talk-btn');
+                var typeB = document.getElementById('mode-type-btn');
+                var talkB = document.getElementById('mode-talk-btn');
+                if (!talkBtn || !typeB || !talkB) return;
+                function sync() {
+                    var talking = talkBtn.getAttribute('aria-pressed') === 'true';
+                    typeB.classList.toggle('is-on', !talking); typeB.setAttribute('aria-pressed', talking ? 'false' : 'true');
+                    talkB.classList.toggle('is-on', talking); talkB.setAttribute('aria-pressed', talking ? 'true' : 'false');
+                }
+                typeB.addEventListener('click', function () {
+                    if (talkBtn.getAttribute('aria-pressed') === 'true' && typeof stopVoiceMode === 'function') stopVoiceMode('Back to typing.');
+                    sync();
+                    var input = document.getElementById('user-input');
+                    if (input && !input.disabled) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }
+                });
+                talkB.addEventListener('click', function () {
+                    if (talkBtn.getAttribute('aria-pressed') !== 'true' && typeof toggleVoiceMode === 'function') toggleVoiceMode();
+                    setTimeout(sync, 0);
+                });
+                try { new MutationObserver(sync).observe(talkBtn, { attributes: true, attributeFilter: ['aria-pressed'] }); } catch (e) {}
+                sync();
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+        })();
+        /* Site polish: keep the composer on screen after sending, measure the sticky header for anchor jumps,
+           and tell people a slow reply is still coming. Read-only on the chat code. */
+        (function initChatComfort() {
+            function start() {
+                var root = document.documentElement;
+                function measureSticky() {
+                    var nav = document.getElementById('site-nav');
+                    if (!nav) return;
+                    var h = Math.ceil(nav.getBoundingClientRect().bottom) + 8;
+                    if (h > 40 && h < 400) root.style.setProperty('--sticky-h', h + 'px');
+                }
+                measureSticky();
+                window.addEventListener('resize', measureSticky, { passive: true });
+                if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSticky).catch(function () {});
+
+                var bar = document.querySelector('.input-control-bar');
+                function composerIntoView() {
+                    if (!bar) return;
+                    var r = bar.getBoundingClientRect();
+                    var vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+                    if (r.bottom > vh - 4 || r.top < 0) {
+                        bar.scrollIntoView({ block: 'end', behavior: (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' });
+                    }
+                }
+                var send = document.getElementById('send-btn');
+                var input = document.getElementById('user-input');
+                if (send) send.addEventListener('click', function () { setTimeout(composerIntoView, 30); });
+                if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) setTimeout(composerIntoView, 30); });
+
+                var since = 0;
+                setInterval(function () {
+                    var el = document.getElementById('thinking-indicator');
+                    if (!el) { since = 0; return; }
+                    if (!since) since = Date.now();
+                    if (Date.now() - since > 12000 && !el.querySelector('.thinking-still')) {
+                        var body = el.querySelector('.msg-body') || el;
+                        var note = document.createElement('span');
+                        note.className = 'thinking-still';
+                        note.textContent = 'Still working on it - good answers take a few extra seconds.';
+                        body.appendChild(note);
+                    }
+                }, 1000);
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+        })();
     </script>
 </body>
 </html>
