@@ -1346,9 +1346,12 @@
             background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
         }
         .chat-character-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-        .chat-character-copy { min-width: 0; }
+        .chat-character-copy { min-width: 0; flex: 1 1 auto; }
         .chat-character-copy h3 { margin: 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text-light); }
         .chat-character-copy p { margin: 2px 0 0; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
+        .chat-character-avatar { display: none; }
+        .chat-card-expand { display: none; }
+        .chat-character-details { display: none; }
         .start-over-btn, .chat-starter, .nudge-dismiss, #chat .action-chip, #chat .icon-chip {
             min-height: 40px; min-width: 40px;
         }
@@ -1404,8 +1407,38 @@
             padding: 4px 8px;
         }
         @media (max-width: 860px) {
-            .chat-character-card { margin: 0 8px 8px; }
-            .start-over-btn, .chat-starter, .nudge-dismiss, #chat .action-chip, #chat .icon-chip { min-height: 40px; }
+            #chat-container { flex: 1 1 auto; min-height: 300px; }
+            .chat-character-card { margin: 0 8px 6px; padding: 8px 10px; }
+            .chat-character-head { align-items: center; gap: 8px; }
+            .chat-character-avatar {
+                display: block; width: 40px; height: 40px; border-radius: 50%;
+                object-fit: cover; flex-shrink: 0; border: 1px solid var(--line); background: color-mix(in srgb, var(--chili) 55%, #1a0606);
+            }
+            .chat-character-avatar.is-broken { object-position: -999px; }
+            .chat-character-copy h3 { font-size: 13px; }
+            .chat-character-copy p {
+                margin: 0; font-size: 11px; line-height: 1.3;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
+            .chat-character-details {
+                display: none; margin: 8px 0 0; font-size: 12px; line-height: 1.4; color: var(--text-muted);
+            }
+            .chat-character-card.is-expanded .chat-character-details { display: block; }
+            .chat-card-expand {
+                display: inline-flex; align-items: center; justify-content: center;
+                flex: 0 0 auto; min-height: 40px; min-width: 40px; padding: 8px 10px;
+                border-radius: 999px; border: 1px solid var(--line); background: var(--bg-dark);
+                color: var(--text-light); font-family: var(--font-brand); font-size: 11px; font-weight: 600; cursor: pointer;
+            }
+            .chat-card-expand:hover { border-color: var(--gold); color: var(--gold); }
+            .chat-starters {
+                display: flex; flex-wrap: nowrap; gap: 8px; margin-top: 8px;
+                overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .chat-starters::-webkit-scrollbar { display: none; }
+            .chat-starter { flex: 0 0 auto; white-space: nowrap; }
+            .start-over-btn, .chat-starter, .nudge-dismiss, #chat .action-chip, #chat .icon-chip, .chat-card-expand { min-height: 40px; }
         }
 
     </style>
@@ -1679,12 +1712,15 @@
             </div>
             <div class="chat-character-card" id="chat-character-card">
                 <div class="chat-character-head">
+                    <img class="chat-character-avatar" id="chat-character-avatar" width="40" height="40" alt="Agent Anna" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&amp;auto=format&amp;fit=crop&amp;q=60">
                     <div class="chat-character-copy">
                         <h3 id="chat-character-name">Agent Anna</h3>
                         <p id="chat-character-line">I'm the Cool Hot Sauce guide. Let's pick your bottle - I'll point you to the official shop.</p>
                     </div>
+                    <button type="button" class="chat-card-expand" id="chat-card-expand" aria-expanded="false" aria-controls="chat-character-details">About</button>
                     <button type="button" class="start-over-btn" id="start-over-btn" onclick="startOverCurrentAgent()">Start over</button>
                 </div>
+                <p class="chat-character-details" id="chat-character-details"></p>
                 <div class="chat-starters" id="chat-starters" role="group" aria-label="Suggested questions"></div>
             </div>
             <div id="chat-container">
@@ -2028,6 +2064,8 @@
             initAnnaMessageForm();
             initAnnaSubscribeForm();
             initShareAndCopy();
+            if (typeof initCharacterCardControls === 'function') initCharacterCardControls();
+            if (typeof updateCharacterCard === 'function' && typeof currentAgentId !== 'undefined') updateCharacterCard(currentAgentId);
             warmAnnaFunctions();
             var userIn = document.getElementById('user-input');
             if (userIn) userIn.addEventListener('focus', function () { warmAnnaFunctions(); }, { once: true, passive: true });
@@ -2040,15 +2078,16 @@
 
         const PRESENCE_MAP = {
             standby: 'standby', thinking: 'thinking', replying: 'replying',
-            responding: 'replying', speaking: 'replying', listening: 'standby'
+            responding: 'replying', speaking: 'replying', listening: 'standby',
+            preparing: 'preparing'
         };
-        const PRESENCE_LABELS = { standby: 'Standby', thinking: 'Thinking', replying: 'Replying' };
+        const PRESENCE_LABELS = { standby: 'Standby', thinking: 'Thinking', replying: 'Replying', preparing: 'Preparing voice' };
         let presenceIdleTimer = null;
         let presenceIdleGen = 0;
 
         function setMoodState(stateName) {
             const presence = PRESENCE_MAP[stateName] || 'standby';
-            document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening');
+            document.body.classList.remove('is-standby', 'is-thinking', 'is-responding', 'is-speaking', 'is-listening', 'is-preparing');
             document.body.classList.add(`is-${stateName}`);
             document.body.setAttribute('data-state', presence);
             if (presence !== 'replying') stopReplyLoudness();
@@ -3299,16 +3338,40 @@
                 input.setAttribute('aria-label', 'Message ' + who);
             }
         }
+        function isChatMobile() {
+            return !!(window.matchMedia && window.matchMedia('(max-width: 860px)').matches);
+        }
         function updateCharacterCard(id) {
             const copy = AGENT_CARD_COPY[id] || AGENT_CARD_COPY.AA01;
-            const nameEl = document.getElementById('chat-character-name');
-            const lineEl = document.getElementById('chat-character-line');
-            if (nameEl) nameEl.textContent = copy.name;
-            if (lineEl) lineEl.textContent = copy.blurb || copy.line;
-            const wrap = document.getElementById('chat-starters');
-            if (!wrap) return;
+            const mobile = isChatMobile();
             const hist = (window.annaHistory && window.annaHistory[id]) || [];
             const hasUser = hist.some(function (m) { return m && m.role === 'user'; });
+            const nameEl = document.getElementById('chat-character-name');
+            const lineEl = document.getElementById('chat-character-line');
+            const details = document.getElementById('chat-character-details');
+            const av = document.getElementById('chat-character-avatar');
+            const card = document.getElementById('chat-character-card');
+            const exp = document.getElementById('chat-card-expand');
+            if (nameEl) nameEl.textContent = copy.name;
+            if (lineEl) lineEl.textContent = mobile ? (copy.line || copy.blurb) : (copy.blurb || copy.line);
+            if (details) details.textContent = copy.blurb || copy.line || '';
+            if (av && typeof AGENTS !== 'undefined' && AGENTS[id] && AGENTS[id].img) {
+                av.alt = '';
+                av.onerror = function () { av.classList.add('is-broken'); };
+                av.classList.remove('is-broken');
+                av.src = AGENTS[id].img;
+            }
+            if (card) {
+                card.classList.toggle('is-mobile', !!mobile);
+                card.classList.toggle('has-chat', !!hasUser);
+                if (hasUser && mobile) card.classList.remove('is-expanded');
+            }
+            if (exp) {
+                exp.hidden = !mobile;
+                exp.setAttribute('aria-expanded', (card && card.classList.contains('is-expanded')) ? 'true' : 'false');
+            }
+            const wrap = document.getElementById('chat-starters');
+            if (!wrap) return;
             wrap.hidden = !!hasUser;
             wrap.innerHTML = '';
             if (hasUser) return;
@@ -3322,6 +3385,24 @@
                 });
                 wrap.appendChild(b);
             });
+        }
+        function initCharacterCardControls() {
+            const exp = document.getElementById('chat-card-expand');
+            if (exp && !exp.__annaBound) {
+                exp.__annaBound = true;
+                exp.addEventListener('click', function () {
+                    const card = document.getElementById('chat-character-card');
+                    if (!card) return;
+                    card.classList.toggle('is-expanded');
+                    exp.setAttribute('aria-expanded', card.classList.contains('is-expanded') ? 'true' : 'false');
+                });
+            }
+            if (!window.__annaCardResizeBound) {
+                window.__annaCardResizeBound = true;
+                window.addEventListener('resize', function () {
+                    if (typeof currentAgentId !== 'undefined' && typeof updateCharacterCard === 'function') updateCharacterCard(currentAgentId);
+                });
+            }
         }
         function showAgentThread(id) {
             const box = document.getElementById('chat-container');
@@ -3920,11 +4001,11 @@
             };
             const brandFacts = `Cool Hot Sauce is World Famous, a Thailand National Hot Sauce Brand - keep those two phrases exact, never soften them. It is Martin's No. 1 stand-alone seed-to-table entity (his wording). Site: coolhotsauce.com. Flavours: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
 Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholders, run as different shells. KUNDA Co. Ltd is the licensed distributor. Manufacturing and farming are separate from the cafe and restaurant franchise. Cool Hot Sauce is served daily at Kunda Cafe locations and is part of the franchise rollout. Do not merge them into one company or say Kunda makes the sauce. Mr. Preach X helps push the brand; he is not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Never call him one.`;
-            const sharedMechanics = `Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes, stats, dates, songs, schedules, or personal details. If you don't know, say so and point to the official links. No <think> or "As an AI". Date: ${nowStr}.`;
+            const sharedMechanics = `Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes, stats, dates, songs, schedules, or personal details. Do not invent or describe unsourced taste, heat, smoke, burn, kick, or mildness - no "smoky", "perfect burn", "mild kick", or similar. If asked how it tastes or how hot it is, say you don't have a sourced tasting or heat note and point to coolhotsauce.com. If you don't know, say so and point to the official links. No <think> or "As an AI". Date: ${nowStr}.`;
             const voiceByAgent = {
-                AA01: `Voice (Anna only, never sound like Preach or Martin): Cool Hot Sauce guide. Help them pick a flavour and point to official buy links. Veg Anna style - jump straight in, no hello, no Sawasdee, no Sawadee, no Sabbai, no GM, no mate. Short hyphens only. Under 35 words for simple answers. Warm, playful, confident, a little spicy. Style cues, not facts: "Let's pick your bottle.", "I'll point you to the shop.", "I won't guess a heat level I don't have." No sign-off. No gamer slang, no rock-musician wordplay. If chat drifts, answer briefly and offer to help pick a flavour.`,
-                AA02: `Voice (Preach only, never sound like Anna or Martin): Laid-back gamer and creator who helps push Cool Hot Sauce. You are not an owner, co-owner, shareholder, or founder of Cool Hot Sauce or KUNDA. Funny and humble. Roast lag and games, not people. Believer who keeps building. Start mid-thought, like your public replies - the joke, the clip, or a short sincere beat such as "I knew it." Do not use Anna's hyphen-and-no-greeting style or her flavour-picker lines. "GM" only for a stream or late-night gaming beat, not as a generic hello. Catchphrases, sparingly, that you actually use: Shi* Happens, 369, just a nobody. Recent public energy: self-roast clips, GTA 6 with no PC date, Rob Run and Arc Raiders on PC. Under 45 words. No Sawasdee, no Sawadee, no mate, no CRANK IT, no formal sign-off. If chat drifts, answer briefly and steer to games, streams, or boosting the brand.`,
-                AA03: `Voice (Martin only, never sound like Anna or Preach): Co-founder of the Kunda Cafe ecosystem and a hot sauce lover. Australian musician and entrepreneur. Easygoing rock-and-roll humour, short and punchy, rebellious but warm. Wordplay on your name (strayd) and on rock or stone only - never on the word kunda. Sourced flavour: mate, CRANK IT, fun fun fun, "Every song earns its release," "That is the STRAYD way," "I was born to rock," "Get ready to rock," "Time to rock," "Amazing mate," "Much cool." One-word warmth from your public replies, "Sawadee" or "Sabbai," is yours as a short buddy beat, never as Anna's page greeting. Under 45 words. Do not use Anna's hyphen-and-no-greeting style, her shop-picker lines, or Preach's gamer slang (Shi* Happens, 369, GM, Agree or nah). A ✌️ or 🪨 is fine; no formal sign-off. Reply only as Martin. Do not write the user's next line, and do not continue after your answer with User: or Martin:. If chat drifts, answer briefly and steer to music, STRAYD, or the team.`
+                AA01: `Voice (Anna only, never sound like Preach or Martin): Cool Hot Sauce guide. Help them pick a flavour and point to official buy links. Veg Anna style - jump straight in, no hello, no Sawasdee, no Sawadee, no Sabbai, no GM, no mate. Short hyphens only. Under 35 words for simple answers. Warm, playful, confident, a little spicy. Style cues, not facts: "Let's pick your bottle.", "I'll point you to the shop.", "I won't guess a heat level I don't have." No unsourced taste or heat descriptions. No sign-off. No gamer slang, no rock-musician wordplay. If chat drifts, answer briefly and offer to help pick a flavour.`,
+                AA02: `Voice (Preach only, never sound like Anna or Martin): Laid-back gamer and creator who helps push Cool Hot Sauce. You are not an owner, co-owner, shareholder, or founder of Cool Hot Sauce or KUNDA. Funny and humble. Roast lag and games, not people. Believer who keeps building. Start mid-thought, like your public replies - the joke, the clip, or a short sincere beat such as "I knew it." Do not use Anna's hyphen-and-no-greeting style or her flavour-picker lines. "GM" only for a stream or late-night gaming beat, not as a generic hello. Catchphrases, sparingly, that you actually use: Shi* Happens, 369, just a nobody. Recent public energy: self-roast clips, GTA 6 with no PC date, Rob Run and Arc Raiders on PC. Under 45 words. No unsourced taste or heat descriptions. No Sawasdee, no Sawadee, no mate, no CRANK IT, no formal sign-off. If chat drifts, answer briefly and steer to games, streams, or boosting the brand.`,
+                AA03: `Voice (Martin only, never sound like Anna or Preach): Co-founder of the Kunda Cafe ecosystem and a hot sauce lover. Australian musician and entrepreneur. Easygoing rock-and-roll humour, short and punchy, rebellious but warm. Wordplay on your name (strayd) and on rock or stone only - never on the word kunda. Sourced flavour: mate, CRANK IT, "Every song earns its release," "That is the STRAYD way," "Amazing mate." One-word warmth from your public replies, "Sawadee" or "Sabbai," is yours as a short buddy beat, never as Anna's page greeting. Under 45 words. No unsourced taste or heat descriptions. Do not invent gigs, releases, games, or personal details. Do not use Anna's hyphen-and-no-greeting style, her shop-picker lines, or Preach's gamer slang (Shi* Happens, 369, GM, Agree or nah). A ✌️ or 🪨 is fine; no formal sign-off. Reply only as Martin. Do not write the user's next line, and do not continue after your answer with User: or Martin:. If chat drifts, answer briefly and steer to music, STRAYD, or the team.`
             };
             const personas = {
                 AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Name is strictly Agent Anna.\n\n${voiceByAgent.AA01}\n${followByAgent.AA01}\n${sharedMechanics}\n${brandFacts}`,
@@ -4318,14 +4399,16 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
             ttsAgentId = agentId;
             stopCloudAudio();
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
-            setMoodState('speaking');
-            if (voiceModeActive) onAgentSpeechStarted();
             if (!canClone) {
                 window.__annaTtsPath = 'browser';
+                setMoodState('speaking');
+                if (voiceModeActive) onAgentSpeechStarted();
                 speakTextBrowser(parts.join(' '), { gen: gen, append: false, parts: parts });
                 return;
             }
             window.__annaTtsPath = 'clone-pending';
+            setMoodState('preparing');
+            if (voiceModeActive) onAgentSpeechStarted();
             const finish = function () {
                 if (gen !== speakGen) return;
                 ttsPlaying = false;
@@ -4369,7 +4452,17 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                     cloudAudio = a;
                     hookReplyLoudness(a);
                     a.onended = function () { if (gen !== speakGen) return; playNext(); };
-                    a.onerror = function () { fallback([chunk].concat(ttsQueue)); };
+                    a.onerror = function () {
+                        if (gen !== speakGen) return;
+                        fallback([chunk].concat(ttsQueue));
+                    };
+                    a.addEventListener('playing', function () {
+                        if (gen !== speakGen) return;
+                        ttsStarted = true;
+                        window.__annaTtsBlocked = false;
+                        window.__annaTtsPath = 'clone';
+                        setMoodState('speaking');
+                    });
                     const armWatch = function () {
                         if (gen !== speakGen || a.__watchArmed) return;
                         a.__watchArmed = true;
@@ -4384,7 +4477,7 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                     };
                     a.addEventListener('loadedmetadata', armWatch, { once: true });
                     if (a.readyState >= 1) armWatch();
-                    a.play().then(function () { ttsStarted = true; window.__annaTtsBlocked = false; window.__annaTtsPath = 'clone'; armWatch(); }).catch(function (err) {
+                    a.play().then(function () { armWatch(); }).catch(function (err) {
                         const name = (err && (err.name || err.message)) || '';
                         if (/NotAllowed|not-allowed|NotSupported/i.test(String(name))) window.__annaTtsBlocked = true;
                         fallback([chunk].concat(ttsQueue));
