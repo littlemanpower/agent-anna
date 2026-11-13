@@ -23,16 +23,33 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
 - Buy link used on the Agent Anna page: [https://www.lazada.co.th/shop/kunda-vegan-cafe](https://www.lazada.co.th/shop/kunda-vegan-cafe). coolhotsauce.com had no shop or price list on the homepage reviewed.
 - Seen in over 69 countries, as stated on coolhotsauce.com. No country list is given. **UNVERIFIED.**
 - HACCP, GMP and GAP, as stated on coolhotsauce.com. Certificates were not shown. **UNVERIFIED** as independently checked certificates.
-- "Exclusively Licenced Distribution by KUNDA Co. Ltd." (site spelling). Related cafe site: [https://kundacafe.com](https://kundacafe.com).
+- "Exclusively Licenced Distribution by KUNDA Co. Ltd." (site spelling). Related cafe site: [https://kundacafe.com](https://kundacafe.com). See the brand-relationship section below; do not read this footer as meaning Kunda makes the sauce or that the two are one company.
 - Theme songs, licensed on streaming platforms as stated on the official site, by Martin Strayd:
   - Vegan Millionaire Tuk Tuk — [https://youtu.be/7Xv9XY6Hr6E](https://youtu.be/7Xv9XY6Hr6E)
   - Cool Hot Hot Shots — [https://youtu.be/csNzQUK3kl0](https://youtu.be/csNzQUK3kl0)
   - Tuk Tuk Secret Spice (Muay Thailand) — [https://youtu.be/RbTVSL_4thw](https://youtu.be/RbTVSL_4thw)
 - Do not invent heat levels, stock, postage amounts, a 48-piece box baht price, or extra flavours. Retail and wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet below; live shop prices may differ.
 
-## Owner-stated brand facts (public-fit, Nov 12 2026 call)
+## Cool Hot Sauce and KUNDA — keep them separate (Martin, Nov 13, 2026, 11:50 AM ET)
 
-Owner statements, recorded as said. Not independently verified. Internal valuation figures, personal outreach lines, and named-company comparisons from that call are not included here.
+Source: Martin Strayd, Nov 13, 2026, 11:50 AM ET (America/New_York), in a reply on X shared by Preach as a screenshot and relayed by Mr. Boss. Martin's exact wording:
+
+> Keep separate. Cool hot sauce Coolhotsauce, is the no 1 stand alone seed to table entity, and is served at many fine dining establishments, including daily at Kunda Cafe locations. KUNDA Co. Ltd is the licenced distributor of Thailands hot sauce to the greater world. KUNDA is owned by same team of shareholders as coolhotsauce though run as different shells. Manufacturing and farming pipeline is separate from CAFE and restaurant franchise. though coolhotsauce is part of the franchise rollout.
+
+How to present this:
+
+- Cool Hot Sauce (coolhotsauce) and KUNDA Co. Ltd are separate companies (different shells) with the same team of shareholders.
+- Cool Hot Sauce is Martin's "No. 1 stand-alone seed-to-table entity." Attribute that phrase to Martin. Do not treat "No. 1" as an independently verified ranking.
+- Cool Hot Sauce is served at many fine dining establishments, including daily at Kunda Cafe locations, and is part of the franchise rollout.
+- KUNDA Co. Ltd is the licensed distributor of Thailand's hot sauce to the greater world (when quoting Martin, keep his spelling "licenced").
+- The manufacturing and farming pipeline is separate from the cafe and restaurant franchise.
+- Bots must not merge them into one company, say Kunda makes the sauce, or call them the same company. Official-site wording may be quoted and attributed, but must not be upgraded into a one-company claim.
+- Keep Martin as "co-founder of the Kunda Cafe ecosystem" and as "shareholder and hot sauce lover."
+- **Preach is not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA.** He only helps push the brand. Never call him an owner, co-owner, shareholder, or the founder of Cool Hot Sauce or KUNDA. (Preach via Mr. Boss, Nov 13, 2026, 12:58 AM ET; restated for this update.)
+
+## Preach-stated brand facts (public-fit, Nov 12 2026 call)
+
+These lines were stated by Preach on the Nov 12 2026 call, recorded as said. Preach helps push the brand; he is not an owner. Not independently verified. Internal valuation figures, personal outreach lines, and named-company comparisons from that call are not included here.
 
 - Five farms. Bottling and manufacturing all under one roof.
 - The brand has Michelin representation.
@@ -41,7 +58,7 @@ Owner statements, recorded as said. Not independently verified. Internal valuati
 
 ## Vision (not current fact)
 
-Owner vision from the Nov 12 2026 call. Anna may describe these as hopes and plans. Do not present them as something already happening.
+Preach-stated vision from the Nov 12 2026 call. Anna may describe these as hopes and plans. Do not present them as something already happening.
 
 - Sauce available in schools around the world, with everyone shaking and having a good time.
 - Sponsoring and advertising wonderful events "like Red Bull without the sugar."
@@ -88,13 +105,14 @@ Source: WhatsApp Video 2026-11-12 at 6.30.21 AM.mp4 and WhatsApp Video 2026-11-1
 - Thai FDA mark with registration number 57-2-05560-6-0018, as shown on this CLASSIC bottle (not independently checked in this pass).
 - Three small certification seals, too small to read in the video. They are likely HACCP, GMP and GAP, but that was not readable, so do not claim the seal names from the video.
 - Front label: white oval with a map of Thailand in Thai flag stripes; "THAILAND"; "100ML"; "HOT HOT SAUCE MADE IN THAILAND"; "WARNING: HOT HOT HOT CHILI...". Shown at a cafe table with a caddy of green, dark and red bottles (the three flavors). Do not assume from the video alone that CLASSIC equals a specific Agent Anna page or premium-sheet flavour name. Ends on "Made in Thailand."
-- Video 2 (~13 seconds, KUNDA Cafe social story, stock-style jazzy music): a KUNDA-branded 100 ml CLASSIC bottle ("KUNDA", "100% PLANT BASED"), with the same ingredients and coolhotsauce.com on the back, then a vegan burger. Overlays: "ALL TIME FAVORITE ^^"; "// BEST VEGAN IN CHIANGRAI"; "@KUNDACAFE_OFFICIAL". "BEST VEGAN IN CHIANGRAI" is video wording, not a checked ranking. This shows the sauce is also sold under a KUNDA private label at KUNDA Cafe.
+- Video 2 (~13 seconds, KUNDA Cafe social story, stock-style jazzy music): a KUNDA-branded 100 ml CLASSIC bottle ("KUNDA", "100% PLANT BASED"), with the same ingredients and coolhotsauce.com on the back, then a vegan burger. Overlays: "ALL TIME FAVORITE ^^"; "// BEST VEGAN IN CHIANGRAI"; "@KUNDACAFE_OFFICIAL". "BEST VEGAN IN CHIANGRAI" is video wording, not a checked ranking. This shows the sauce is also sold under a KUNDA private label at KUNDA Cafe. That fits Martin's Nov 13, 2026, 11:50 AM ET statement that Cool Hot Sauce is served daily at Kunda Cafe locations. Do not say Kunda makes the sauce or that the two brands are one company.
 
 ## Sources
 
 - [https://coolhotsauce.com](https://coolhotsauce.com) (homepage read Nov 12 2026)
 - Agent Anna page copy and sauce cards in this repo
-- Owner-stated public-fit facts from the Nov 12 2026 call
+- Preach-stated public-fit facts from the Nov 12 2026 call
+- Martin Strayd, Nov 13, 2026, 11:50 AM ET (America/New_York), reply on X shared by Preach as a screenshot and relayed by Mr. Boss: verbatim brand-separation wording quoted above
 - KUNDA Co. Ltd. July 2026 newsletter (staff name and phone numbers omitted)
 - Anna's full knowledge file: `anna-AA01/knowledge/knowledge.md`
 - One-page PREMIUM HOT SAUCE CoolHotSauce.com sheet, received Nov 12 2026 (personal name, phone, and business email omitted)

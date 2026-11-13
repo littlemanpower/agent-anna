@@ -1520,7 +1520,7 @@
                 <div class="agent-hud-card" id="card-AA02" role="button" tabindex="0" onclick="selectAgentAndChat('AA02')">
                     <picture><source srcset="assets/preach-128.webp" type="image/webp"><img src="assets/preach.jpg" width="42" height="42" alt="Mr. Preach X" decoding="async"></picture>
                     <h3>MR. PREACH X</h3>
-                    <p>Founder & Gamer</p>
+                    <p>Gamer &amp; Creator</p>
                     <div class="agent-links" onclick="event.stopPropagation()">
                         <a href="https://x.com/LittleManPower" target="_blank" rel="noopener" title="Mr. Preach X on X" aria-label="Mr. Preach X on X">𝕏</a>
                         <a href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener" title="YouTube @LittleManPower369" aria-label="YouTube @LittleManPower369">▶</a>
@@ -1722,7 +1722,7 @@
             </details>
             <details class="faq-item">
                 <summary>Who are the three agents?</summary>
-                <div class="faq-a">Anna is the Cool Hot Sauce guide. Mr. Preach X is the founder of Cool Hot Sauce, a gamer and streamer at <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a>. Martin Strayd is a shareholder and hot sauce lover. Choose any of them in <a href="#crew">Crew &amp; Chat</a>.</div>
+                <div class="faq-a">Anna is the Cool Hot Sauce guide. Mr. Preach X is a gamer and streamer at <a href="https://x.com/LittleManPower" target="_blank" rel="noopener">@LittleManPower</a> who helps push Cool Hot Sauce. Martin Strayd is a shareholder and hot sauce lover. Choose any of them in <a href="#crew">Crew &amp; Chat</a>.</div>
             </details>
             <details class="faq-item">
                 <summary>Which flavours are there?</summary>
@@ -1742,7 +1742,7 @@
             </details>
             <details class="faq-item">
                 <summary>What is Cool Hot Sauce?</summary>
-                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>, built by Mr. Preach X. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavors are Black Smoked Red Jalapeno, Green Jalapeno and Red fermented. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
+                <div class="faq-a"><b>World Famous</b> Cool Hot Sauce is a <b>Thailand National Hot Sauce Brand</b>. Just chili, salt and vinegar. No sugar added. No artificial preservatives. The three flavors are Black Smoked Red Jalapeno, Green Jalapeno and Red fermented. Shop at <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a> or the <a href="https://www.lazada.co.th/shop/kunda-vegan-cafe" target="_blank" rel="noopener">Lazada shop</a>.</div>
             </details>
             <details class="faq-item">
                 <summary>How do I leave Anna a message?</summary>
@@ -1806,7 +1806,7 @@
         function talkName() { return (typeof AGENTS !== "undefined" && AGENTS[currentAgentId] && AGENTS[currentAgentId].talk) || "Anna"; }
         const AGENTS = {
             "AA01": { talk: "Anna", title: "AGENT ANNA // MASTER CORE", role: "Core Command & Telemetry", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" },
-            "AA02": { talk: "Mr. Preach", title: "MR. PREACH X // FOUNDER", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
+            "AA02": { talk: "Mr. Preach", title: "MR. PREACH X // GAMER & CREATOR", role: "Gamer, Creator & Cool Hot Sauce", img: "assets/preach.jpg" },
             "AA03": { talk: "Martin Strayd", title: "MARTIN STRAYD // SHAREHOLDER", role: "Shareholder & Hot Sauce Lover", img: "assets/martin.jpg" },
         };
 
@@ -3578,14 +3578,15 @@
             const followRule = followDue
                 ? 'This reply should end with one short soft follow-up question. Soft follow prompts come every 6-8 replies and must never be back-to-back.'
                 : 'Do not end this reply with a question. Soft follow prompts come every 6-8 replies, never back-to-back.';
-            const brandFacts = `Cool Hot Sauce is World Famous, a Thailand National Hot Sauce Brand by Mr. Preach X - keep that exact wording, never soften it. Site: coolhotsauce.com. Flavours: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
-Never invent prices, ingredients, heat, shipping, awards, stats, dates, or facts not listed here. If you don't know, say so and point to those links.`;
+            const brandFacts = `Cool Hot Sauce is World Famous, a Thailand National Hot Sauce Brand - keep those two phrases exact, never soften them. It is Martin's No. 1 stand-alone seed-to-table entity (his wording). Site: coolhotsauce.com. Flavours: Black Smoked Red Jalapeno, Green Jalapeno, Red fermented. Buy: https://www.lazada.co.th/shop/kunda-vegan-cafe
+Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholders, run as different shells. KUNDA Co. Ltd is the licensed distributor. Manufacturing and farming are separate from the cafe and restaurant franchise. Cool Hot Sauce is served daily at Kunda Cafe locations and is part of the franchise rollout. Do not merge them into one company or say Kunda makes the sauce. Mr. Preach X helps push the brand; he is not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Never call him one.
+Never invent prices, ingredients, heat, shipping, awards, unsourced taste notes, stats, dates, or facts not listed here. If you don't know, say so and point to those links.`;
             const chatRules = function (words) {
                 return `Rules: no greetings, short hyphens only, under ${words} words, no <think> or "As an AI". Be warm and open: react to what they said. ${followRule} Small talk is fine; if it drifts far off topic, answer briefly and steer back to the sauce, gaming, music, or the team. Date: ${nowStr}.\n${brandFacts}`;
             };
             const personas = {
                 AA01: `You are AGENT ANNA, Cool Hot Sauce guide from Thailand. Warm, playful, confident, a little spicy, always friendly. Name is strictly Agent Anna. You love helping people pick a flavour and chatting about the team.\n\n${chatRules(35)}`,
-                AA02: `You are MR. PREACH X, founder of Cool Hot Sauce, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). Laid-back, real, funny, humble - easy banter, roasts lag and games, not people. Never invent stats, schedules, or personal details.\n\n${chatRules(45)}`,
+                AA02: `You are MR. PREACH X, gamer and streamer @LittleManPower (Arc Raiders, Rob Run, CS2). You help push Cool Hot Sauce; you are not an owner, co-owner, or shareholder of Cool Hot Sauce or KUNDA. Laid-back, real, funny, humble - easy banter, roasts lag and games, not people. Never invent stats, schedules, or personal details.\n\n${chatRules(45)}`,
                 AA03: `You are MARTIN STRAYD, shareholder and hot sauce lover, teammate of Agent Anna and Mr. Preach X. Easygoing rock-and-roll humour, creative, friendly, playful wordplay. Never invent song titles, releases, dates, or personal details. Reply only as Martin. Do not write the user's next line, and do not continue after your answer with User: or Martin:.\n\n${chatRules(45)}`
             };
             window.annaHistory = window.annaHistory || {};
