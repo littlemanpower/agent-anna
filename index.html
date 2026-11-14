@@ -2098,11 +2098,12 @@
         // Markup is kept. To re-enable: set PRERELEASE_HIDE to false (this also removes html.prerelease-hide).
         const PRERELEASE_HIDE = true;
         if (PRERELEASE_HIDE) document.documentElement.classList.add('prerelease-hide');
-        // Anna's X/YouTube came from Martin's PR #1, not from Preach. One-line re-enable:
-        // set SHOW_ANNA_PUBLIC_LINKS to true once Preach confirms them himself.
-        const SHOW_ANNA_PUBLIC_LINKS = false;
-        if (!SHOW_ANNA_PUBLIC_LINKS) document.documentElement.classList.add('anna-links-hidden');
         else document.documentElement.classList.remove('prerelease-hide');
+        // Anna's X/YouTube (Preach approved showing them, 14 Nov 2026). To hide again:
+        // set SHOW_ANNA_PUBLIC_LINKS to false. This flag must not touch prerelease-hide.
+        const SHOW_ANNA_PUBLIC_LINKS = true;
+        if (!SHOW_ANNA_PUBLIC_LINKS) document.documentElement.classList.add('anna-links-hidden');
+        else document.documentElement.classList.remove('anna-links-hidden');
 
         const ANNA_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-chat';
         const ANNA_ANON = 'sb_publishable_HZhfHAFHsPPG7txc5R_Iog__Ligubqq';
