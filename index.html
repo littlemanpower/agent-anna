@@ -4615,11 +4615,14 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
         function chunkForSpeech(text, opts) {
             const parts = splitSpokenSentences(text);
             if (!parts.length) return [];
-            const firstSeparate = !(opts && opts.firstSeparate === false);
+            const agentId = (opts && opts.agent) || (typeof currentAgentId !== 'undefined' ? currentAgentId : '');
+            // AA03: keep a typical short reply as one utterance so sentence gaps don't drag.
+            const firstSeparate = agentId === 'AA03' ? false : !(opts && opts.firstSeparate === false);
+            const cap = agentId === 'AA03' ? TTS_CHUNK : 320;
             if (firstSeparate && parts.length > 1) {
-                return [parts[0]].concat(packSpokenSentences(parts.slice(1), 320));
+                return [parts[0]].concat(packSpokenSentences(parts.slice(1), cap));
             }
-            return packSpokenSentences(parts, 320);
+            return packSpokenSentences(parts, cap);
         }
 
         async function fetchClonedAudio(agentId, text, opts) {
@@ -4697,7 +4700,7 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
             opts = opts || {};
             text = sanitizeTtsText(text, (opts && opts.agent) || (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01'));
             if (typeof prewarmAudioContext === 'function') prewarmAudioContext();
-            const parts = chunkForSpeech(text, { firstSeparate: !opts.append });
+            const parts = chunkForSpeech(text, { firstSeparate: !opts.append, agent: (opts && opts.agent) || (typeof currentAgentId !== 'undefined' ? currentAgentId : 'AA01') });
             if (!parts.length) return;
             const agentId = currentAgentId;
             const canClone = CLONE_AGENTS.indexOf(agentId) !== -1 && (isVoiceEnabled || voiceModeActive) && window.fetch && typeof Audio !== 'undefined';
@@ -4771,6 +4774,7 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                 urlPromise.then(function (url) {
                     if (gen !== speakGen) return;
                     const a = new Audio(url);
+                    if (agentId === 'AA03') a.playbackRate = 1.12;
                     cloudAudio = a;
                     hookReplyLoudness(a);
                     a.onended = function () { if (gen !== speakGen) return; playNext(); };
@@ -4891,6 +4895,7 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                     if (currentAgentId === 'AA03') { const pv = (window.__preachVoice || ''); if (voice && voice.name === pv) utterance.pitch = Math.max(0.7, utterance.pitch - 0.14); }
                     if (currentAgentId === 'AA02' && voice) window.__preachVoice = voice.name;
                     utterance.rate = maleAgent ? (isNeural ? 0.98 : 0.94) : (isNeural ? 0.97 : 0.92);
+                    if (currentAgentId === 'AA03') utterance.rate = Math.round(utterance.rate * 1.12 * 100) / 100;
                     utterance.volume = 1.0;
                     const safety = setTimeout(function () { if (gen !== speakGen) return; speakNext(); }, Math.min(20000, Math.max(4000, part.length * 90)));
                     utterance.onstart = function () { ttsStarted = true; window.__annaTtsBlocked = false; window.__annaTtsPath = 'browser'; };
