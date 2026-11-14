@@ -4,9 +4,11 @@ One folder per agent, numbered AA01 to AA03. Each has a `character/` folder (per
 
 | Folder | Agent | What's inside |
 | --- | --- | --- |
-| `anna-AA01/` | Agent Anna | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. |
+| `anna-AA01/` | Agent Anna | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. `law.md`: locked shop-link law. |
 | `mr-preach-x-AA02/` | Mr. Preach X | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. |
 | `martin-strayd-AA03/` | Martin Strayd | `character/character.md`: personality and voice. `knowledge/knowledge.md`: facts this agent should know. `Note-of-Today.md`: Martin's daily notes. |
+
+Anna's locked laws live in [`anna-AA01/law.md`](anna-AA01/law.md). Never invent shop or buy links. Lazada is https://www.lazada.co.th/shop/kundacafe/ only.
 
 The `README.md` in each subfolder explains what belongs there. New agents get the next number (AA04) and the same two subfolders.
 
