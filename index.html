@@ -1341,6 +1341,51 @@
             select, #agent-phonebook-select, #voice-talker { min-height: 44px; }
             #user-input { font-size: 16px; } /* stops iPhone Safari zooming in when the box is tapped */
         }
+        /* Mobile tap targets: at least 40px, independent of pointer:coarse (headless checks use a fine pointer). */
+        @media (max-width: 860px) {
+            .site-nav { padding-top: 4px; padding-bottom: 4px; }
+            .skip-link,
+            .site-nav a,
+            .nav-chip,
+            .lazada-btn,
+            .wwd-bot,
+            #copy-site-link-btn,
+            #anna-message-submit,
+            #anna-subscribe-submit,
+            .anna-msg-form .ctrl-btn,
+            .presence-frame .ctrl-btn {
+                min-height: 40px;
+                box-sizing: border-box;
+            }
+            .site-nav a,
+            .nav-chip,
+            .lazada-btn,
+            .wwd-bot,
+            #copy-site-link-btn,
+            #anna-message-submit,
+            #anna-subscribe-submit,
+            .anna-msg-form .ctrl-btn,
+            .presence-frame .ctrl-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 40px;
+            }
+            .feature-links a,
+            .foot-links a,
+            .faq-a a,
+            .credential-line a,
+            .site-foot a,
+            .photo-credits a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                min-width: 40px;
+                padding: 0 8px;
+                box-sizing: border-box;
+            }
+        }
         /* Chat panel (Nov 13): the transcript is a fixed-height box that scrolls inside; replies never stretch the page. */
         @media (min-width: 861px) {
             .page-stage > .app-shell { align-self: start; }
@@ -1427,6 +1472,13 @@
             .chat-character-copy { flex: 1 1 0; min-width: 5.5rem; }
             .chat-card-expand { padding-left: 6px; padding-right: 6px; }
             .start-over-btn { padding-left: 8px; padding-right: 8px; }
+            @media (max-width: 360px) {
+                .chat-character-head { flex-wrap: nowrap; column-gap: 2px; }
+                .chat-character-copy { min-width: 0; flex: 1 1 0%; }
+            }
+            @media (max-width: 320px) {
+                .chat-character-head { flex-wrap: wrap; column-gap: 2px; row-gap: 4px; }
+            }
             .chat-character-avatar {
                 display: block; width: 40px; height: 40px; border-radius: 50%;
                 object-fit: cover; flex-shrink: 0; border: 1px solid var(--line); background: color-mix(in srgb, var(--chili) 55%, #1a0606);
@@ -3576,6 +3628,7 @@
                     a.target = '_blank';
                     a.rel = 'noopener';
                     a.textContent = item.label;
+                    a.setAttribute('aria-label', item.label);
                     linkBox.appendChild(a);
                 });
                 linkBox.hidden = !linkBox.childNodes.length;
