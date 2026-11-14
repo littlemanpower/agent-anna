@@ -25,6 +25,8 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
 - HACCP, GMP and GAP, as stated on coolhotsauce.com. Certificates were not shown. **VERIFIED as is on lazada and needed for that listing** as independently checked certificates.
 - "Exclusively Licenced Distribution by KUNDA Co. Ltd." (site spelling). Related cafe site: [https://kundacafe.com](https://kundacafe.com). See the brand-relationship section below; do not read this footer as meaning Kunda makes the sauce or that the two are one company.
 - Theme songs, licensed on streaming platforms as stated on the official site, by Martin Strayd:
+
+- song COOL HOT HOT SHOTS by Strad with reference to cool hot shots. and populat in thailand Tuk Tuk song woth tiktok action and on tiktok sounds as are all of martins music. ( not facebook) tiktok loves strayd. 
   - Vegan Millionaire Tuk Tuk — [https://youtu.be/7Xv9XY6Hr6E](https://youtu.be/7Xv9XY6Hr6E)
   - Cool Hot Hot Shots — [https://youtu.be/csNzQUK3kl0](https://youtu.be/csNzQUK3kl0)
   - Tuk Tuk Secret Spice (Muay Thailand) — [https://youtu.be/RbTVSL_4thw](https://youtu.be/RbTVSL_4thw)
