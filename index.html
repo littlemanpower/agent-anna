@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="prerelease-hide">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
@@ -792,6 +792,10 @@
         }
         .wwd-bot:hover { border-color: var(--gold); color: var(--gold); }
         .wwd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+        /* Pre-release chrome (Share on X, social nudge, demo block, Share FAQ).
+           Hidden while html has class prerelease-hide, which tracks PRERELEASE_HIDE below.
+           To re-enable: set const PRERELEASE_HIDE = false in the page script. */
+        html.prerelease-hide .prerelease-only { display: none !important; }
         .share-x-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
             padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
@@ -1538,7 +1542,8 @@
             <a class="nav-chip" href="https://www.youtube.com/@LittleManPower369" target="_blank" rel="noopener">▶️ YouTube @LittleManPower369</a>
             <a class="nav-chip" href="https://www.tiktok.com/@mr.preachx" target="_blank" rel="noopener">🎵 TikTok @mr.preachx</a>
             <a class="nav-chip" href="https://x.com/LittleManPower" target="_blank" rel="noopener">𝕏 @LittleManPower</a>
-            <a class="nav-chip" href="#demo">🎬 Demo</a>
+            <!-- prerelease-only: Demo nav. Hidden while PRERELEASE_HIDE is true. -->
+            <a class="nav-chip prerelease-only" href="#demo">🎬 Demo</a>
             <a class="nav-chip" href="#sauces">🌶️ The Sauces</a>
             <a class="nav-chip" href="#crew">💬 Meet the crew</a>
             <a class="nav-chip" href="#leave-message">✉️ Leave a message</a>
@@ -1573,7 +1578,8 @@
                         <a class="wwd-bot" href="#crew" onclick="selectAgentAndChat('AA03'); return false;">Martin Strayd</a>
                     </div>
                     <div class="wwd-actions">
-                        <a class="share-x-btn" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
+                        <!-- prerelease-only: Share on X + prefill. Hidden while PRERELEASE_HIDE is true. -->
+                        <a class="share-x-btn prerelease-only" id="share-x-btn" target="_blank" rel="noopener" href="https://x.com/intent/post?text=Just%20chatted%20with%20Agent%20Anna%20about%20Cool%20Hot%20Sauce.%20World%20Famous.%20Thailand%20National%20Hot%20Sauce%20Brand.%20%F0%9F%8C%B6%EF%B8%8F&amp;url=https%3A%2F%2Flittlemanpower.github.io%2Fagent-anna%2F">Share on X</a>
                         <button type="button" class="share-x-btn" id="copy-site-link-btn">Copy link</button>
                     </div>
                 </div>
@@ -1800,7 +1806,8 @@
             </a>
             </div>
         </section>
-        <section class="demo-video-section reveal" id="demo" aria-labelledby="demo-title">
+        <!-- prerelease-only: demo block and coming-soon placeholder. Hidden while PRERELEASE_HIDE is true. -->
+        <section class="demo-video-section reveal prerelease-only" id="demo" aria-labelledby="demo-title">
             <h2 class="section-title" id="demo-title">🎬 Demo <span>// watch Anna</span></h2>
             <p class="faq-lead demo-lead">A short look at Agent Anna and Cool Hot Sauce. The video slot is ready - the clip itself is coming soon.</p>
             <div class="demo-video-slot" role="img" aria-label="Demo video placeholder, coming soon">
@@ -1871,7 +1878,8 @@
                 <summary>How do you handle privacy, and what does Forget me do?</summary>
                 <div class="faq-a">Anna’s opening line may use the time of day and, if available, an approximate city and weather from your IP. Location is approximate, from IP, used only to show the weather, and not stored. A short visit note can stay in this browser only. <strong>Forget me</strong> clears that note on this device. Chat you type is sent so Anna can reply. Notes left in the message form are saved for the team and are not readable from the browser.</div>
             </details>
-            <details class="faq-item">
+            <!-- prerelease-only: Share on X FAQ. Hidden while PRERELEASE_HIDE is true. -->
+            <details class="faq-item prerelease-only">
                 <summary>How does Share on X work?</summary>
                 <div class="faq-a">Share on X opens your own X compose window with a prefilled line about Agent Anna and Cool Hot Sauce. Nothing is posted by this site.</div>
             </details>
@@ -1902,7 +1910,8 @@
     <div class="kanok-strip"></div>
     <footer class="site-foot" id="foot">🪷 Agent Anna // Cool Hot Sauce Edition
         <div class="foot-links">
-            <a href="#demo">Demo</a>
+            <!-- prerelease-only: Demo footer link. Hidden while PRERELEASE_HIDE is true. -->
+            <a class="prerelease-only" href="#demo">Demo</a>
             <a href="#faq">FAQ</a>
             <a href="#updates">Email updates</a>
             <a href="https://coolhotsauce.com" target="_blank" rel="noopener">CoolHotSauce.com</a>
@@ -1939,6 +1948,12 @@
         let recognition = null;
         let isListening = false;
 
+
+        // Hide pre-release chrome (Share on X + prefill, once-per-session social nudge, demo block, Share FAQ).
+        // Markup is kept. To re-enable: set PRERELEASE_HIDE to false (this also removes html.prerelease-hide).
+        const PRERELEASE_HIDE = true;
+        if (PRERELEASE_HIDE) document.documentElement.classList.add('prerelease-hide');
+        else document.documentElement.classList.remove('prerelease-hide');
 
         const ANNA_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-chat';
         const ANNA_ANON = 'sb_publishable_HZhfHAFHsPPG7txc5R_Iog__Ligubqq';
@@ -3526,6 +3541,7 @@
         window.startOverCurrentAgent = startOverCurrentAgent;
 
         function maybeShowSocialNudge(id) {
+            if (typeof PRERELEASE_HIDE !== 'undefined' && PRERELEASE_HIDE) return;
             try { if (sessionStorage.getItem(ANNA_NUDGE_KEY) === '1') return; } catch (e) {}
             if (document.querySelector('.chat-nudge')) return;
             const counts = window.annaReplyCounts || {};
@@ -4751,10 +4767,10 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
         }
         function initShareAndCopy() {
             const share = document.getElementById('share-x-btn');
-            if (share) {
+            if (share && !(typeof PRERELEASE_HIDE !== 'undefined' && PRERELEASE_HIDE)) {
                 try { share.setAttribute('href', shareIntentUrl()); } catch (e) {}
             }
-            if (share && !share.__bound) {
+            if (share && !(typeof PRERELEASE_HIDE !== 'undefined' && PRERELEASE_HIDE) && !share.__bound) {
                 share.__bound = true;
                 share.addEventListener('click', function (ev) {
                     if (!navigator.share) return;
