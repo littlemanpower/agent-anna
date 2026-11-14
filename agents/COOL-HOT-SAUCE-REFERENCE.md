@@ -28,7 +28,7 @@ Sourced from [coolhotsauce.com](https://coolhotsauce.com) (read Nov 12 2026) and
   - Vegan Millionaire Tuk Tuk — [https://youtu.be/7Xv9XY6Hr6E](https://youtu.be/7Xv9XY6Hr6E)
   - Cool Hot Hot Shots — [https://youtu.be/csNzQUK3kl0](https://youtu.be/csNzQUK3kl0)
   - Tuk Tuk Secret Spice (Muay Thailand) — [https://youtu.be/RbTVSL_4thw](https://youtu.be/RbTVSL_4thw)
-- Do not invent heat levels, stock, postage amounts, a 48-piece box baht price, or extra flavours. Retail and wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet below; live shop prices may differ.
+- Do not invent heat levels, stock, postage amounts, 12 pack , 12 bottles one flavour or mixed, a 48-piece box baht price, or extra flavours. Retail and wholesale baht prices and a short ingredient line are on the Nov 12 2026 premium sheet below; live shop prices may differ.
 
 ## Cool Hot Sauce and KUNDA — keep them separate (Martin, Nov 13, 2026, 11:50 AM ET)
 
