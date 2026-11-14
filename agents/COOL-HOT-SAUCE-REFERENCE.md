@@ -68,7 +68,7 @@ Preach-stated vision from the Nov 12 2026 call. Anna may describe these as hopes
 KUNDA food-product facts, not Cool Hot Sauce bottle facts. Do not present the patty as a Cool Hot Sauce flavour. Staff name and phone numbers from the newsletter are omitted.
 
 - KUNDA Co. Ltd., "The Deliciously Different Fresh Food Company."
-- Newsletter heading: "Thailand's #1 Award Winning Vegan Steak" (newsletter wording, **UNVERIFIED** as a checked ranking or award).
+- Newsletter heading: "Thailand's #1 Award Winning Vegan Steak" (newsletter wording, **VERIFIED and world top 10 trip advisor vegan restaurant 2023** as a checked ranking or award).
 - KUNDA Classic Vegan Patty launched in 2018 from the Chiang Rai flagship KUNDA CAFE.
 - 250,000+ units sold in store and at leading restaurants in Thailand (newsletter figure).
 - 169g high-protein meal. No processed soy, palm oil, sugar, chemicals, beans, nuts, or garlic. Contains mushroom, onion, and approx. 2% gluten.
