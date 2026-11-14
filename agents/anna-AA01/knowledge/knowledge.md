@@ -89,7 +89,8 @@ coolhotsauce.com says Cool Hot Sauce theme songs are "Licenced" (site spelling) 
 
 From `/workspace/agent-anna-repo/index.html` only:
 
-- Public links used on the page: [coolhotsauce.com](https://coolhotsauce.com), Lazada shop above, [x.com/coolhotsauce](https://x.com/coolhotsauce), [YouTube @LittleManPower369](https://www.youtube.com/@LittleManPower369), [TikTok @mr.preachx](https://www.tiktok.com/@mr.preachx), [x.com/LittleManPower](https://x.com/LittleManPower), [x.com/iamMartinStrayd](https://x.com/iamMartinStrayd), [github.com/suzukistrayd](https://github.com/suzukistrayd).
+- Public links used on the page: [coolhotsauce.com](https://coolhotsauce.com), Lazada shop above, [x.com/coolhotsauce](https://x.com/coolhotsauce), [YouTube @LittleManPower369](https://www.youtube.com/@LittleManPower369), [TikTok @mr.preachx](https://www.tiktok.com/@mr.preachx), [x.com/LittleManPower](https://x.com/LittleManPower), [x.com/iamMartinStrayd](https://x.com/iamMartinStrayd).
+- Do not volunteer or link Martin's GitHub profile or repos (github.com/suzukistrayd). Martin asked for it to be removed from his card (Nov 14 2026, via Mr. Boss).
 - Chiang Rai photos on the page (White Temple / Wat Rong Khun, a golden building at the same temple, hills and tea farms, night-market lanterns) are credited to Wikimedia Commons photographers. They set a Thailand scene. They are not product shots.
 - The page welcome bubble greets with "สวัสดีค่ะ! Sawasdee ka! I'm Anna, your Cool Hot Sauce guide." Replies still follow the no-greeting rule in character.md.
 
