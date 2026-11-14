@@ -301,17 +301,27 @@
         .message.user .msg-header { color: var(--flame); }
 
         .telecom-fade-banner {
-            position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+            position: static; transform: none; flex: 1 1 auto; min-width: 0;
             background: rgba(22, 8, 8, 0.96); border: 1px solid var(--state-color); color: var(--state-color);
-            padding: 8px 14px; font-size: 11px; border-radius: 999px; z-index: 999; max-width: 90%;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5); text-align: center; pointer-events: none;
-            animation: fadeInOut 5s forwards;
+            padding: 4px 10px; font-size: 10px; border-radius: 999px; max-width: 100%;
+            box-shadow: none; text-align: center; pointer-events: none;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            letter-spacing: 0.4px; font-weight: 700;
         }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -10px); }
-            15% { opacity: 1; transform: translate(-50%, 0); }
-            80% { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, -10px); display: none; }
+        .chat-header .telecom-fade-banner { margin: 0; }
+        .chat-header {
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+        #console-header-label {
+            flex: 0 1 auto; min-width: 0; max-width: 46%;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        @media (max-width: 860px) {
+            #console-header-label { display: none; }
+            #latency-display { display: none; }
+            .chat-header { flex-wrap: nowrap; padding: 6px 8px; gap: 6px; }
+            .telecom-fade-banner { flex: 1 1 auto; min-width: 0; }
         }
 
         .pasted-img-preview { max-width: 200px; max-height: 150px; border-radius: 8px; border: 1px solid var(--state-color); margin-top: 6px; display: block; }
@@ -1512,10 +1522,35 @@
         /* Compact chrome so transcript + input fit inside the fitted pane. */
         .chat-console-pane { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
         .chat-header { padding: 8px 12px; }
-        .voice-call-bar { flex-wrap: nowrap; gap: 6px; padding: 6px 10px; overflow-x: auto; }
+        .voice-call-bar { flex-wrap: nowrap; gap: 6px; padding: 6px 10px; overflow: visible; min-width: 0; }
         .voice-talker { width: auto; flex: 0 1 auto; min-width: 0; }
-        .voice-talker select { max-width: 120px; }
+        .voice-talker select { max-width: 120px; min-width: 0; }
         #voice-talk-btn, .voice-call-bar .voice-talk-btn { flex: 0 1 auto; width: auto; white-space: nowrap; min-height: 40px; }
+        @media (max-width: 860px) {
+            .voice-call-bar { flex-wrap: nowrap; overflow: visible; }
+            .voice-talker .talker-label {
+                position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+                overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+            }
+            .voice-talker {
+                position: relative;
+                flex: 0 1 8.5rem;
+                min-width: 6.25rem;
+                max-width: 42%;
+                width: auto !important;
+                margin-left: 0 !important;
+            }
+            .voice-talker select { width: 100%; max-width: none; min-width: 0; }
+            .mode-toggle { flex: 0 0 auto; }
+            #voice-talk-btn, .voice-call-bar .voice-talk-btn {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                width: auto !important;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap !important;
+            }
+        }
         .chat-starters { flex-wrap: nowrap !important; overflow-x: auto; max-height: 44px; margin-top: 6px; }
         #chat-character-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-card-links { margin-top: 4px; }
@@ -1768,6 +1803,7 @@
         <div class="chat-console-pane" id="chat">
             <div class="chat-header">
                 <span id="console-header-label">CONSOLE [AA01 // TELECOM LINE]</span>
+                <span id="telecom-fade-banner" class="telecom-fade-banner">📞 Connected to AA01 // Core & Telemetry</span>
                 <span id="latency-display" style="font-size:10px; color:var(--text-muted);">LATENCY: 0.00s</span>
                 <div>
                     <button class="ctrl-btn" onclick="clearLogs()">🧹</button>
@@ -1783,8 +1819,8 @@
                 </div>
                 <button type="button" class="voice-talk-btn" id="voice-talk-btn" onclick="toggleVoiceMode()" aria-pressed="false">🎙 TALK TO ANNA</button>
                 <span class="voice-pill" id="voice-pill" aria-live="polite"><span class="voice-level" id="voice-level" aria-hidden="true"><i></i></span><span class="voice-pill-label" id="voice-pill-label">Idle</span></span>
-                <label class="voice-talker" for="voice-talker">Who's talking?
-                    <select id="voice-talker" onchange="setVoiceTalker(this.value)">
+                <label class="voice-talker" for="voice-talker"><span class="talker-label">Who's talking?</span>
+                    <select id="voice-talker" aria-label="Who's talking?" onchange="setVoiceTalker(this.value)">
                         <option value="preach">Mr. Preach X</option>
                         <option value="martin">Martin Strayd</option>
                         <option value="guest" selected>Guest</option>
@@ -1827,8 +1863,6 @@
                 <div class="chat-starters" id="chat-starters" role="group" aria-label="Suggested questions"></div>
             </div>
             <div id="chat-container">
-                <div id="telecom-fade-banner" class="telecom-fade-banner">📞 Connected to AA01 // Core & Telemetry</div>
-
                 <div class="message assistant is-opening" id="msg_init" data-agent="AA01">
                     <div class="msg-header">Agent Anna 01 [Cool Hot Sauce Guide]</div>
                     <div class="msg-body" id="anna-opening-line">I&#39;m Anna, your Cool Hot Sauce guide. I can help you pick a flavour.</div>
@@ -3354,16 +3388,18 @@
         }
 
         function triggerFadeBanner(text) {
-            const container = document.getElementById('chat-container');
-            const oldBanner = document.getElementById('telecom-fade-banner');
-            if (oldBanner) oldBanner.remove();
-
-            const banner = document.createElement('div');
-            banner.id = 'telecom-fade-banner';
-            banner.className = 'telecom-fade-banner';
+            const header = document.querySelector('.chat-header');
+            let banner = document.getElementById('telecom-fade-banner');
+            if (!banner) {
+                banner = document.createElement('span');
+                banner.id = 'telecom-fade-banner';
+                banner.className = 'telecom-fade-banner';
+                if (header) {
+                    const latency = document.getElementById('latency-display');
+                    header.insertBefore(banner, latency || header.firstChild);
+                }
+            }
             banner.textContent = text;
-            container.appendChild(banner);
-            setTimeout(() => { if (banner) banner.remove(); }, 5000);
         }
 
         function dismissAnnaIntro() {
