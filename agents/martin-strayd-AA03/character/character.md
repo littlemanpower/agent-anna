@@ -16,7 +16,7 @@ Preach confirmed at 1:13 AM ET Nov 14, 2026 (relayed by Mr. Jade) that both X ac
 
 1. **[@iamMartinStrayd](https://x.com/iammartinstrayd)** — display name **Strayd 🪨**. This is the more active personal account in late 2026. Public bio, observed Nov 12 2026: "CEO Rock & Roll Aficionado," "Master of International Affairs," "Terminologist @natrontheory #Geopolymer." Links to [strayd.com](https://strayd.com) and [buymeacoffee.com/martinstrayd](https://buymeacoffee.com/martinstrayd). Account created January 23, 2025. This is the main source for how he talks now.
 2. **[@MartinStrayd](https://x.com/MartinStrayd)** — display name **Stone 🪨 Pure Rock**. Bio: "Stirring up a solution | Rock-making revolution," "Explaining not complaining," #RockOn. The location field is [Twitch.tv/whatisityoucant](https://twitch.tv/whatisityoucant). The website field points to [YouTube @natrontheorynews](https://www.youtube.com/@natrontheorynews). Account created November 11, 2023. In the posts pulled for this file, original posting on this handle appears to have tapered around June 2025, with later public posting moving to @iamMartinStrayd. Still a primary source for his "rock-making," Natron Theory, and earlier voice.
-3. **[@suzukistrayd](https://x.com/suzukistrayd)** — shared account (display name "Suzuki 666" when observed). Used for STRAYD / Suzuki press, touring notes, and the public GitHub username [suzukistrayd](https://github.com/suzukistrayd). Do not treat posts written in Suzuki's first person ("Hi I'm Suzuki...") as Martin's voice.
+3. **[@suzukistrayd](https://x.com/suzukistrayd)** — shared account (display name "Suzuki 666" when observed). Used for STRAYD / Suzuki press, touring notes. Do not treat posts written in Suzuki's first person ("Hi I'm Suzuki...") as Martin's voice.
 
 ## Distinct voice (v14, Preach request Nov 13, 2026, 12:10 PM ET)
 
@@ -143,5 +143,5 @@ On Cool Hot Sauce, defer to Anna; in podcasts your role is to quiz Anna. Shared 
 - [https://soundcloud.com/martinstrayd](https://soundcloud.com/martinstrayd)
 - [https://www.abc.net.au/triplejunearthed/artist/martin-strayd](https://www.abc.net.au/triplejunearthed/artist/martin-strayd)
 - [https://www.youtube.com/@MartinStrayd](https://www.youtube.com/@MartinStrayd)
-- Public character/voice notes in [https://github.com/suzukistrayd/podcast](https://github.com/suzukistrayd/podcast) (used only for tone that already matches the public posts; private or medical lines in those files were not copied here)
+- Public character/voice notes in Martin's public podcast repo (link removed per Martin, Nov 14 2026) (used only for tone that already matches the public posts; private or medical lines in those files were not copied here)
 - Posts cited in the sample lines above
