@@ -1423,13 +1423,19 @@
         @media (max-width: 860px) {
             #chat-container { flex: 1 1 auto; min-height: 300px; }
             .chat-character-card { margin: 0 8px 6px; padding: 8px 10px; }
-            .chat-character-head { align-items: center; gap: 8px; }
+            .chat-character-head { align-items: center; gap: 4px; flex-wrap: nowrap; }
+            .chat-character-copy { flex: 1 1 0; min-width: 5.5rem; }
+            .chat-card-expand { padding-left: 6px; padding-right: 6px; }
+            .start-over-btn { padding-left: 8px; padding-right: 8px; }
             .chat-character-avatar {
                 display: block; width: 40px; height: 40px; border-radius: 50%;
                 object-fit: cover; flex-shrink: 0; border: 1px solid var(--line); background: color-mix(in srgb, var(--chili) 55%, #1a0606);
             }
             .chat-character-avatar.is-broken { object-position: -999px; }
-            .chat-character-copy h3 { font-size: 13px; }
+            .chat-character-copy h3 {
+                font-size: 13px;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
             .chat-character-copy p {
                 margin: 0; font-size: 11px; line-height: 1.3;
                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -1464,10 +1470,28 @@
         .main-workspace { container-type: inline-size; }
         html.anna-links-hidden .anna-public-links { display: none !important; }
         .foot-profile-links { margin-top: 6px; font-size: 11px; }
-        .foot-profile-links a { font-weight: 600; color: var(--text-muted); }
+        .foot-profile-links a {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 40px; min-width: 40px; padding: 0 8px;
+            font-weight: 600; color: var(--text-muted);
+        }
         .foot-profile-links a:hover { color: var(--gold); }
-        .chat-card-links { justify-content: flex-start; margin: 8px 0 0; }
-        .chat-card-links a { width: auto; height: auto; min-height: 28px; padding: 4px 8px; border-radius: 999px; font-size: 11px; }
+        /* Compact 40px icon hit-targets in the existing card header so they don't eat transcript height. Labels stay in the DOM for assistive tech. */
+        .chat-character-card .chat-card-links {
+            display: inline-flex; align-items: center; justify-content: flex-start;
+            flex: 0 0 auto; gap: 0; margin: 0; align-self: center;
+        }
+        .chat-character-card .chat-card-links[hidden] { display: none !important; }
+        .chat-character-card .chat-card-links a {
+            position: relative;
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; min-width: 40px; min-height: 40px;
+            padding: 0; margin: 0; border-radius: 999px;
+            font-size: 0; line-height: 0; color: var(--text-light);
+            text-decoration: none; overflow: visible;
+        }
+        .chat-character-card .chat-card-links a[href*="x.com"]::before { content: "𝕏"; font-size: 15px; line-height: 1; color: currentColor; }
+        .chat-character-card .chat-card-links a[href*="youtube.com"]::before { content: "▶"; font-size: 14px; line-height: 1; color: currentColor; }
         @media (min-width: 861px) {
             .page-stage > .app-shell {
                 align-self: start;
@@ -1554,12 +1578,10 @@
         }
         .chat-starters { flex-wrap: nowrap !important; overflow-x: auto; max-height: 44px; margin-top: 6px; }
         #chat-character-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-card-links { margin-top: 4px; }
         .input-control-bar { padding: 8px 10px; gap: 6px; }
         @media (min-width: 861px) and (min-height: 760px) and (max-height: 860px) {
             .chat-character-card { padding: 6px 10px; margin: 0 10px 4px; }
             .chat-starters { margin-top: 4px; }
-            .chat-card-links { margin-top: 2px; }
             .input-control-bar { padding: 6px 10px; gap: 4px; }
             .multimedia-toolbar { gap: 4px; }
         }
@@ -1567,7 +1589,7 @@
             .anna-boot-log-wrap, .quick-launch-bar { display: none; }
         }
         @media (max-height: 760px) {
-            .chat-starters, .chat-card-links { display: none; }
+            .chat-starters { display: none; }
             #chat-character-line { display: none; }
             .chat-character-card { padding: 6px 8px; margin: 0 8px 4px; }
         }
@@ -1863,11 +1885,11 @@
                         <h3 id="chat-character-name">Agent Anna</h3>
                         <p id="chat-character-line">I'm the Cool Hot Sauce guide. Let's pick your bottle - I'll point you to the official shop.</p>
                     </div>
+                    <div class="agent-links chat-card-links" id="chat-character-links"></div>
                     <button type="button" class="chat-card-expand" id="chat-card-expand" aria-expanded="false" aria-controls="chat-character-details">About</button>
                     <button type="button" class="start-over-btn" id="start-over-btn" onclick="startOverCurrentAgent()">Start over</button>
                 </div>
                 <p class="chat-character-details" id="chat-character-details"></p>
-                <div class="agent-links chat-card-links" id="chat-character-links"></div>
                 <div class="chat-starters" id="chat-starters" role="group" aria-label="Suggested questions"></div>
             </div>
             <div id="chat-container">
