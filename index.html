@@ -1943,12 +1943,25 @@
         const ANNA_FN = 'https://xyhbdkbqwfsdciczpqnx.supabase.co/functions/v1/anna-chat';
         const ANNA_ANON = 'sb_publishable_HZhfHAFHsPPG7txc5R_Iog__Ligubqq';
 
+        function annaSessionId() {
+            try {
+                var id = sessionStorage.getItem('annaSession');
+                if (!id || !/^[A-Za-z0-9_-]{8,64}$/.test(id)) {
+                    id = (crypto.randomUUID && crypto.randomUUID()) || ('s' + Math.random().toString(36).slice(2) + Date.now().toString(36));
+                    sessionStorage.setItem('annaSession', id);
+                }
+                return id;
+            } catch (e) {
+                return 's' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+            }
+        }
         async function annaApi(route, opts) {
             opts = opts || {};
             const headers = {
                 'Content-Type': 'application/json',
                 'apikey': ANNA_ANON,
-                'Authorization': 'Bearer ' + ANNA_ANON
+                'Authorization': 'Bearer ' + ANNA_ANON,
+                'x-anna-session': annaSessionId()
             };
             if (opts.accept) headers['Accept'] = opts.accept;
             return fetch(ANNA_FN + '/' + route, {
@@ -4040,9 +4053,9 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                 }
                 const chatBody = {
                     agent: currentAgentId,
-                    messages: [{ role: "system", content: (personas[currentAgentId] || personas.AA01) + extraContext + (onVoice ? "\nYou are on a live voice call. Keep this reply to one or two short spoken sentences." : "") }, ...hist],
-                    temperature: 0.6,
-                    max_tokens: onVoice ? 280 : 400,
+                    messages: hist.slice(),
+                    voice: !!onVoice,
+                    notes: extraContext ? String(extraContext).slice(0, 1500) : undefined,
                     stream: true
                 };
                 let streamId = null;
@@ -4121,6 +4134,15 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                             if (onVoice) speakText('Chat is offline. Open Keys and add your Dahl key.');
                             else setMoodState('standby');
                             hist.pop();
+                            return;
+                        }
+                        if (data.error === 'rate_limited') {
+                            const slow = data.message || "Easy - let's take a breath. Try again in a minute.";
+                            setChatRetryStatus('');
+                            hist.pop();
+                            appendMsg(slow, 'assistant', currentAgentId + ' [Slow down]', { retryQuery: query });
+                            if (onVoice) speakText(slow);
+                            else setMoodState('standby');
                             return;
                         }
                         const detail = data.message || '';
