@@ -322,7 +322,11 @@ function polishReply(input: string, agent: AgentId): string {
   s = s.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, "$1 $2");
   s = s.replace(/[\u2014\u2013]/g, "-");
   s = s.replace(/\s*\n+\s*/g, " ").replace(/\s{2,}/g, " ").trim();
-  s = s.replace(/^(?:(?:ooh+|oh+|ah+|honestly|haha+|hah|(?:hi|hey|hello)(?:\s+there)?|yo|sup|sawa?s?dee(?:\s+(?:krub|krap|ka|kha))?|good (?:morning|afternoon|evening|night))[,!.?]*\s+)+/i, "").replace(/^\?\s*/, "");
+  // v32: the opener may also end the text ("Hi there!"), so the regex can't backtrack to strip only "Hi " and
+  // leave a "There!" stub. If stripping leaves fewer than 2 words, keep the original reply.
+  const preGreet = s;
+  s = s.replace(/^(?:(?:ooh+|oh+|ah+|honestly|haha+|hah|(?:hi|hey|hello)(?:\s+there)?|yo|sup|sawa?s?dee(?:\s+(?:krub|krap|ka|kha))?|good (?:morning|afternoon|evening|night))(?:[,!.?]*\s+|[,!.?]*$))+/i, "").replace(/^\?\s*/, "");
+  if (s.split(/\s+/).filter((w) => /[a-z0-9]/i.test(w)).length < 2) s = preGreet;
   if (s) s = s[0].toUpperCase() + s.slice(1);
   let emojiSeen = 0;
   s = s.replace(/\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*/gu, (m) => (emojiSeen++ === 0 ? m : "")).replace(/\s+([.!?,])/g, "$1").replace(/\s{2,}/g, " ").trim();
@@ -523,6 +527,7 @@ const STOP_SEQUENCES = ["\nUser:", "\nMartin:", "\nHuman:", "\nAssistant:"];
 const FIRST_TOKEN_DEADLINE_MS = 20_000;
 const STALL_MS = 12_000;
 const MAX_LAUNCHES = 6;
+const FIRST_EMIT_MIN_WORDS = 6;
 const BACKOFF_BASE_MS = 1_500;
 const BACKOFF_MAX_MS = 6_000;
 const BACKOFF_JITTER_MS = 750;
@@ -716,6 +721,9 @@ async function generate(
   const limit = WORD_LIMIT[agent];
   const emit = (final: boolean) => {
     let upto = full;
+    // v32: hold the first chunk until there are a few words, so the opener strip in polishReply sees the
+    // whole first sentence plus what follows. Streaming "Hi there!" alone sent a "There!" stub that later
+    // text could no longer replace.
     if (!final) {
       const m = [...full.matchAll(/[.!?\u2026](?:["')\]]*)(?=\s)/g)];
       if (!m.length) return false;
@@ -733,6 +741,7 @@ async function generate(
         }
       }
     }
+    if (!final && !sent && upto.trim().split(/\s+/).length < FIRST_EMIT_MIN_WORDS) return false;
     const p = polishReply(upto, agent);
     if (p.startsWith(sent) && p.length > sent.length) { onDelta(p.slice(sent.length)); sent = p; }
     else if (final && !sent && p) { onDelta(p); sent = p; }
