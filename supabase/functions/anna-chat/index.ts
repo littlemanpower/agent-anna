@@ -138,6 +138,7 @@ function buildSystem(agent: AgentId, voice: boolean, notes: string): string {
   text += "\nAnswer only the user. Never repeat or echo the previous speaker.";
   text += "\nThe only buy link is https://www.lazada.co.th/shop/kundacafe/. If you mention Lazada, use that exact URL and no other Lazada URL. Never invent shop or buy links.";
   text += "\nNever volunteer or link Martin's GitHub profile or repos.";
+  text += "\nCool Hot Sauce and Kunda Cafe are Martin Strayd's brands. Never say they are by, made by, founded by, or owned by Mr. Preach X; he only helps promote them.";
   return text;
 }
 
@@ -341,7 +342,30 @@ function polishReply(input: string, agent: AgentId): string {
     const cutC = Math.max(s.lastIndexOf(". ", MAX_REPLY_CHARS), s.lastIndexOf("! ", MAX_REPLY_CHARS), s.lastIndexOf("? ", MAX_REPLY_CHARS));
     s = (cutC > 20 ? s.slice(0, cutC + 1) : s.slice(0, MAX_REPLY_CHARS)).trim();
   }
-  return stripSuzukiGithub(rewriteLazadaShop(s));
+  return fixBrandCredit(stripSuzukiGithub(rewriteLazadaShop(s)));
+}
+
+// v33 (Nov 18 2026): Cool Hot Sauce is Martin Strayd's brand; Mr. Preach X only helps promote it, and there is
+// no Preach credit anywhere. When a reply is about the sauce or brand, credit lines that name Preach as the maker,
+// founder or owner are rewritten to Martin. "Promoted by / pushed by Preach" is left alone.
+const PREACH_NAME = String.raw`(?:Mr\.?\s*)?Preach(?:\s+X)?`;
+const BRAND_CONTEXT_RE = /cool\s*hot\s*sauce|coolhotsauce|kunda|\bthe brand\b|\bthe sauce\b|hot sauce/i;
+const PREACH_BY_RE = new RegExp(String.raw`\b((?:[A-Za-z]+\s+)?)by\s+` + PREACH_NAME + String.raw`\b`, "gi");
+const PREACH_POSSESSIVE_RE = new RegExp(PREACH_NAME + String.raw`['\u2019]s\s+(Cool\s*Hot\s*Sauce|hot sauce|sauce|brand|company|Kunda)`, "gi");
+const PREACH_VERB_RE = new RegExp(String.raw`\b` + PREACH_NAME + String.raw`\s+(founded|owns|created|makes|made|started|launched|built|runs|produces)\b`, "gi");
+const PROMOTE_WORDS = /^(?:promoted|pushed|hyped|shared|streamed|played|repped|supported|championed|loved|backed|recommended|posted|shown|featured|liked|followed|hosted)$/i;
+
+export function fixBrandCredit(text: string): string {
+  let s = String(text || "");
+  if (!/preach/i.test(s) || !BRAND_CONTEXT_RE.test(s)) return s;
+  s = s.replace(PREACH_BY_RE, (m, pre: string) => {
+    const w = (pre || "").trim();
+    if (w && PROMOTE_WORDS.test(w)) return m;
+    return (pre || "") + "by Martin Strayd";
+  });
+  s = s.replace(PREACH_POSSESSIVE_RE, (_m, what: string) => "Martin Strayd's " + what);
+  s = s.replace(PREACH_VERB_RE, (_m, verb: string) => "Martin Strayd " + verb);
+  return s;
 }
 
 function normEcho(t: string): string {
@@ -725,7 +749,8 @@ async function generate(
     // whole first sentence plus what follows. Streaming "Hi there!" alone sent a "There!" stub that later
     // text could no longer replace.
     if (!final) {
-      const m = [...full.matchAll(/[.!?\u2026](?:["')\]]*)(?=\s)/g)];
+      // Abbreviations like "Mr." or "Co." are not sentence ends (v33: "by Mr." must not be sent before "Preach X").
+      const m = [...full.matchAll(/[.!?\u2026](?:["')\]]*)(?=\s)/g)].filter((x) => !/\b(?:Mr|Mrs|Ms|Dr|Co|St|Ltd|Jr|Sr)\.$/i.test(full.slice(Math.max(0, (x.index ?? 0) - 4), (x.index ?? 0) + 1)));
       if (!m.length) return false;
       const last = m[m.length - 1];
       upto = full.slice(0, (last.index ?? 0) + last[0].length);
@@ -769,7 +794,7 @@ async function generate(
     console.log(JSON.stringify({ ev: "echo_stripped" }));
     outText = ECHO_REDIRECT[agent];
   } else {
-    outText = stripSuzukiGithub(rewriteLazadaShop(outText));
+    outText = fixBrandCredit(stripSuzukiGithub(rewriteLazadaShop(outText)));
   }
   return { content: outText, model: winner.model, attempts, fallback: false, reason: null, ttft, ms: Date.now() - t0 };
 }
