@@ -5,7 +5,9 @@ const ALLOWED_ORIGIN = "https://littlemanpower.github.io";
 const DAHL_URL = "https://inference.dahl.global/v1/chat/completions";
 // Model chain (Nov 13 2026). Dahl's 429s are per-model "model_concurrency" capacity, so on 429/timeout/empty
 // we move to the next model instead of waiting. Roll back: set MODELS = ["MiniMaxAI/MiniMax-M2.7"].
-const MODELS = ["deepseek-ai/DeepSeek-V4-Flash-0731", "MiniMaxAI/MiniMax-M2.7", "zai-org/GLM-5.3-Flash"];
+// v36 (Nov 19 2026): GLM-5.3-Flash dropped from the chain. In the 24 h to 10:30 AM ET it answered 0 of 19 tries
+// (18 x 429, 1 empty) and only added upstream calls. Roll back: add "zai-org/GLM-5.3-Flash" back as the third entry.
+const MODELS = ["deepseek-ai/DeepSeek-V4-Flash-0731", "MiniMaxAI/MiniMax-M2.7"];
 const MODEL = MODELS[0];
 const DBG_NONCE = ""; // benchmark override disabled (set a random value only while benchmarking)
 const THINKING_MODELS = new Set(["MiniMaxAI/MiniMax-M2.7"]);
@@ -527,22 +529,23 @@ async function runChat(apiKey: string, payload: Record<string, unknown>): Promis
 // primary model; if it hasn't produced a visible token within FIRST_TOKEN_MS (or fails), the next model
 // starts in parallel. The first model to produce visible text wins, the others are aborted, and the winner's
 // tokens are passed to the browser sentence by sentence (think-stripped and polished on the fly).
-const FIRST_TOKEN_MS = 3_000; // was 6_000; start the next model sooner when the primary is silent
+const FIRST_TOKEN_MS = 2_500; // v36: was 3_000; start the other model sooner when the first is silent
 // v18 live test: with `stop` set, DeepSeek never answered (every chat fell through to the fallbacks), so stop
 // sequences are off until a model is confirmed to accept them; polishReply cuts self-written turns instead.
 const STOP_OK = new Set<string>([]);
 const STOP_SEQUENCES = ["\nUser:", "\nMartin:", "\nHuman:", "\nAssistant:"];
-// v31 (Nov 17 2026): Dahl answered every model with an instant 429 (~150 ms each), so the old loop burned all
-// 5 launches in ~2.5 s, then sat idle until the 32 s deadline before showing the fallback. Now: once every model
-// has 429'd, wait (Retry-After if given, else 1.5 s / 3 s / 6 s) plus jitter before the next try, and return the
-// fallback as soon as nothing is left to try. Whole first-token wait is capped at 20 s.
-const FIRST_TOKEN_DEADLINE_MS = 20_000;
+// v31 (Nov 17 2026) added Retry-After backoff. v36 (Nov 19 2026): the 11 AM check showed v35 still made 7 upstream
+// calls for one chat (DeepSeek 429 retried 3 times within 5 s while MiniMax sat queued) and fell back at 20.4 s.
+// Now each 429'd model rests for its Retry-After (capped), the first-token wait is 12 s, and at most 4 tries run.
+const FIRST_TOKEN_DEADLINE_MS = 12_000;
+const LAST_LAUNCH_MARGIN_MS = 3_000; // a try started later than this before the deadline can't answer in time
 const STALL_MS = 12_000;
-const MAX_LAUNCHES = 6;
+const MAX_LAUNCHES = 4;
 const FIRST_EMIT_MIN_WORDS = 6;
-const BACKOFF_BASE_MS = 1_500;
-const BACKOFF_MAX_MS = 6_000;
-const BACKOFF_JITTER_MS = 750;
+const COOL_DEFAULT_MS = 4_000; // 429 without Retry-After
+const COOL_MIN_MS = 1_500;
+const COOL_MAX_MS = 6_000; // Dahl sends Retry-After: 10; capped so one retry still fits in the 12 s budget
+const COOL_JITTER_MS = 500;
 
 function parseRetryAfterMs(v: string | null): number | null {
   if (!v) return null;
@@ -623,35 +626,48 @@ async function generate(
 ): Promise<GenResult> {
   const t0 = Date.now();
   console.log(JSON.stringify({ ev: "gen_start", agent, sys_chars: messages[0]?.content.length ?? 0, turns: messages.length - 1 }));
-  let attempts = 0, lastReason: string | null = null, lastRetryAfterMs: number | null = null, backoffRound = 0;
+  let attempts = 0, lastReason: string | null = null;
   type Cand = { model: string; ctrl: AbortController; iter?: AsyncGenerator<string>; filter: ThinkFilter; first?: string };
   const cands: Cand[] = [];
+  // v36 (Nov 19 2026): one model at a time, no hammering. A model that answers 429 rests for its Retry-After
+  // (capped at COOL_MAX_MS, plus jitter) before it is tried again; the other model is tried meanwhile. A second
+  // model also starts if the first is silent for FIRST_TOKEN_MS. No new try starts in the last
+  // LAST_LAUNCH_MARGIN_MS, and the honest fallback (with Retry in the page) comes as soon as nothing is in
+  // flight and nothing can start in time, or at FIRST_TOKEN_DEADLINE_MS at the latest.
   const winner = await new Promise<Cand | null>((resolve) => {
-    let settled = false, pending = 0, idx = 0;
+    let settled = false, pending = 0;
+    const deadline = t0 + FIRST_TOKEN_DEADLINE_MS;
     const timers: ReturnType<typeof setTimeout>[] = [];
-    const finish = (c: Cand | null) => { if (settled) return; settled = true; timers.forEach(clearTimeout); resolve(c); };
-    timers.push(setTimeout(() => finish(null), FIRST_TOKEN_DEADLINE_MS));
-    const cooled = new Set<string>();
-    const inflight = new Set<string>();
-    const launch = () => {
+    let wake: ReturnType<typeof setTimeout> | null = null;
+    const finish = (c: Cand | null) => {
       if (settled) return;
-      if (attempts >= MAX_LAUNCHES || Date.now() - t0 > FIRST_TOKEN_DEADLINE_MS - 4000) {
-        if (pending === 0) finish(null); // nothing in flight and nothing left to try: answer now, don't wait out the deadline
-        return;
-      }
-      let model: string | null = null;
-      for (let k = 0; k < models.length * 2; k++) {
-        const cand = models[idx++ % models.length];
-        if (inflight.has(cand)) continue;
-        if (cooled.has(cand) && inflight.size + (models.length - cooled.size) > 0) {
-          // Skip a model that just failed if another unused model can be tried first.
-          const alt = models.find((m) => !inflight.has(m) && !cooled.has(m));
-          if (alt) { model = alt; break; }
+      settled = true; timers.forEach(clearTimeout); if (wake) clearTimeout(wake); resolve(c);
+    };
+    timers.push(setTimeout(() => finish(null), FIRST_TOKEN_DEADLINE_MS));
+    const coolUntil = new Map<string, number>();
+    const inflight = new Set<string>();
+    const lastStart = deadline - LAST_LAUNCH_MARGIN_MS;
+    const pick = (now: number) => models.find((m) => !inflight.has(m) && (coolUntil.get(m) ?? 0) <= now) ?? null;
+    const armWake = (at: number) => {
+      if (wake) clearTimeout(wake);
+      wake = setTimeout(() => { wake = null; next(); }, Math.max(0, at - Date.now()));
+    };
+    const next = () => {
+      if (settled) return;
+      const now = Date.now();
+      if (attempts < MAX_LAUNCHES && now <= lastStart) {
+        const m = pick(now);
+        if (m) return start(m);
+        const waits = models.filter((x) => !inflight.has(x)).map((x) => coolUntil.get(x) ?? 0).filter((t) => t > now && t <= lastStart);
+        if (waits.length) {
+          const at = Math.min(...waits);
+          console.log(JSON.stringify({ ev: "retry_wait", agent, delay: at - now, attempts }));
+          return armWake(at);
         }
-        model = cand;
-        break;
       }
-      if (!model) return;
+      if (pending === 0) finish(null); // nothing in flight and nothing can start in time: fall back now
+    };
+    const start = (model: string) => {
       attempts++; pending++;
       inflight.add(model);
       const c: Cand = { model, ctrl: new AbortController(), filter: new ThinkFilter() };
@@ -659,37 +675,43 @@ async function generate(
       const thinking = THINKING_MODELS.has(model);
       const body: Record<string, unknown> = { model, messages, temperature, stream: true, max_tokens: thinking ? BASE_MAX_TOKENS : 400, ...(STOP_OK.has(model) ? { stop: STOP_SEQUENCES } : {}) };
       if (thinking && dahlExtrasOk !== false) Object.assign(body, { reasoning_split: true, reasoning_effort: "low" });
-      const nextTimer = setTimeout(launch, FIRST_TOKEN_MS);
-      timers.push(nextTimer);
+      const startedAt = Date.now();
+      timers.push(setTimeout(next, FIRST_TOKEN_MS)); // silent too long: let the other model start alongside
       (async () => {
+        let why: string | null = null;
         try {
           const res = await fetch(DAHL_URL, {
             method: "POST", signal: c.ctrl.signal,
             headers: { Authorization: `Bearer ${apiKey.trim()}`, "Content-Type": "application/json", Accept: "text/event-stream" },
             body: JSON.stringify(body),
           });
-          if (res.status === 401 || res.status === 403) { lastReason = "rejected_key"; throw new Error("rejected"); }
+          if (res.status === 401 || res.status === 403) { why = "rejected_key"; throw new Error("rejected"); }
           if (!res.ok || !res.body) {
-            lastReason = "http_" + res.status;
+            why = "http_" + res.status;
             if (res.status === 429) {
-              lastRetryAfterMs = parseRetryAfterMs(res.headers.get("retry-after"));
+              const ra = parseRetryAfterMs(res.headers.get("retry-after"));
+              const cool = Math.min(COOL_MAX_MS, Math.max(COOL_MIN_MS, ra ?? COOL_DEFAULT_MS)) + Math.floor(Math.random() * COOL_JITTER_MS);
+              coolUntil.set(model, Date.now() + cool);
               const txt = await res.text().catch(() => "");
-              console.log(JSON.stringify({ ev: "upstream_429", model, agent, ...rateInfo(res, txt) }));
-            } else { try { await res.body?.cancel(); } catch { /* */ } }
-            throw new Error(lastReason);
+              console.log(JSON.stringify({ ev: "upstream_429", model, agent, attempt: attempts, inflight: inflight.size, cool_ms: cool, ...rateInfo(res, txt) }));
+            } else {
+              coolUntil.set(model, Date.now() + COOL_MIN_MS);
+              try { await res.body?.cancel(); } catch { /* */ }
+            }
+            throw new Error(why);
           }
           const ctype = res.headers.get("content-type") || "";
           if (!ctype.includes("text/event-stream")) {
             const data = await res.json().catch(() => null);
             const { content } = extractContent(data);
-            if (!content) { lastReason = "empty"; throw new Error("empty"); }
+            if (!content) { why = "empty"; throw new Error("empty"); }
             c.first = content;
             c.iter = (async function* () { /* nothing more */ })();
           } else {
             c.iter = sseDeltas(res);
             while (true) {
               const step = await c.iter.next();
-              if (step.done) { lastReason = "empty"; throw new Error("empty"); }
+              if (step.done) { why = "empty"; throw new Error("empty"); }
               const vis = c.filter.push(step.value);
               if (vis.trim()) { c.first = vis; break; }
               if (settled) return;
@@ -702,26 +724,17 @@ async function generate(
         } catch (e) {
           pending--;
           inflight.delete(model);
-          if (!lastReason) lastReason = (e as Error)?.name === "AbortError" ? "aborted" : "network";
-          if (lastReason === "http_429" || (typeof lastReason === "string" && lastReason.startsWith("http_"))) cooled.add(model);
-          console.log(JSON.stringify({ ev: "try_failed", model, reason: lastReason, ms: Date.now() - t0 }));
+          if (!why) why = settled ? "deadline_or_lost" : ((e as Error)?.name === "AbortError" ? "aborted" : "network");
+          if (why === "empty" || why === "network") coolUntil.set(model, Date.now() + COOL_MIN_MS);
+          if (!settled || !lastReason) lastReason = why;
+          console.log(JSON.stringify({ ev: "try_failed", model, reason: why, ms: Date.now() - t0, try_ms: Date.now() - startedAt }));
           if (settled) return;
-          clearTimeout(nextTimer);
-          if (lastReason === "rejected_key") return finish(null);
-          let delay = lastReason === "http_429" ? 400 : 0;
-          if (lastReason === "http_429" && inflight.size === 0 && models.every((m) => cooled.has(m))) {
-            // Every model is saturated: back off (honour Retry-After, capped) with jitter instead of hammering.
-            const base = Math.min(BACKOFF_MAX_MS, BACKOFF_BASE_MS * 2 ** backoffRound++);
-            delay = Math.min(BACKOFF_MAX_MS, Math.max(base, lastRetryAfterMs ?? 0)) + Math.floor(Math.random() * BACKOFF_JITTER_MS);
-            lastRetryAfterMs = null;
-          }
-          if (pending === 0 && (attempts >= MAX_LAUNCHES || Date.now() - t0 + delay > FIRST_TOKEN_DEADLINE_MS - 4000)) return finish(null);
-          console.log(JSON.stringify({ ev: "retry_wait", agent, delay, attempts }));
-          timers.push(setTimeout(launch, delay));
+          if (why === "rejected_key") return finish(null);
+          next();
         }
       })();
     };
-    launch();
+    next();
   });
   for (const c of cands) if (c !== winner) { try { c.ctrl.abort(); } catch { /* */ } }
   if (!winner) {
