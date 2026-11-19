@@ -1332,6 +1332,7 @@
             #anna-msg-name, #anna-msg-contact, #anna-sub-email { min-height: 44px; font-size: 16px; }
             .ctrl-btn, #send-btn { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
             #chat .ctrl-btn:not(#send-btn) { min-height: 38px; }
+            #chat #mic-btn.ctrl-btn { min-height: 40px; } /* touch target: MIC was 38px tall */
             #chat .ctrl-btn:not(#send-btn) { padding-left: 8px; padding-right: 8px; }
             #user-input::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             #chat .action-chip { min-height: 32px; }
@@ -2209,7 +2210,18 @@
             });
         }
 
+        let annaLastActive = Date.now();
+        ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) {
+            window.addEventListener(ev, function () { annaLastActive = Date.now(); }, { passive: true });
+        });
+        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') annaLastActive = Date.now(); });
+        // Background timers (warm-up, team inbox, rates) skip while the tab is hidden or idle for 10+ minutes,
+        // so a forgotten open tab does not keep calling the backend all day.
+        function annaPageActive() {
+            return document.visibilityState !== 'hidden' && (Date.now() - annaLastActive) < 10 * 60 * 1000;
+        }
         function warmAnnaFunctions() {
+            if (!annaPageActive()) return;
             try {
                 annaApi('status').catch(function () {});
                 fetch(ANNA_FN, { method: 'OPTIONS', headers: { 'Origin': location.origin } }).catch(function () {});
@@ -2246,9 +2258,8 @@
             try { localKey = (localStorage.getItem('dahl_key') || '').trim(); } catch (e) {}
             let has = false;
             try { has = await refreshKeyStatus(); } catch (e) {}
-            if (localKey && !has) {
-                try { await annaApi('set-key', { method: 'POST', body: { key: localKey } }); } catch (e) {}
-            }
+            // Key updates are locked server-side (403), so a key left in this browser is never sent; it is just deleted.
+            void localKey; void has;
             try { localStorage.removeItem('dahl_key'); } catch (e) {}
             const input = document.getElementById('api-key');
             if (input) input.value = '';
@@ -2290,7 +2301,7 @@
             try { localStorage.removeItem('bridge_url'); localStorage.removeItem('gh_pat_token'); } catch (e) {}
             migrateAndClearLocalKey();
             pollTeamInbox();
-            setInterval(pollTeamInbox, 60000);
+            setInterval(function () { if (annaPageActive()) pollTeamInbox(); }, 60000);
             initVoiceTalker();
             messagePayloadStore['msg_init'] = "I'm Anna, your Cool Hot Sauce guide. I can help you pick a flavour.";
             initAnnaOpeningLine();
@@ -2299,7 +2310,7 @@
             setInterval(updateLocalTime, 1000);
             initCanvas();
             triggerCryptoMarket(false);
-            setInterval(() => triggerCryptoMarket(false), 60000);
+            setInterval(() => { if (annaPageActive()) triggerCryptoMarket(false); }, 60000);
             if (typeof loadAgentThreads === 'function') loadAgentThreads();
             if (typeof restoreAgentBubbles === 'function') restoreAgentBubbles();
             switchAgent('AA01', { quiet: true });
@@ -4451,7 +4462,11 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                     if (reply && window.__annaLastMeta && window.__annaLastMeta.fallback) {
                         // Server could not get a real answer: show the friendly in-character line, keep it out of history.
                         hist.pop();
-                        if (streamId) updateMsgBody(streamId, reply, false);
+                        if (streamId) {
+                            // Streamed fallback line: give it the same Retry button as the non-streamed path.
+                            updateMsgBody(streamId, reply, false);
+                            addRetryChip(document.getElementById(streamId), query);
+                        }
                         else appendMsg(reply, 'assistant', `${currentAgentId} [Retry]`, { retryQuery: query });
                         if (onVoice) speakText(reply);
                         else setMoodState('standby');
@@ -5106,6 +5121,17 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                 .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
+        function addRetryChip(div, retryQuery) {
+            if (!div || typeof retryQuery !== 'string' || !retryQuery || div.querySelector('.retry-chip')) return;
+            const row = div.querySelector('.action-row');
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.className = 'action-chip retry-chip';
+            retry.textContent = 'Retry';
+            retry.addEventListener('click', function () { sendMessage(retryQuery); });
+            if (row) row.insertBefore(retry, row.firstChild);
+        }
+
         // All chat text (user input, AI replies, team relay, voice) is escaped, so it can never run as HTML.
         function appendMsg(text, sender, label, opts) {
             const container = document.getElementById('chat-container');
@@ -5136,16 +5162,7 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
                 if (plain) body.appendChild(document.createElement('br'));
                 body.appendChild(img);
             }
-            const retryQuery = opts && opts.retryQuery;
-            if (typeof retryQuery === 'string' && retryQuery) {
-                const row = div.querySelector('.action-row');
-                const retry = document.createElement('button');
-                retry.type = 'button';
-                retry.className = 'action-chip retry-chip';
-                retry.textContent = 'Retry';
-                retry.addEventListener('click', function () { sendMessage(retryQuery); });
-                if (row) row.insertBefore(retry, row.firstChild);
-            }
+            addRetryChip(div, opts && opts.retryQuery);
             container.appendChild(div);
             if ((opts && opts.forceScroll) || sender === 'user' || chatPinnedToBottom) {
                 chatPinnedToBottom = true;
