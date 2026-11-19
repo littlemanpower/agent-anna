@@ -207,18 +207,6 @@ const FRIENDLY_SLOWDOWN: Record<AgentId, string> = {
 
 const FLAVOURS_LINE = 'Flavours (exact names): Black Smoked Red Jalapeno, Green Jalapeno, Red fermented.';
 
-// Martin's own wording (Nov 13 2026): role, the three exact flavour names, and no "prik chi fa".
-// The page still sends older persona text, so the server corrects those bits before calling the model.
-function fixPersonaText(t: string): string {
-  return t
-    .replace(/Flavou?rs:\s*[^.\n]*\./gi, FLAVOURS_LINE)
-    .replace(/musician and teammate of Agent Anna and Mr\. Preach X/gi, "shareholder and hot sauce lover, teammate of Agent Anna and Mr. Preach X")
-    .replace(/founder of Cool Hot Sauce, gamer and streamer/gi, "gamer and streamer")
-    .replace(/You are MR\. PREACH X, founder of Cool Hot Sauce/gi, "You are MR. PREACH X, gamer and streamer")
-    .replace(/a Thailand National Hot Sauce Brand by Mr\. Preach X/gi, "a Thailand National Hot Sauce Brand")
-    .replace(/\s*pri(?:c)?k\s*chi\s*fa/gi, "");
-}
-
 const SHARED_STYLE = `
 Conversation style (server):
 - ${FLAVOURS_LINE} Use exactly these names. Never say "prik chi fa" (any spelling). "Red fermented" is not "Red Thai Chili" - never call any flavour Red Thai Chili or Smoked Black.
@@ -810,6 +798,14 @@ Deno.serve(async (req: Request) => {
 
   try {
     if (req.method === "GET" && route === "status") {
+      if (req.headers.get("x-anna-ipdiag") === "1") {
+        // Temporary (Nov 19 2026): which client-IP header can a caller spoof? Logs shapes only, never addresses.
+        const xff = (req.headers.get("x-forwarded-for") || "").split(",").map((x) => x.trim()).filter(Boolean);
+        const cf = req.headers.get("cf-connecting-ip") || "";
+        console.log(JSON.stringify({ ev: "ipdiag", xff_n: xff.length, has_cf: !!cf, has_xreal: !!req.headers.get("x-real-ip"),
+          first_is_probe: xff[0] === "203.0.113.7", last_is_probe: xff[xff.length - 1] === "203.0.113.7", cf_is_probe: cf === "203.0.113.7",
+          first_eq_cf: !!cf && xff[0] === cf, last_eq_cf: !!cf && xff[xff.length - 1] === cf }));
+      }
       const key = await getDahlKey();
       return json({ hasKey: Boolean(key) });
     }
@@ -821,6 +817,11 @@ Deno.serve(async (req: Request) => {
 
     if (req.method === "POST" && route === "chat") {
       const session = sessionId(req);
+      // v34: refuse an oversized body before reading it (the 80 KB check below still applies).
+      const declared = Number(req.headers.get("content-length") || "0");
+      if (Number.isFinite(declared) && declared > 80_000) {
+        return json({ error: "payload_too_large", message: "That message is too long." }, 413);
+      }
       const rawText = await req.text();
       if (rawText.length > 80_000) {
         return json({ error: "payload_too_large", message: "That message is too long." }, 413);
@@ -842,7 +843,9 @@ Deno.serve(async (req: Request) => {
           const msg = m && typeof m === "object" ? m as Record<string, unknown> : {};
           const role = msg.role === "assistant" ? "assistant" : "user";
           let content = String(msg.content ?? "").slice(0, MAX_MSG_CHARS);
-          if (role === "assistant") content = stripThink(content);
+          // v34: old replies kept in the browser go back through the brand-credit guard, so a stale
+          // "by Mr. Preach X" line from before v33 can't steer the next answer.
+          if (role === "assistant") content = fixBrandCredit(stripThink(content));
           return { role, content };
         })
         .filter((m) => m.content)
