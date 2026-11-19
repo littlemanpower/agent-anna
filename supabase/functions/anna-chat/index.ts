@@ -798,14 +798,6 @@ Deno.serve(async (req: Request) => {
 
   try {
     if (req.method === "GET" && route === "status") {
-      if (req.headers.get("x-anna-ipdiag") === "1") {
-        // Temporary (Nov 19 2026): which client-IP header can a caller spoof? Logs shapes only, never addresses.
-        const xff = (req.headers.get("x-forwarded-for") || "").split(",").map((x) => x.trim()).filter(Boolean);
-        const cf = req.headers.get("cf-connecting-ip") || "";
-        console.log(JSON.stringify({ ev: "ipdiag", xff_n: xff.length, has_cf: !!cf, has_xreal: !!req.headers.get("x-real-ip"),
-          first_is_probe: xff[0] === "203.0.113.7", last_is_probe: xff[xff.length - 1] === "203.0.113.7", cf_is_probe: cf === "203.0.113.7",
-          first_eq_cf: !!cf && xff[0] === cf, last_eq_cf: !!cf && xff[xff.length - 1] === cf }));
-      }
       const key = await getDahlKey();
       return json({ hasKey: Boolean(key) });
     }
@@ -862,6 +854,10 @@ Deno.serve(async (req: Request) => {
         capped.unshift(historyDeduped[i]);
       }
       while (capped.length && capped[0].role === "assistant") capped.shift();
+      // v35: nothing for the model to answer (no user turn) -> 400, without calling the model.
+      if (!capped.some((m) => m.role === "user" && m.content.trim())) {
+        return json({ error: "empty_message", message: "Type a message first.", agent }, 400);
+      }
       capped.unshift({ role: "system", content: personaText });
 
       const temperature = CHAT_TEMPERATURE;
