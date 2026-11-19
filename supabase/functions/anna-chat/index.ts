@@ -529,7 +529,7 @@ async function runChat(apiKey: string, payload: Record<string, unknown>): Promis
 // primary model; if it hasn't produced a visible token within FIRST_TOKEN_MS (or fails), the next model
 // starts in parallel. The first model to produce visible text wins, the others are aborted, and the winner's
 // tokens are passed to the browser sentence by sentence (think-stripped and polished on the fly).
-const FIRST_TOKEN_MS = 2_500; // v36: was 3_000; start the other model sooner when the first is silent
+const FIRST_TOKEN_MS = 1_500; // v37: was 2_500; most real DeepSeek answers start within 1.5-3 s, MiniMax needs the head start
 // v18 live test: with `stop` set, DeepSeek never answered (every chat fell through to the fallbacks), so stop
 // sequences are off until a model is confirmed to accept them; polishReply cuts self-written turns instead.
 const STOP_OK = new Set<string>([]);
@@ -538,6 +538,9 @@ const STOP_SEQUENCES = ["\nUser:", "\nMartin:", "\nHuman:", "\nAssistant:"];
 // calls for one chat (DeepSeek 429 retried 3 times within 5 s while MiniMax sat queued) and fell back at 20.4 s.
 // Now each 429'd model rests for its Retry-After (capped), the first-token wait is 12 s, and at most 4 tries run.
 const FIRST_TOKEN_DEADLINE_MS = 12_000;
+// v37 (Nov 19 2026): at 5:54 PM AA01 had no 429 at all - DeepSeek and MiniMax both had streams open (HTTP 200) but
+// silent when the 12 s cut-off hit. If a stream is open at 12 s, wait up to 15 s in total; never longer.
+const OPEN_STREAM_DEADLINE_MS = 15_000;
 const LAST_LAUNCH_MARGIN_MS = 3_000; // a try started later than this before the deadline can't answer in time
 const STALL_MS = 12_000;
 const MAX_LAUNCHES = 4;
@@ -594,7 +597,8 @@ class ThinkFilter {
   flush(): string { const r = this.inThink ? "" : this.buf; this.buf = ""; return r; }
 }
 
-async function* sseDeltas(res: Response): AsyncGenerator<string> {
+type StreamStats = { events: number; reasoningChars: number };
+async function* sseDeltas(res: Response, stats?: StreamStats): AsyncGenerator<string> {
   const reader = res.body!.getReader();
   const dec = new TextDecoder();
   let buf = "";
@@ -612,6 +616,11 @@ async function* sseDeltas(res: Response): AsyncGenerator<string> {
       try {
         const j = JSON.parse(p);
         const ch = (j.choices && j.choices[0]) || {};
+        if (stats) {
+          stats.events++;
+          const r = ch.delta && (ch.delta.reasoning_content ?? ch.delta.reasoning);
+          if (typeof r === "string") stats.reasoningChars += r.length;
+        }
         const piece = (ch.delta && typeof ch.delta.content === "string") ? ch.delta.content
           : (ch.message && typeof ch.message.content === "string" ? ch.message.content : "");
         if (piece) yield piece;
@@ -643,7 +652,12 @@ async function generate(
       if (settled) return;
       settled = true; timers.forEach(clearTimeout); if (wake) clearTimeout(wake); resolve(c);
     };
-    timers.push(setTimeout(() => finish(null), FIRST_TOKEN_DEADLINE_MS));
+    const openStreams = new Set<Cand>();
+    timers.push(setTimeout(() => {
+      if (openStreams.size === 0) return finish(null);
+      console.log(JSON.stringify({ ev: "deadline_extend", agent, open: openStreams.size, to_ms: OPEN_STREAM_DEADLINE_MS }));
+      timers.push(setTimeout(() => finish(null), OPEN_STREAM_DEADLINE_MS - FIRST_TOKEN_DEADLINE_MS));
+    }, FIRST_TOKEN_DEADLINE_MS));
     const coolUntil = new Map<string, number>();
     const inflight = new Set<string>();
     const lastStart = deadline - LAST_LAUNCH_MARGIN_MS;
@@ -677,6 +691,8 @@ async function generate(
       if (thinking && dahlExtrasOk !== false) Object.assign(body, { reasoning_split: true, reasoning_effort: "low" });
       const startedAt = Date.now();
       timers.push(setTimeout(next, FIRST_TOKEN_MS)); // silent too long: let the other model start alongside
+      const stats: StreamStats = { events: 0, reasoningChars: 0 };
+      let openedAt: number | null = null;
       (async () => {
         let why: string | null = null;
         try {
@@ -708,7 +724,9 @@ async function generate(
             c.first = content;
             c.iter = (async function* () { /* nothing more */ })();
           } else {
-            c.iter = sseDeltas(res);
+            openedAt = Date.now() - startedAt;
+            openStreams.add(c);
+            c.iter = sseDeltas(res, stats);
             while (true) {
               const step = await c.iter.next();
               if (step.done) { why = "empty"; throw new Error("empty"); }
@@ -719,7 +737,8 @@ async function generate(
           }
           pending--;
           if (settled) { c.ctrl.abort(); return; }
-          console.log(JSON.stringify({ ev: "first_token", model, attempt: attempts, ms: Date.now() - t0 }));
+          openStreams.delete(c);
+          console.log(JSON.stringify({ ev: "first_token", model, attempt: attempts, ms: Date.now() - t0, open_ms: openedAt, pre_events: stats.events, reasoning_chars: stats.reasoningChars }));
           finish(c);
         } catch (e) {
           pending--;
@@ -727,7 +746,8 @@ async function generate(
           if (!why) why = settled ? "deadline_or_lost" : ((e as Error)?.name === "AbortError" ? "aborted" : "network");
           if (why === "empty" || why === "network") coolUntil.set(model, Date.now() + COOL_MIN_MS);
           if (!settled || !lastReason) lastReason = why;
-          console.log(JSON.stringify({ ev: "try_failed", model, reason: why, ms: Date.now() - t0, try_ms: Date.now() - startedAt }));
+          openStreams.delete(c);
+          console.log(JSON.stringify({ ev: "try_failed", model, reason: why, ms: Date.now() - t0, try_ms: Date.now() - startedAt, open_ms: openedAt, pre_events: stats.events, reasoning_chars: stats.reasoningChars }));
           if (settled) return;
           if (why === "rejected_key") return finish(null);
           next();
