@@ -704,12 +704,14 @@ async function generate(
           if (res.status === 401 || res.status === 403) { why = "rejected_key"; throw new Error("rejected"); }
           if (!res.ok || !res.body) {
             why = "http_" + res.status;
-            if (res.status === 429) {
+            // v38 (Nov 21 2026): a 5xx (Dahl answered DeepSeek 503 three times in 3.3 s at 6:00 PM ET) rests like a 429
+            // instead of 1.5 s, so the 4 tries are spread over the budget rather than spent in the first 3 s.
+            if (res.status === 429 || res.status >= 500) {
               const ra = parseRetryAfterMs(res.headers.get("retry-after"));
               const cool = Math.min(COOL_MAX_MS, Math.max(COOL_MIN_MS, ra ?? COOL_DEFAULT_MS)) + Math.floor(Math.random() * COOL_JITTER_MS);
               coolUntil.set(model, Date.now() + cool);
               const txt = await res.text().catch(() => "");
-              console.log(JSON.stringify({ ev: "upstream_429", model, agent, attempt: attempts, inflight: inflight.size, cool_ms: cool, ...rateInfo(res, txt) }));
+              console.log(JSON.stringify({ ev: res.status === 429 ? "upstream_429" : "upstream_5xx", model, agent, attempt: attempts, inflight: inflight.size, cool_ms: cool, ...rateInfo(res, txt) }));
             } else {
               coolUntil.set(model, Date.now() + COOL_MIN_MS);
               try { await res.body?.cancel(); } catch { /* */ }

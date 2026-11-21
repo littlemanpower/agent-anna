@@ -5130,6 +5130,8 @@ Cool Hot Sauce and KUNDA Co. Ltd are separate companies with the same shareholde
             retry.textContent = 'Retry';
             retry.addEventListener('click', function () { sendMessage(retryQuery); });
             if (row) row.insertBefore(retry, row.firstChild);
+            // The chip can wrap the row to a new line after the reply already scrolled; keep the last chips in view.
+            if (typeof scrollChatIfPinned === 'function') scrollChatIfPinned();
         }
 
         // All chat text (user input, AI replies, team relay, voice) is escaped, so it can never run as HTML.
