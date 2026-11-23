@@ -540,6 +540,11 @@ const STOP_SEQUENCES = ["\nUser:", "\nMartin:", "\nHuman:", "\nAssistant:"];
 const FIRST_TOKEN_DEADLINE_MS = 12_000;
 // v37 (Nov 19 2026): at 5:54 PM AA01 had no 429 at all - DeepSeek and MiniMax both had streams open (HTTP 200) but
 // silent when the 12 s cut-off hit. If a stream is open at 12 s, wait up to 15 s in total; never longer.
+// v39 (Nov 22 2026): also wait to 15 s while a MiniMax try is still queued (no headers yet). In the logs
+// MiniMax's queue does clear late (first words at 12.3-17.7 s under the old 20 s budget); DeepSeek never answered
+// after 5.5 s. At 5:58 PM ET Nov 22, AA03's MiniMax sat queued for 10.5 s when the 12 s cut-off hit.
+// "Slow model" = any THINKING_MODELS entry (today only MiniMax); a new thinking model would get the same wait.
+// If that slow try fails during the extra wait and no stream is open, fall back right away (Rust review nit).
 const OPEN_STREAM_DEADLINE_MS = 15_000;
 const LAST_LAUNCH_MARGIN_MS = 3_000; // a try started later than this before the deadline can't answer in time
 const STALL_MS = 12_000;
@@ -653,9 +658,13 @@ async function generate(
       settled = true; timers.forEach(clearTimeout); if (wake) clearTimeout(wake); resolve(c);
     };
     const openStreams = new Set<Cand>();
+    let extended = false;
+    const slowInFlight = () => [...inflight].some((m) => THINKING_MODELS.has(m));
     timers.push(setTimeout(() => {
-      if (openStreams.size === 0) return finish(null);
-      console.log(JSON.stringify({ ev: "deadline_extend", agent, open: openStreams.size, to_ms: OPEN_STREAM_DEADLINE_MS }));
+      const slowQueued = slowInFlight();
+      if (openStreams.size === 0 && !slowQueued) return finish(null);
+      extended = true;
+      console.log(JSON.stringify({ ev: "deadline_extend", agent, open: openStreams.size, slow_queued: slowQueued, to_ms: OPEN_STREAM_DEADLINE_MS }));
       timers.push(setTimeout(() => finish(null), OPEN_STREAM_DEADLINE_MS - FIRST_TOKEN_DEADLINE_MS));
     }, FIRST_TOKEN_DEADLINE_MS));
     const coolUntil = new Map<string, number>();
@@ -679,7 +688,12 @@ async function generate(
           return armWake(at);
         }
       }
-      if (pending === 0) finish(null); // nothing in flight and nothing can start in time: fall back now
+      if (pending === 0) return finish(null); // nothing in flight and nothing can start in time: fall back now
+      // In the 12-15 s extra wait, stop as soon as nothing it was waiting for is left (no open stream, no slow try).
+      if (extended && openStreams.size === 0 && !slowInFlight()) {
+        console.log(JSON.stringify({ ev: "deadline_extend_end", agent, ms: now - t0 }));
+        finish(null);
+      }
     };
     const start = (model: string) => {
       attempts++; pending++;
