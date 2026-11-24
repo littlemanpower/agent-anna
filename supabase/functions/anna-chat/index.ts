@@ -7,7 +7,11 @@ const DAHL_URL = "https://inference.dahl.global/v1/chat/completions";
 // we move to the next model instead of waiting. Roll back: set MODELS = ["MiniMaxAI/MiniMax-M2.7"].
 // v36 (Nov 19 2026): GLM-5.3-Flash dropped from the chain. In the 24 h to 10:30 AM ET it answered 0 of 19 tries
 // (18 x 429, 1 empty) and only added upstream calls. Roll back: add "zai-org/GLM-5.3-Flash" back as the third entry.
-const MODELS = ["deepseek-ai/DeepSeek-V4-Flash-0731", "MiniMaxAI/MiniMax-M2.7"];
+// v41 (Nov 24 2026): GLM-5.3-Flash back as the third entry (the v36 roll-back above). At 6:55 AM ET
+// Dahl's public status showed MiniMax not operational (1 h uptime 66.67%, 24 h 84.72%) while GLM was 100%, and
+// every MiniMax try in Boss's check sat queued with no reply until the 15 s cut. Same provider and key; GLM is
+// only tried when DeepSeek is resting or silent and MiniMax is busy. Roll back: remove the third entry again.
+const MODELS = ["deepseek-ai/DeepSeek-V4-Flash-0731", "MiniMaxAI/MiniMax-M2.7", "zai-org/GLM-5.3-Flash"];
 const MODEL = MODELS[0];
 const DBG_NONCE = ""; // benchmark override disabled (set a random value only while benchmarking)
 const THINKING_MODELS = new Set(["MiniMaxAI/MiniMax-M2.7"]);
@@ -192,6 +196,11 @@ const TOTAL_BUDGET_MS = 38_000; // whole /chat request, both attempts included
 const MIN_RETRY_WINDOW_MS = 5_000;
 const BASE_MAX_TOKENS = 1200; // MiniMax-M2.7 always thinks first; leave room for the answer
 const RETRY_MAX_TOKENS = 2000;
+// v41 (Nov 24 2026; reviewed as v40-local Nov 23): DeepSeek now streams reasoning before its answer (134-1,360 reasoning chars seen
+// Nov 21-23). At 7:22 PM ET Nov 22 one try spent ~1,360 chars of reasoning and ended with no answer at the old
+// 400-token cap. 900 leaves room for the reasoning plus a short reply; polishReply still clamps what is shown.
+// Also used by the unused non-stream tryOnce() path so the two can't drift. MiniMax keeps BASE_MAX_TOKENS (1200).
+const STREAM_MAX_TOKENS = 900;
 
 type AgentId = "AA01" | "AA02" | "AA03";
 
@@ -236,6 +245,15 @@ Voice (Martin only, never sound like Anna or Preach): Co-founder of the Kunda Ca
 Limits: no slurs, hate, harassment, or explicit sexual content, and never aim crude jokes at the person you're talking to.
 Inside joke: among the guys, "kunda" is slang for pussy. Get the joke and play along lightly when a user brings it up; don't bring it up unprompted or repeat it. KUNDA Co Ltd and Kunda Cafe are real brand businesses: talk about them straight and never mock them with the slang.`,
 };
+
+// v41 (Nov 24 2026; reviewed as v40-local Nov 23): a missing or unknown agent still answers as AA01, but it is now logged
+// ("agent_defaulted") and flagged in the reply meta, so a test that forgets the agent field is easy to spot.
+function agentSource(explicit: unknown): "explicit" | "missing" | "invalid" {
+  if (explicit === undefined || explicit === null) return "missing";
+  if (typeof explicit === "string" && explicit.trim() === "") return "missing"; // "" and whitespace-only count as missing
+  const id = typeof explicit === "string" ? explicit.trim().toUpperCase() : "";
+  return id === "AA01" || id === "AA02" || id === "AA03" ? "explicit" : "invalid";
+}
 
 function detectAgent(explicit: unknown): AgentId {
   const id = typeof explicit === "string" ? explicit.trim().toUpperCase() : "";
@@ -450,7 +468,7 @@ type TryResult =
 
 async function tryOnce(apiKey: string, model: string, payload: Record<string, unknown>, timeoutMs: number): Promise<TryResult> {
   const thinking = THINKING_MODELS.has(model);
-  const body: Record<string, unknown> = { ...payload, model, max_tokens: thinking ? BASE_MAX_TOKENS : (model.includes("GLM") ? 700 : 400), stream: false };
+  const body: Record<string, unknown> = { ...payload, model, max_tokens: thinking ? BASE_MAX_TOKENS : (model.includes("GLM") ? 700 : STREAM_MAX_TOKENS), stream: false };
   if (thinking && dahlExtrasOk !== false) Object.assign(body, { reasoning_split: true, reasoning_effort: "low" });
   let res: Response;
   try {
@@ -701,7 +719,7 @@ async function generate(
       const c: Cand = { model, ctrl: new AbortController(), filter: new ThinkFilter() };
       cands.push(c);
       const thinking = THINKING_MODELS.has(model);
-      const body: Record<string, unknown> = { model, messages, temperature, stream: true, max_tokens: thinking ? BASE_MAX_TOKENS : 400, ...(STOP_OK.has(model) ? { stop: STOP_SEQUENCES } : {}) };
+      const body: Record<string, unknown> = { model, messages, temperature, stream: true, max_tokens: thinking ? BASE_MAX_TOKENS : STREAM_MAX_TOKENS, ...(STOP_OK.has(model) ? { stop: STOP_SEQUENCES } : {}) };
       if (thinking && dahlExtrasOk !== false) Object.assign(body, { reasoning_split: true, reasoning_effort: "low" });
       const startedAt = Date.now();
       timers.push(setTimeout(next, FIRST_TOKEN_MS)); // silent too long: let the other model start alongside
@@ -869,13 +887,16 @@ Deno.serve(async (req: Request) => {
       }
       const body = (() => { try { return JSON.parse(rawText || "{}") as Record<string, unknown>; } catch { return {} as Record<string, unknown>; } })();
       const agent = detectAgent(body.agent);
+      const agentSrc = agentSource(body.agent);
+      const agentMeta = agentSrc === "explicit" ? {} : { agent_defaulted: agentSrc };
+      if (agentSrc !== "explicit") console.log(JSON.stringify({ ev: "agent_defaulted", in: agentSrc, used: agent }));
       if (await chatCapped(ip, session)) {
         console.log(JSON.stringify({ ev: "rate_limited", route: "chat" }));
-        return json({ error: "rate_limited", message: FRIENDLY_SLOWDOWN[agent], agent, fallback: true }, 429);
+        return json({ error: "rate_limited", message: FRIENDLY_SLOWDOWN[agent], agent, ...agentMeta, fallback: true }, 429);
       }
       const apiKey = await getDahlKey();
       if (!apiKey) {
-        return json({ error: "no_key", message: "NO DAHL API KEY: open KEYS and paste your key." }, 401);
+        return json({ error: "no_key", message: "NO DAHL API KEY: open KEYS and paste your key.", ...agentMeta }, 401);
       }
       const raw = Array.isArray(body.messages) ? body.messages : [];
       // Client system / role=system history is ignored. The server builds the prompt from the agent id only.
@@ -905,7 +926,7 @@ Deno.serve(async (req: Request) => {
       while (capped.length && capped[0].role === "assistant") capped.shift();
       // v35: nothing for the model to answer (no user turn) -> 400, without calling the model.
       if (!capped.some((m) => m.role === "user" && m.content.trim())) {
-        return json({ error: "empty_message", message: "Type a message first.", agent }, 400);
+        return json({ error: "empty_message", message: "Type a message first.", agent, ...agentMeta }, 400);
       }
       capped.unshift({ role: "system", content: personaText });
 
@@ -917,10 +938,10 @@ Deno.serve(async (req: Request) => {
 
       if (!wantStream) {
         const out = await generate(apiKey, capped, temperature, agent, models, () => {});
-        if (out.reason === "rejected_key") return json({ error: "rejected_key", message: "The chat key was rejected. Contact the owner." }, 401);
+        if (out.reason === "rejected_key") return json({ error: "rejected_key", message: "The chat key was rejected. Contact the owner.", ...agentMeta }, 401);
         return json({
           choices: [{ index: 0, message: { role: "assistant", content: out.content }, finish_reason: out.fallback ? "fallback" : "stop" }],
-          model: out.model, agent, attempts: out.attempts, fallback: out.fallback, reason: out.reason, ttft_ms: out.ttft, ms: out.ms,
+          model: out.model, agent, ...agentMeta, attempts: out.attempts, fallback: out.fallback, reason: out.reason, ttft_ms: out.ttft, ms: out.ms,
         }, 200);
       }
 
@@ -936,11 +957,11 @@ Deno.serve(async (req: Request) => {
             send("data: " + JSON.stringify({ choices: [{ index: 0, delta: { content: d } }] }) + "\n\n");
           });
           if (out.reason === "rejected_key") {
-            send("data: " + JSON.stringify({ error: "rejected_key", message: "The chat key was rejected. Contact the owner." }) + "\n\n");
+            send("data: " + JSON.stringify({ error: "rejected_key", message: "The chat key was rejected. Contact the owner.", ...agentMeta }) + "\n\n");
           } else if (out.fallback) {
-            send("data: " + JSON.stringify({ choices: [{ index: 0, delta: { content: out.content }, finish_reason: "fallback" }], fallback: true, agent, attempts: out.attempts, reason: out.reason, ms: out.ms }) + "\n\n");
+            send("data: " + JSON.stringify({ choices: [{ index: 0, delta: { content: out.content }, finish_reason: "fallback" }], fallback: true, agent, ...agentMeta, attempts: out.attempts, reason: out.reason, ms: out.ms }) + "\n\n");
           } else {
-            send("data: " + JSON.stringify({ choices: [{ index: 0, delta: { content: "" }, finish_reason: "stop" }], fallback: false, agent, model: out.model, attempts: out.attempts, ttft_ms: out.ttft, ms: out.ms }) + "\n\n");
+            send("data: " + JSON.stringify({ choices: [{ index: 0, delta: { content: "" }, finish_reason: "stop" }], fallback: false, agent, ...agentMeta, model: out.model, attempts: out.attempts, ttft_ms: out.ttft, ms: out.ms }) + "\n\n");
           }
           send("data: [DONE]\n\n");
         } finally {
