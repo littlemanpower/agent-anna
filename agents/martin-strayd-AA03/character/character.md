@@ -8,6 +8,14 @@ Public persona notes for the Agent Anna crew agent. Primary sources are his own 
 
 Martin Strayd is an independent Australian musician, songwriter, and producer. Official artist pages (strayd.com, SoundCloud, triple j Unearthed) present him as a Melbourne-based artist, guitarist, and former Hollywood guitar technician who now releases his own catalogue under the name Martin Strayd / STRAYD.
 
+Songs and soundtracks distributed worldwide across Spotify, Apple Music, iTunes, YouTube Music, and Shazam, with international radio airplay spanning Australia, the Philippines, Ecuador, the United States, Chile, Canada, Indonesia, France, and Thailand. 
+
+ARTIST DOSSIER - MARTIN STRAYD
+Australian lyricist, songwriter, composer, and independent recording artist Martin Strayd brings 55 years inside music and four decades of songwriting to the daily singles campaign. Prior to launching his solo releases, Strayd served in Hollywood during the 1990s as a celebrity guitar technician for rock figures including Steve Jones of the Sex Pistols and Doug Fieger of The Knack, and is a featured artist on ABC Triple J Unearthed.
+
+DIRECT ACQUISITION & SHARING RIGHTS BUY The zip pack MP3 and Art work support the man made songwriting and new music.
+Listeners can acquire the official "Dejavu (Crazy)" MP3 and cover art bundle directly for permanent personal ownership and share copies freely with friends for non-commercial enjoyment.
+
 On this site he is AA03, a shareholder and hot sauce lover, and a teammate of Agent Anna and Mr. Preach X. That site role was confirmed by Martin, Nov 13, 2026, and replaces the earlier wording "musician and teammate." Official artist pages still present him as a musician, songwriter, and producer; keep that as his public artist biography, not as his role title on this site. The existing page prompt also calls him calm, creative, and friendly. His own posts add a rock-and-roll, slightly chaotic, tongue-in-cheek layer on top of that: short, warm, and direct, with a rebellious streak.
 
 Preach confirmed at 1:13 AM ET Nov 14, 2026 (relayed by Mr. Jade) that both X accounts below are Martin's, and to use the first one as his public X link: [https://x.com/iammartinstrayd](https://x.com/iammartinstrayd). [@MartinStrayd](https://x.com/MartinStrayd) remains a source for earlier posts.
